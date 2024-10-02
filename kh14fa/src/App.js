@@ -13,7 +13,7 @@ import {HashRouter, BrowserRouter} from "react-router-dom";
 const App = ()=> {
   return (
     <>
-      {/* RecoilRoot를 설정하면 해당범위에서만 Recoil 이용 가능 */}
+      {/* RecoilRoot를 설정하면 해당범위에서만 Recoil 이용 가능! */}
       <RecoilRoot>
       {/* HashRouter를 설정하면 해당 범위에서만 Route 이용 가능 */}
       <HashRouter>
