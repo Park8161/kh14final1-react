@@ -27,6 +27,10 @@ const Menu = () => {
         // axios에 설정된 Authorization 헤더도 제거
         delete axios.defaults.headers.common["Authorization"];
 
+        // localStorage, sessionStorage의 refreshToken을 제거
+        window.localStorage.removeItem("refreshToken");
+        window.sessionStorage.removeItem("refreshToken");
+
         navigate("/");
     },[memberId, memberLevel]);
     
