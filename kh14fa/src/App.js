@@ -4,6 +4,7 @@ import Menu from "./components/Menu";
 import { useCallback, useEffect } from 'react';
 import { useRecoilState } from "recoil";
 import { memberIdState, memberLevelState } from "./utils/recoil";
+import { memberLoadingState } from "../../../kh14-react/home/src/utils/recoil";
 
 // HashRouter : localhost:3000/#/ex01
 // 하나의 주소만 허용해줄 때 사용, /#/~~ (ex. GitHub)
@@ -18,6 +19,7 @@ const App = ()=> {
   // recoil state
   const [memberId, setMemberId] = useRecoilState(memberIdState);
   const [memberLevel, setMemberLevel] = useRecoilState(memberLevelState);
+  const [memberLoading, setMemberLoading] = useRecoilState(memberLoadingState);
 
   // callback
   const refreshLogin = useCallback(async()=>{
@@ -43,6 +45,8 @@ const App = ()=> {
     else{
       window.sessionStorage.setItem("refreshToken", resoponse.data.refreshToken);
     }
+
+    setMemberLoading(true);
   },[]);
 
   // effect - 화면 첫 로딩 시 1회 실행

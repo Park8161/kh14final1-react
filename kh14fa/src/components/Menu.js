@@ -115,6 +115,12 @@ const Menu = () => {
                                 </a>
                             </li>
                             <li className="nav-item">
+                                <NavLink className="nav-link" to="/member/mypage">
+                                    <MdContactPage />
+                                    MyPage
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
                                 <a className="nav-link" href="#" onClick={logout}>
                                     <RiLogoutBoxLine />
                                     로그아웃

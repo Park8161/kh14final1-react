@@ -40,3 +40,11 @@ const loginState = selector({
 export {memberIdState, memberLevelState, loginState};
 // memberIdState, memberLevelState는 읽기/쓰기 전용 >> useRecoilState();
 // loginState는 읽기 전용 >> useRecoilValue();
+
+// 로그인 처리 관련 여부
+const memberLoadingState = atom({
+    key : "memberLoadingState",
+    default : false
+});
+
+export {memberLoadingState};
