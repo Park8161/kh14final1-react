@@ -10,6 +10,9 @@ import { loginState } from "../utils/recoil";
 import MemberLogin from "./member/MemberLogin";
 import PageNotFound from "./error/PageNotFound";
 import MyPage from "./member/Mypage";
+import PrivateRoute from "./router/PrivateRoute";
+import MemberCheck from "./member/MemberCheck";
+import MemberJoin from "./member/MemberJoin";
 
 // component
 const MainContent = ()=>{
@@ -52,6 +55,8 @@ const MainContent = ()=>{
 
                             {/* 회원 로그인 */}
                             <Route path="/member/login" element={<MemberLogin/>} />
+                            <Route path="/member/check" element={<MemberCheck/>} />
+                            <Route path="/member/join" element={<MemberJoin/>} />
                             <Route path="/member/mypage" element={<PrivateRoute element={<MyPage/>}/>}/>
 
                             {/* 나머지 경로(*) 패턴을 지정해서 미 지정된 페이지를 모두 연결 할 수 있다 */}

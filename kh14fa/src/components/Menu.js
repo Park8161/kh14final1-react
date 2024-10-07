@@ -5,6 +5,8 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { loginState, memberIdState, memberLevelState } from "../utils/recoil";
 import { RiLoginBoxLine, RiLogoutBoxLine } from "react-icons/ri";
 import axios from "axios";
+import { MdContactPage } from "react-icons/md";
+import { FaUserPlus } from "react-icons/fa";
 
 // component
 const Menu = () => {
@@ -110,7 +112,7 @@ const Menu = () => {
                             {/* 로그인이 되어있다면 아이디(등급) 형태로 출력 */}
                             {login ? (<>
                             <li className="nav-item">
-                                <a className="nav-link" href="#">
+                                <a className="nav-link" >
                                     환영해요 {memberId}님!
                                 </a>
                             </li>
@@ -128,10 +130,10 @@ const Menu = () => {
                             </li>
                             </>) : (<>
                             <li className="nav-item">
-                                <a className="nav-link" href="#">
-                                    <i className="fa-solid fa-user"></i>
+                                <NavLink className="nav-link" to="/member/check">
+                                    <FaUserPlus />
                                     회원가입
-                                </a>
+                                </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/member/login">

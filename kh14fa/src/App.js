@@ -3,8 +3,7 @@ import MainContent from "./components/MainContent";
 import Menu from "./components/Menu";
 import { useCallback, useEffect } from 'react';
 import { useRecoilState } from "recoil";
-import { memberIdState, memberLevelState } from "./utils/recoil";
-import { memberLoadingState } from "../../../kh14-react/home/src/utils/recoil";
+import { memberIdState, memberLevelState,memberLoadingState } from "./utils/recoil";
 
 // HashRouter : localhost:3000/#/ex01
 // 하나의 주소만 허용해줄 때 사용, /#/~~ (ex. GitHub)

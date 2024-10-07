@@ -5,6 +5,8 @@ import axios from "axios";
 const MyPage = ()=>{
     //state
     const [member, setMember] = useState({});
+    const [block, setBlock] = useState({});
+    const [product, setProduct] = useState({});
     
     //effect
     useEffect(()=>{
@@ -14,15 +16,17 @@ const MyPage = ()=>{
     //callback
     const loadMember = useCallback(async ()=>{
         const response = await axios.get("http://localhost:8080/member/mypage");
-        setMember(response.data);
-    }, [member]);
+        setMember(response.data.memberDto);
+        setBlock(response.data.blockDto);
+        setProduct(response.data.productDto);
+    }, [member, block, product]);
 
     return (<>
         <Jumbotron title={`${member.memberId} 님의 정보`}/>
 
         <div className="row mt-4">
             <div className="col-3">닉네임</div>
-            <div className="col-3">{member.memberNickname}</div>
+            <div className="col-3">{member.memberName}</div>
         </div>
         <div className="row mt-4">
             <div className="col-3">전화번호</div>
@@ -38,7 +42,7 @@ const MyPage = ()=>{
         </div>
         <div className="row mt-4">
             <div className="col-3">포인트</div>
-            <div className="col-3">{member.memberNickname}</div>
+            <div className="col-3">{member.memberPoint}</div>
         </div>
         <div className="row mt-4">
             <div className="col-3">주소</div>
