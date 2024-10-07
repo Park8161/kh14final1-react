@@ -45,7 +45,9 @@ const MemberLogin = () => {
             // 이 토큰을 이용해서 서버가 나의 존재를 구분할 수 있다
             // 매번 첨부하기 귀찮으니 axios 설정을 통해 Http Header에 첨부
             // 헤더 이름은 Authorization 으로 하자(대부분의 사이트에서 이렇게 사용함)
-            axios.defaults.headers.common["Authorization"] = response.data.accessToken;
+            // 토큰 앞에 "Bearer"라는 접두사를 붙여 인증용 토큰임을 명시하자! + 뒤에 띄어쓰기 반드시 써야함
+            // (Bearer는 공식 단어 중 하나임(Basic,Digest,Apikey,...), 접두사 사용시 서드파티 이용 가능)
+            axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.accessToken;
 
             // - 로그인에 성공하면? 메인페이지로 이동
             // return <Navigate to="/" /> // 컴포넌트(view)에서 사용해야할 경우
