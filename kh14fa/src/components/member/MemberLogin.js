@@ -49,6 +49,17 @@ const MemberLogin = () => {
             // (Bearer는 공식 단어 중 하나임(Basic,Digest,Apikey,...), 접두사 사용시 서드파티 이용 가능)
             axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.accessToken;
 
+            // refreshToken은 로그인이 풀렸을 때 상황에 따라 로그인을 갱신하기 위한 데이터
+            // - 로그인 유지를 체크했느냐에 따라 다른 위치에 저장
+            // - 로그인 유지 체크 시 - localStorage에 저장
+            // - 로그인 유지 미 체크 시 - sessionStorage에 저장
+            if(stay === true){ // 로그인 유지 체크 시
+                window.localStorage.setItem("refreshToken", response.data.refreshToken);
+            }
+            else { // 로그인 유지 미 체크 시
+                window.sessionStorage.setItem("refreshToken", response.data.refreshToken);
+            }
+
             // - 로그인에 성공하면? 메인페이지로 이동
             // return <Navigate to="/" /> // 컴포넌트(view)에서 사용해야할 경우
             // useNavigate를 쓰면 무조건 뒤에 화면(return(<></>);)이 나와야 함 >> 함수 내부라서 화면 안해도 된다?
@@ -57,7 +68,7 @@ const MemberLogin = () => {
         catch(e){
             console.log("아이디가 없거나 비밀번호 불일치");
         }
-    },[input]);
+    },[input, stay]);
     
 
     // view

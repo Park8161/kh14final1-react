@@ -7,6 +7,12 @@ import Home from './Home';
 // import MemberLogin from "./member/MemberLogin";
 import { useRecoilValue } from 'recoil';
 import { loginState } from "../utils/recoil";
+import MemberLogin from "./member/MemberLogin";
+import PageNotFound from "./error/PageNotFound";
+import MyPage from "./member/Mypage";
+import PrivateRoute from "./router/PrivateRoute";
+import MemberCheck from "./member/MemberCheck";
+import MemberJoin from "./member/MemberJoin";
 
 // component
 const MainContent = ()=>{
@@ -39,16 +45,19 @@ const MainContent = ()=>{
                             {/* 경로변수를 사용할 경우 콜론과 이름을 합쳐 변수명으로 지정 ("/book/detail/{bookID}") */}
                             
                             {/* 변경 : 중첩 라우팅 */}
-                            <Route path="/search/*" element={<Search/>} />
+                            {/* <Route path="/search/*" element={<Search/>} /> */}
 
                             {/* 접속 제한 하기 */}
                             {/* <PrivateRoute>children</PrivateRoute> */}
-                            <Route path="/emp" element={<PrivateRoute><Emp/></PrivateRoute>} /> 
-                            {/* <PrivateRoute target={property} /> */}
-                            <Route path="/emp" element={<PrivateRoute target={<Emp/>} />} /> 
+                            {/* <Route path="/emp" element={<PrivateRoute><Emp/></PrivateRoute>} />  */}
+                            {/* <PrivateRoute target={element} /> */}
+                            {/* <Route path="/emp" element={<PrivateRoute element={<Emp/>} />} />  */}
 
                             {/* 회원 로그인 */}
                             <Route path="/member/login" element={<MemberLogin/>} />
+                            <Route path="/member/check" element={<MemberCheck/>} />
+                            <Route path="/member/join" element={<MemberJoin/>} />
+                            <Route path="/member/mypage" element={<PrivateRoute element={<MyPage/>}/>}/>
 
                             {/* 나머지 경로(*) 패턴을 지정해서 미 지정된 페이지를 모두 연결 할 수 있다 */}
                             <Route path="*" element={<PageNotFound/>} />
