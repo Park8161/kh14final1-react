@@ -5,9 +5,14 @@ import Home from './Home';
 // import MemberComplexSearch from "./search/MemberComplexSearch";
 // import Search from "./search/Search";
 // import MemberLogin from "./member/MemberLogin";
+import { useRecoilValue } from 'recoil';
+import { loginState } from "../utils/recoil";
 
 // component
 const MainContent = ()=>{
+    // recoil에서 login 상태를 불러온다
+    const login = useRecoilValue(loginState);
+
     // state
 
     // effect

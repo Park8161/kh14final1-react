@@ -87,10 +87,12 @@ const Menu = () => {
                                     aria-haspopup="true" aria-expanded="false">데이터</a>
                                 <div className="dropdown-menu">
                                     <NavLink className="dropdown-item" to="/poketmon">포켓몬</NavLink>
+                                    {login === true && (<>
                                     <NavLink className="dropdown-item" to="/emp">사원</NavLink>
                                     <NavLink className="dropdown-item" to="/emp2">사원2</NavLink>
                                     <NavLink className="dropdown-item" to="/book/spa">도서(SPA)</NavLink>
                                     <NavLink className="dropdown-item" to="/book/list">도서(Multi)</NavLink>
+                                    </>)}
                                     {/* <div className="dropdown-divider"></div> */}
                                     <a className="dropdown-item" href="#">기타</a>
                                 </div>
