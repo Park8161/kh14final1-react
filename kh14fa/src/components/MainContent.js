@@ -44,8 +44,8 @@ const MainContent = ()=>{
                             {/* 접속 제한 하기 */}
                             {/* <PrivateRoute>children</PrivateRoute> */}
                             <Route path="/emp" element={<PrivateRoute><Emp/></PrivateRoute>} /> 
-                            {/* <PrivateRoute target={property} /> */}
-                            <Route path="/emp" element={<PrivateRoute target={<Emp/>} />} /> 
+                            {/* <PrivateRoute target={element} /> */}
+                            <Route path="/emp" element={<PrivateRoute element={<Emp/>} />} /> 
 
                             {/* 회원 로그인 */}
                             <Route path="/member/login" element={<MemberLogin/>} />
