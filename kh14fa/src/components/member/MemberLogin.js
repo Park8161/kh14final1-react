@@ -7,6 +7,7 @@ import { Navigate } from "react-router";
 import { useNavigate } from 'react-router';
 import { useRecoilState } from "recoil";
 import { memberIdState, memberLevelState } from "../../utils/recoil";
+import { NavLink } from "react-router-dom";
 
 const MemberLogin = () => {
     // navigate
@@ -100,7 +101,7 @@ const MemberLogin = () => {
                     </div>
 
                     <div className="row mt-4">
-                        <div className="col">
+                        <div className="col-8">
                             <label>
                                 <input type="checkbox" className="form-check-input" 
                                     checked={display} onChange={e=>setDisplay(e.target.checked)}/>
@@ -110,6 +111,13 @@ const MemberLogin = () => {
                                 <input type="checkbox" className="form-check-input"  
                                     checked={stay} onChange={e=>setStay(e.target.checked)}/>
                                 <span className="form-check-label ms-1 me-3">로그인 유지</span>
+                            </label>
+                        </div>
+                        <div className="col-4 text-end">
+                            <label>
+                                <NavLink className="text-decoration-none" to="/member/findpw">
+                                    비밀번호 찾기
+                                </NavLink>
                             </label>                            
                         </div>
                     </div>

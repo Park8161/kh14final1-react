@@ -4,6 +4,8 @@ import Menu from "./components/Menu";
 import { useCallback, useEffect } from 'react';
 import { useRecoilState } from "recoil";
 import { memberIdState, memberLevelState,memberLoadingState } from "./utils/recoil";
+import 'react-toastify/dist/ReactToastify.css';
+import { Bounce, ToastContainer } from "react-toastify";
 
 // HashRouter : localhost:3000/#/ex01
 // 하나의 주소만 허용해줄 때 사용, /#/~~ (ex. GitHub)
@@ -57,6 +59,21 @@ const App = ()=> {
     <>
       <Menu />
       <MainContent />
+
+      {/* toast 메세지 출력을 위한 컨테이너 */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable={false}
+        pauseOnHover={false}
+        theme="colored"
+        transition={Bounce}
+      />
     </>
   );
 }

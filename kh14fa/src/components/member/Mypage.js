@@ -64,6 +64,9 @@ const MyPage = ()=>{
 
         <div className="row mt-4">
             <div className="col text-end">
+                <NavLink className="btn btn-info me-3" to="/member/changepw">
+                    비밀번호 변경
+                </NavLink>
                 <NavLink className="btn btn-info" to="/member/edit">
                     개인정보 수정
                 </NavLink>
