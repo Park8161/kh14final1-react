@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Jumbotron from "../Jumbotron";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import { toast } from "react-toastify";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 import { FaAsterisk } from "react-icons/fa6";
 
 
@@ -115,7 +115,7 @@ const MemberEdit = ()=>{
     // view
     return(
         <>
-            <Jumbotron title="개인 정보 수정" content={`${member.memberId} 님의 정보 수정`}/>
+            <Jumbotron title={`${member.memberId} 님의 정보`} content="개인 정보 수정" />
             
             <div className="row mt-3">
                 <div className="col-3 d-flex align-items-center">이름<FaAsterisk className="text-danger" /></div>
@@ -189,7 +189,7 @@ const MemberEdit = ()=>{
                     </button>
                 </div>
             </div>
-
+            
         </>
     );
 

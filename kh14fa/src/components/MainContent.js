@@ -14,6 +14,9 @@ import PrivateRoute from "./router/PrivateRoute";
 import MemberCheck from "./member/MemberCheck";
 import MemberJoin from "./member/MemberJoin";
 import MemberEdit from "./member/MemberEdit";
+import MemberChangePw from "./member/MemberChangePw";
+import MemberFindPw from "./member/MemberFindPw";
+import MemberResetPw from "./member/MemberResetPw";
 
 // component
 const MainContent = ()=>{
@@ -55,10 +58,13 @@ const MainContent = ()=>{
                             {/* <Route path="/emp" element={<PrivateRoute element={<Emp/>} />} />  */}
                             
                             <Route path="/member/login" element={<MemberLogin/>} />
+                            <Route path="/member/findpw" element={<MemberFindPw/>}/>
+                            <Route path="/member/resetpw" element={<MemberResetPw/>}/>
                             <Route path="/member/check" element={<MemberCheck/>} />
                             <Route path="/member/join" element={<MemberJoin/>} />
                             <Route path="/member/mypage" element={<PrivateRoute element={<MyPage/>}/>}/>
                             <Route path="/member/edit" element={<PrivateRoute element={<MemberEdit/>}/>}/>
+                            <Route path="/member/changepw" element={<PrivateRoute element={<MemberChangePw/>}/>}/>
 
                             {/* 나머지 경로(*) 패턴을 지정해서 미 지정된 페이지를 모두 연결 할 수 있다 */}
                             <Route path="*" element={<PageNotFound/>} />

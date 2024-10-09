@@ -2,7 +2,7 @@
 import {useState, useMemo, useCallback} from "react";
 import Jumbotron from "../Jumbotron";
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
 import axios from "axios";
 import { FaAsterisk, FaEye, FaRegEye } from "react-icons/fa6";
 
@@ -145,10 +145,10 @@ const MemberJoin = ()=>{
     },[display]);
     const trueDisplay2 = useCallback(()=>{
         setDisplay2(true);
-    },[display]);
+    },[display2]);
     const falseDisplay2 = useCallback(()=>{
         setDisplay2(false);
-    },[display]);
+    },[display2]);
     
     // 신규 회원 등록
     const goMemberJoin = useCallback(async()=>{
