@@ -11,6 +11,11 @@ import 'bootstrap';
 import { RecoilRoot } from 'recoil';
 import { HashRouter,BrowserRouter } from 'react-router-dom';
 
+// axios customzie
+import axios from "axios";
+axios.defaults.baseURL=process.env.REACT_APP_BASE_URL; // 기본요청 URL, http://localhost:8080
+axios.defaults.timeout=2000; // 타임아웃(ms)
+
 // HashRouter : localhost:3000/#/ex01
 // 하나의 주소만 허용해줄 때 사용, /#/~~ (ex. GitHub)
 // 배포 환경에서 주소 매핑을 사용할 수 없을 경우 사용

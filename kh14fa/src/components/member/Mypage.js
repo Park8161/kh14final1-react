@@ -16,7 +16,7 @@ const MyPage = ()=>{
 
     //callback
     const loadMember = useCallback(async ()=>{
-        const response = await axios.get("http://localhost:8080/member/mypage");
+        const response = await axios.get("/member/mypage");
         setMember(response.data.memberDto);
         setBlock(response.data.blockDto);
         setProduct(response.data.productDto);

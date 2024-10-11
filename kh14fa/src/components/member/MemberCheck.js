@@ -51,7 +51,7 @@ const MemberCheck = ()=>{
                 <div className="col">
                     <div><img src="https://placehold.co/700x200" /></div>
                     <label className="mt-1">
-                        <input type="checkbox" name="ckbox1"
+                        <input type="checkbox" name="ckbox1" className="form-check-input"
                         checked={check1} onChange={e=>setCheck1(e.target.checked)} />
                         <span>(필수) 개인정보 취급 방침에 동의합니다</span>
                     </label>
@@ -62,7 +62,7 @@ const MemberCheck = ()=>{
                 <div className="col">
                     <div><img src="https://placehold.co/700x200" /></div>
                     <label className="mt-1">
-                        <input type="checkbox" name="ckbox2"
+                        <input type="checkbox" name="ckbox2" className="form-check-input"
                         checked={check2} onChange={e=>setCheck2(e.target.checked)} />
                         <span>(필수) 홈페이지 이용규칙을 준수합니다</span>
                     </label>
@@ -73,7 +73,7 @@ const MemberCheck = ()=>{
                 <div className="col">
                     <div><img src="https://placehold.co/700x200" /></div>
                     <label className="mt-1">
-                        <input type="checkbox" name="ckbox3"
+                        <input type="checkbox" name="ckbox3" className="form-check-input"
                         checked={check3} onChange={e=>setCheck3(e.target.checked)} />
                         <span>(선택) 이벤트성 정보 수신에 동의합니다</span>
                     </label>
@@ -84,7 +84,7 @@ const MemberCheck = ()=>{
                 <div className="col">
                     <div><img src="https://placehold.co/700x200" /></div>
                     <label className="mt-1">
-                        <input type="checkbox" name="ckbox4"
+                        <input type="checkbox" name="ckbox4" className="form-check-input"
                         checked={check4} onChange={e=>setCheck4(e.target.checked)} />
                         <span>(선택) 개인정보의 제 3자 제공에 대해 동의합니다</span>
                     </label>
@@ -94,12 +94,12 @@ const MemberCheck = ()=>{
             <div className="row mt-4">
                 <div className="col text-center">
                     <label className="mt-1 me-4">
-                        <input type="checkbox" name="ckbox4" className="mx-2"
+                        <input type="checkbox" name="ckbox4" className="form-check-input mx-2"
                         checked={checkReqAll} onChange={e=>changeCheckReqAll(e.target.checked)} />
                         <span>(필수) 전체선택</span>
                     </label>
                     <label className="mt-1">
-                        <input type="checkbox" name="ckbox4" className="mx-2"
+                        <input type="checkbox" name="ckbox4" className="form-check-input mx-2"
                         checked={checkAll} onChange={e=>changeCheckAll(e.target.checked)} />
                         <span>(전체) 전체선택</span>
                     </label>

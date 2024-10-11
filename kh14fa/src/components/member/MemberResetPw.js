@@ -62,7 +62,7 @@ const MemberResetPw = ()=>{
         try{ // 비밀번호 변경 성공 
 
             // 등록
-            const response = await axios.post("http://localhost:8080/member/resetPw", input);
+            const response = await axios.post("/member/resetPw", input);
             
             navigate("/member/login");
             

@@ -37,7 +37,7 @@ const MemberFindPw = ()=>{
         try{
             if(isEmpty === true) return;
     
-            const response = await axios.get(`http://localhost:8080/member/memberId/${input.memberId}/memberEmail/${input.memberEmail}`);
+            const response = await axios.get(`/member/memberId/${input.memberId}/memberEmail/${input.memberEmail}`);
     
             toast.info("이메일 발송 완료!");
         }

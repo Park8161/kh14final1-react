@@ -72,7 +72,7 @@ const MemberJoin = ()=>{
     const checkMemberId = useCallback(async()=>{
         if(input.memberId.length > 0){
             // 아이디 중복 검사
-            const response = await axios.get("http://localhost:8080/member/checkId/"+input.memberId);
+            const response = await axios.get("/member/checkId/"+input.memberId);
             if(response.data === false) {
                 setMessage("중복된 아이디입니다!");
                 setMemberIdClass("");
@@ -155,7 +155,7 @@ const MemberJoin = ()=>{
         if(isAllValid === false) return;
 
         // 등록
-        const response = await axios.post("http://localhost:8080/member/join",input);
+        const response = await axios.post("/member/join",input);
         navigate("/");
     
         // 알림 코드

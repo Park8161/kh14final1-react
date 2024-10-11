@@ -54,7 +54,7 @@ const MemberEdit = ()=>{
     
     //callback
     const loadMember = useCallback(async ()=>{
-        const response = await axios.get("http://localhost:8080/member/mypage");
+        const response = await axios.get("/member/mypage");
         setEdit(response.data.memberDto);
     }, [member,edit]);
     const returnBack = useCallback(()=>{
@@ -63,7 +63,7 @@ const MemberEdit = ()=>{
     const goMemberEdit = useCallback(async()=>{
         if(isAllValid === false) return;
 
-        const response = await axios.put("http://localhost:8080/member/edit", edit);
+        const response = await axios.put("/member/edit", edit);
         navigate("/member/mypage");
     
         // 알림 코드

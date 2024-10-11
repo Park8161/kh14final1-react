@@ -68,7 +68,7 @@ const MemberChangePw = ()=>{
         try{ // 비밀번호 변경 성공 
 
             // 등록
-            const response = await axios.post("http://localhost:8080/member/changePw", memberPw);
+            const response = await axios.post("/member/changePw", memberPw);
             
             navigate("/member/mypage");
             
