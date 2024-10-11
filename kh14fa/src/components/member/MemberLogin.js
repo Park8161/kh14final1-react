@@ -35,7 +35,7 @@ const MemberLogin = () => {
 
     const sendLoginRequest = useCallback(async()=>{
         try { // 로그인 성공
-            const response = await axios.post("http://localhost:8080/member/login", input);
+            const response = await axios.post("/member/login", input);
             // console.log(response.data);
 
             // 이동하기 전에 로그인 상태(아이디, 등급)를 recoil 저장소에 저장
