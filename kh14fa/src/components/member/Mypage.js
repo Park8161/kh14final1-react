@@ -6,7 +6,6 @@ import { NavLink } from "react-router-dom";
 const MyPage = ()=>{
     //state
     const [member, setMember] = useState({});
-    const [block, setBlock] = useState({});
     const [product, setProduct] = useState({});
     
     //effect
@@ -18,9 +17,8 @@ const MyPage = ()=>{
     const loadMember = useCallback(async ()=>{
         const response = await axios.get("/member/mypage");
         setMember(response.data.memberDto);
-        setBlock(response.data.blockDto);
         setProduct(response.data.productDto);
-    }, [member, block, product]);
+    }, [member, product]);
 
     return (<>
         <Jumbotron title={`${member.memberId} 님의 정보`}/>
@@ -67,8 +65,14 @@ const MyPage = ()=>{
                 <NavLink className="btn btn-info me-3" to="/member/changepw">
                     비밀번호 변경
                 </NavLink>
-                <NavLink className="btn btn-info" to="/member/edit">
+                <NavLink className="btn btn-info me-3" to="/member/edit">
                     개인정보 수정
+                </NavLink>
+                <NavLink className="btn btn-info me-3" to="/member/block/list">
+                    차단 목록 확인
+                </NavLink>
+                <NavLink className="btn btn-danger" to="/member/exit">
+                    회원 탈퇴
                 </NavLink>
             </div>
         </div>
