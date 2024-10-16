@@ -29,7 +29,10 @@ const App = ()=> {
     // [2] localStorage에 refreshToken이라는 이름의 값이 있는지 확인
     const localToken = window.localStorage.getItem("refreshToken");
     // [3] 둘 다 없으면 차단
-    if(sessionToken === null && localToken === null) return;
+    if(sessionToken === null && localToken === null){
+      setMemberLoading(true);
+      return;
+    }
     // [4] 둘 중 하나라도 있다면 로그인 갱신을 진행
     const refreshToken = sessionToken || localToken; // 앞이 없으면 뒤를 넣어라
     // [5] 헤더에 Authorization 설정
