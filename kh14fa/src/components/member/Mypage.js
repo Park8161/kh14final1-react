@@ -133,6 +133,10 @@ const MyPage = ()=>{
                         <div className="col-3">{member.memberEmail}</div>
                     </div>
                     <div className="row mt-4">
+                        <div className="col-3">회원등급</div>
+                        <div className="col-3">{member.memberLevel}</div>
+                    </div>
+                    <div className="row mt-4">
                         <div className="col-3">주소</div>
                         <div className="col-3">
                             [{member.memberPost}] <br/>
