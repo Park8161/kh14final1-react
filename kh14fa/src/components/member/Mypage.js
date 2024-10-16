@@ -8,10 +8,10 @@ const MyPage = ()=>{
     //state
     const [member, setMember] = useState({});
     const [collapse, setCollpase] = useState({
-        product : "collapse",
-        sell : "collapse",
-        reserve : "collapse",
-        soldout : "collapse",
+        product : false,
+        sell : false,
+        reserve : false,
+        soldout : false,
         productButton : "btn w-100",
         sellButton : "btn w-100",
         reserveButton : "btn w-100",
@@ -31,10 +31,10 @@ const MyPage = ()=>{
 
     const clearCollapse = useCallback(()=>{
         setCollpase({
-            product : "collapse",
-            sell : "collapse",
-            reserve : "collapse",
-            soldout : "collapse",
+            product : false,
+            sell : false,
+            reserve : false,
+            soldout : false,
             productButton : "btn w-100",
             sellButton : "btn w-100",
             reserveButton : "btn w-100",
@@ -46,7 +46,7 @@ const MyPage = ()=>{
         clearCollapse();
         setCollpase({
             ...collapse,
-            [e.target.name] : "collapse show",
+            [e.target.name] : true,
             [e.target.name+"Button"] : "btn w-100 border-dark"            
         });
     },[]); // 왜 연관항목이 없어야 되는거..?
@@ -164,49 +164,49 @@ const MyPage = ()=>{
 
                 <div className="row mt-4 text-center">
                     <div className="col-3">
-                        <button className={collapse.productButton} name="product" onClick={e=>changeCollapse(e)}>내 상품</button>
+                        <button className={collapse.productButton} name="product" onClick={changeCollapse}>내 상품</button>
                     </div>
                     <div className="col-3">
-                        <button className={collapse.sellButton} name="sell" onClick={e=>changeCollapse(e)}>판매중</button>
+                        <button className={collapse.sellButton} name="sell" onClick={changeCollapse}>판매중</button>
                     </div>
                     <div className="col-3">
-                        <button className={collapse.reserveButton} name="reserve" onClick={e=>changeCollapse(e)}>예약중</button>
+                        <button className={collapse.reserveButton} name="reserve" onClick={changeCollapse}>예약중</button>
                     </div>
                     <div className="col-3">
-                        <button className={collapse.soldoutButton} name="soldout" onClick={e=>changeCollapse(e)}>판매완료</button>
+                        <button className={collapse.soldoutButton} name="soldout" onClick={changeCollapse}>판매완료</button>
                     </div>
                 </div>
 
                 <hr className="my-0"/>
 
-                <div className={collapse.product}>
-                    <div className="row mt-4">
-                        <div className="col text-center">
-                            내 상품
-                        </div>
+                {collapse.product === true && (
+                <div className="row mt-4">
+                    <div className="col text-center">
+                        내 상품
                     </div>
                 </div>
-                <div className={collapse.sell}>
-                    <div className="row mt-4">
-                        <div className="col text-center">
-                            판매중
-                        </div>
+                )}
+                {collapse.sell === true && (
+                <div className="row mt-4">
+                    <div className="col text-center">
+                        판매중
                     </div>
                 </div>
-                <div className={collapse.reserve}>
-                    <div className="row mt-4">
-                        <div className="col text-center">
-                            예약중
-                        </div>
+                )}
+                {collapse.reserve === true && (
+                <div className="row mt-4">
+                    <div className="col text-center">
+                        예약중
                     </div>
                 </div>
-                <div className={collapse.soldout}>
-                    <div className="row mt-4">
-                        <div className="col text-center">
-                            판매완료
-                        </div>
+                )}
+                {collapse.soldout === true && (
+                <div className="row mt-4">
+                    <div className="col text-center">
+                        판매완료
                     </div>
                 </div>
+                )}
                 
             </div>
         </div>
