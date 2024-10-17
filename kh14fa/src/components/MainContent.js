@@ -23,12 +23,11 @@ import Chaesujin from "./tmp/Chaesujin";
 import Jhs0713 from "./tmp/Jhs0713";
 import Gykim94 from "./tmp/Gykim94";
 import Aldskaldsk from "./tmp/Aldskaldsk";
-import Park8161 from "./tmp/Park8161";
-import Admin from "./tmp/admin";
-import Member from "./tmp/member";
-import Product from "./tmp/product";
-import Chat from "./tmp/chat";
-import Notice from "./tmp/notice";
+import Admin from "./tmp/Admin";
+import Member from "./tmp/Member";
+import Product from "./tmp/Product";
+import Chat from "./tmp/Chat";
+import Notice from "./tmp/Notice";
 import Qna from "./tmp/Qna";
 import Pay from "./tmp/Pay";
 
