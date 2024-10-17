@@ -103,8 +103,16 @@ const Menu = () => {
                                     <a className="dropdown-item" href="#">기타</a>
                                 </div>
                             </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="#">게시판</a>
+                            <li className="nav-item dropdown">
+                                <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                                    aria-haspopup="true" aria-expanded="false">게시판</a>
+                                <div className="dropdown-menu">
+                                    {login === true && (<>
+                                    <NavLink className="dropdown-item" to="/qna/list">1:1 문의 게시판</NavLink>
+                                    </>)}
+                                    {/* <div className="dropdown-divider"></div> */}
+                                    <NavLink className="dropdown-item" to="/notice/list">공지사항 게시판</NavLink>
+                                </div>
                             </li>
                         </ul>
                         
