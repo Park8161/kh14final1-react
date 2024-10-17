@@ -24,6 +24,13 @@ import Jhs0713 from "./tmp/Jhs0713";
 import Gykim94 from "./tmp/Gykim94";
 import Aldskaldsk from "./tmp/Aldskaldsk";
 import Park8161 from "./tmp/Park8161";
+import Admin from "./tmp/admin";
+import Member from "./tmp/member";
+import Product from "./tmp/product";
+import Chat from "./tmp/chat";
+import Notice from "./tmp/notice";
+import Qna from "./tmp/Qna";
+import Pay from "./tmp/Pay";
 
 // component
 const MainContent = ()=>{
@@ -58,8 +65,13 @@ const MainContent = ()=>{
                             <Route exact path="/Jsh0713/*" element={<Jhs0713/>} />
                             <Route exact path="/Chaesujin/*" element={<Chaesujin/>} />
                             <Route exact path="/Aldskaldsk/*" element={<Aldskaldsk/>} />
-                            <Route exact path="/Park8161/*" element={<Park8161/>} />
-
+                            <Route path="/admin/*" element={<Admin/>} />
+                            <Route path="/member/*" element={<Member/>} />
+                            <Route path="/product/*" element={<Product/>} />
+                            <Route path="/chat/*" element={<Chat/>} />
+                            <Route path="/notice/*" element={<Notice/>} />
+                            <Route path="/qna/*" element={<Qna/>} />
+                            <Route path="/pay/*" element={<Pay/>} />
 
                             {/* exact path : 정확하게 일치할때만 나오게 할 수 있다 */}
                             {/* 경로변수를 사용할 경우 콜론과 이름을 합쳐 변수명으로 지정 ("/book/detail/{bookID}") */}
