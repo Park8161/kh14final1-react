@@ -1,13 +1,13 @@
-import { Routes } from "react-router";
+import { Routes, Route } from "react-router";
 
-// 박명호
-const Park8161 = ()=>{
+const Chat = ()=>{
     return (
         <>
         <Routes>
             {/* <Route path="/autocomplete" element={<AutoComplete/>} /> */}
+            <Route />
         </Routes>
         </>
     );
 };
-export default Park8161;
+export default Chat;
