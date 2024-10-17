@@ -68,15 +68,10 @@ const Menu = () => {
                         <ul className="navbar-nav me-auto"> {/*me-auto : 오른쪽으로 최대한 공간을 많이 부여하라*/}
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-                                    aria-haspopup="true" aria-expanded="false">예제</a>
+                                    aria-haspopup="true" aria-expanded="false">관리자 전용</a>
                                 <div className="dropdown-menu">
-                                    <NavLink className="dropdown-item" to="/ex01">예제1</NavLink>
-                                    <NavLink className="dropdown-item" to="/ex02">예제2</NavLink>
-                                    <NavLink className="dropdown-item" to="/todolist">오늘의 할일</NavLink>
-                                    <NavLink className="dropdown-item" to="/fruit-cart">과일구매</NavLink>
-                                    <NavLink className="dropdown-item" to="/bank-acc">통장관리</NavLink>
-                                    <NavLink className="dropdown-item" to="/testbank">TestBank</NavLink>
-                                    <NavLink className="dropdown-item" to="/data/exam01">통합state필요성</NavLink>
+                                    <NavLink className="dropdown-item" to="/admin/member/memberlist">회원 관리 목록</NavLink>
+                                    
                                 </div>
                             </li>
                             <li className="nav-item dropdown">
