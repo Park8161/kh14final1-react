@@ -19,6 +19,11 @@ import MemberFindPw from "./member/MemberFindPw";
 import MemberResetPw from "./member/MemberResetPw";
 import MemberExit from "./member/MemberExit";
 import BlockList from './member/BlockList';
+import Chaesujin from "./tmp/Chaesujin";
+import Jhs0713 from "./tmp/Jhs0713";
+import Gykim94 from "./tmp/Gykim94";
+import Aldskaldsk from "./tmp/Aldskaldsk";
+import Park8161 from "./tmp/Park8161";
 
 // component
 const MainContent = ()=>{
@@ -47,6 +52,15 @@ const MainContent = ()=>{
                         */}
                         <Routes>
                             <Route exact path="/" element={<Home/>} /> 
+
+                            {/* 팀플 중 충돌 방지 임시 중첩 라우팅 */}
+                            <Route exact path="/Gykim94/*" element={<Gykim94/>} />
+                            <Route exact path="/Jsh0713/*" element={<Jhs0713/>} />
+                            <Route exact path="/Chaesujin/*" element={<Chaesujin/>} />
+                            <Route exact path="/Aldskaldsk/*" element={<Aldskaldsk/>} />
+                            <Route exact path="/Park8161/*" element={<Park8161/>} />
+
+
                             {/* exact path : 정확하게 일치할때만 나오게 할 수 있다 */}
                             {/* 경로변수를 사용할 경우 콜론과 이름을 합쳐 변수명으로 지정 ("/book/detail/{bookID}") */}
                             
