@@ -1,13 +1,13 @@
 //import
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Jumbotron from "../Jumbotron";
+import Jumbotron from "../../Jumbotron";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import { FaAsterisk } from "react-icons/fa6";
 
 
-const MemberEdit = ()=>{
+const AdminMemberEdit = ()=>{
     // navigate
     const navigate = useNavigate();
 
@@ -63,7 +63,7 @@ const MemberEdit = ()=>{
     const goMemberEdit = useCallback(async()=>{
         if(isAllValid === false) return;
 
-        const response = await axios.put("/member/edit", edit);
+        const response = await axios.put("/admin/member/edit", edit);
         navigate("/member/mypage");
     
         // 알림 코드
@@ -121,7 +121,7 @@ const MemberEdit = ()=>{
     // view
     return(
         <>
-            <Jumbotron title={`${member.memberId} 님의 정보`} content="개인 정보 수정" />
+            <Jumbotron title={member.memberId + "님의 개인정보 수정"}/>
             
             <div className="row mt-3">
                 <div className="col-3 d-flex align-items-center">이름<FaAsterisk className="text-danger" /></div>
@@ -172,6 +172,23 @@ const MemberEdit = ()=>{
                     <div className="invalid-feedback">날짜를 선택 및 입력해주세요</div>
                 </div>
             </div>
+
+            <div className="row mt-5">
+            
+            <div className="col-3 d-flex align-items-center">회원등급</div>
+                <div className="col-5 ps-1">
+                <select name="memberLevel" className="form-select"
+                            value={edit.memberLevel}
+                            onChange={changeEdit}>
+                    <option value="">선택하세요</option>
+                    <option>일반회원</option>
+                    <option>인증회원</option>
+                    <option>안전회원</option>
+                    <option>관리자</option>
+                </select>
+                </div>
+        </div>
+
             <div className="row mt-3">
                 <div className="col-3 d-flex align-items-center">포인트</div>
                 <div className="col-5">{edit.memberPoint} (수정불가)</div>
@@ -201,4 +218,4 @@ const MemberEdit = ()=>{
 
 };
 
-export default MemberEdit;
+export default AdminMemberEdit;
