@@ -83,7 +83,7 @@ const MainContent = ()=>{
                             <Route path="/member/changepw" element={<PrivateRoute element={<MemberChangePw/>}/>}/>
                             <Route path="/member/exit" element={<PrivateRoute element={<MemberExit/>}/>}/>
                             <Route path="/member/block/list" element={<PrivateRoute element={<BlockList/>}/>}/>
-
+                            
                             {/* 나머지 경로(*) 패턴을 지정해서 미 지정된 페이지를 모두 연결 할 수 있다 */}
                             <Route path="*" element={<PageNotFound/>} />
                         </Routes>
