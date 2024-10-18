@@ -2,6 +2,7 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import Jumbotron from "../../Jumbotron";
 import { useNavigate, useParams } from "react-router-dom";  // useNavigate 추가
+import { Modal, Button } from "react-bootstrap";
 
 const AdminMemberDetail = () => {
     //parameter
@@ -12,6 +13,9 @@ const AdminMemberDetail = () => {
     const [load, setLoad] = useState(false);
 
     const navigate = useNavigate(); 
+
+    //modal
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     //effect
     useEffect(() => {
@@ -31,31 +35,22 @@ const AdminMemberDetail = () => {
 
     //삭제 callback
     const deleteMember = useCallback(async () => {
-        const isConfirmed = window.confirm("정말 삭제하시겠습니까?");
-        if (isConfirmed) {
-            try {
-                await axios.delete(`/admin/member/detail/${memberId}`);
-                navigate("/admin/member/memberlist");
-            } catch (error) {
-                // 서버 오류 처리
-                if (error.response) {
-                    // 서버 응답이 있는 경우
-                    console.error("삭제 실패: ", error.response.data);
-                    alert(`삭제 실패: ${error.response.data.message || "알 수 없는 오류"}`);
-                } else if (error.request) {
-                    // 요청이 보내졌으나 응답이 없는 경우
-                    console.error("응답 없음: ", error.request);
-                    alert("서버와 연결할 수 없습니다.");
-                } else {
-                    // 요청을 설정하는 중에 오류가 발생한 경우
-                    console.error("요청 설정 오류: ", error.message);
-                    alert("삭제 요청을 처리하는 중 오류가 발생했습니다.");
-                }
+        try {
+            await axios.delete(`/admin/member/detail/${memberId}`);
+            navigate("/admin/member/memberlist");
+        } catch (error) {
+            if (error.response) {
+                console.error("삭제 실패: ", error.response.data);
+                alert(`삭제 실패: ${error.response.data.message || "알 수 없는 오류"}`);
+            } else if (error.request) {
+                console.error("응답 없음: ", error.request);
+                alert("서버와 연결할 수 없습니다.");
+            } else {
+                console.error("요청 설정 오류: ", error.message);
+                alert("삭제 요청을 처리하는 중 오류가 발생했습니다.");
             }
-        } else {
-            console.log("삭제 취소");
         }
-    }, [member, memberId]);
+    }, [memberId, navigate]);
 
     //차단 callback
     const blockMember = useCallback(async()=>{
@@ -107,6 +102,12 @@ const AdminMemberDetail = () => {
     if (!member) {
         return <div>회원 정보를 찾을 수 없습니다.</div>;
     }
+
+    // 모달 닫기
+    const handleCloseModal = () => setShowDeleteModal(false);
+
+    // 모달 열기
+    const handleShowModal = () => setShowDeleteModal(true);
 
     //view
     return (
@@ -164,8 +165,8 @@ const AdminMemberDetail = () => {
                         onClick={() => navigate("/admin/member/edit/" + memberId)}>
                         수정하기
                     </button>
-                    <button type="button" className="btn btn-danger ms-2"
-                        onClick={deleteMember}>
+                    <button type="button" className="btn btn-danger ms-2" 
+                                onClick={handleShowModal}>
                         삭제하기
                     </button>
                     <button type="button" className="btn btn-danger ms-2"
@@ -178,6 +179,27 @@ const AdminMemberDetail = () => {
                     </button>
                 </div>
             </div>
+
+            {/* 삭제 확인 모달 */}
+            <Modal show={showDeleteModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>회원 삭제</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    정말로 이 회원을 삭제하시겠습니까?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        취소
+                    </Button>
+                    <Button variant="danger" onClick={() => {
+                        deleteMember();
+                        handleCloseModal(); // 모달 닫기 
+                    }}>
+                        삭제
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };
