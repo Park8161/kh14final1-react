@@ -121,7 +121,7 @@ const MemberEdit = ()=>{
     // view
     return(
         <>
-            <Jumbotron title={`${member.memberId} 님의 정보`} content="개인 정보 수정" />
+            <Jumbotron title={`${edit.memberId} 님의 정보`} content="개인 정보 수정" />
             
             <div className="row mt-3">
                 <div className="col-3 d-flex align-items-center">이름<FaAsterisk className="text-danger" /></div>
