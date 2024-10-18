@@ -8,7 +8,7 @@ const Chaesujin = ()=>{
         <Routes>
             {/* <Route path="/autocomplete" element={<AutoComplete/>} /> */}
 
-            <Route path="/productInsert" element={<ProductInsert/>}></Route>
+            {/* <Route path="/productInsert" element={<ProductInsert/>}></Route> */}
         </Routes>
         </>
     );
