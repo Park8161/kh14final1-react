@@ -97,12 +97,12 @@ const AdminMemberEdit = ()=>{
         setMemberEmailValid(valid);
         setMemberEmailClass(valid ? "is-valid" : "is-invalid");
     },[edit]);
-    const checkMemberAddress = useCallback(() => {
-        const check1 = (!edit.memberPost || edit.memberPost.length === 0) && 
+    const checkMemberAddress = useCallback(()=>{
+        const check1 = (!edit.memberPost || edit.memberPost === null) && 
                        (!edit.memberAddress1 || edit.memberAddress1.length === 0) && 
                        (!edit.memberAddress2 || edit.memberAddress2.length === 0);
     
-        const check2 = (edit.memberPost && edit.memberPost.length > 0) && 
+        const check2 = (edit.memberPost && edit.memberPost > null) && 
                        (edit.memberAddress1 && edit.memberAddress1.length > 0) && 
                        (edit.memberAddress2 && edit.memberAddress2.length > 0);
     
@@ -111,20 +111,20 @@ const AdminMemberEdit = ()=>{
         if(check1) setMemberAddressClass("");
         else setMemberAddressClass(valid ? "is-valid" : "is-invalid");
     }, [edit]);
-    const checkMemberContact = useCallback(() => {
+    const checkMemberContact = useCallback(()=>{
         const regex = /^010[1-9][0-9]{6,7}$/;
-        // memberContact가 빈 문자열이거나 regex 검사를 통과하는지 확인
-        const valid = (edit.memberContact.length === 0 || regex.test(edit.memberContact));
+        const valid = regex.test(edit.memberContact) || edit.memberContact === null;
         setMemberContactValid(valid);
-        setMemberContactClass(valid ? "is-valid" : "is-invalid");
-    }, [edit]);
-    const checkMemberBirth = useCallback(() => {
+        if(edit.memberContact === null) setMemberContactClass("");
+        else setMemberContactClass(valid ? "is-valid" : "is-invalid");
+    },[edit]);
+    const checkMemberBirth = useCallback(()=>{
         const regex = /^(1[0-9]{3}|20([01][0-9]|2[0-9]))-(02-(0[1-9]|1[0-9]|2[0-8])|(0[469]|11)-(0[1-9]|1[0-9]|2[0-9]|30)|(0[13578]|1[02])-(0[1-9]|1[0-9]|2[0-9]|3[01]))$/;
-        // memberBirth가 빈 문자열이거나 regex 검사를 통과하는지 확인
-        const valid = (edit.memberBirth.length === 0 || regex.test(edit.memberBirth));
+        const valid = regex.test(edit.memberBirth) || edit.memberBirth === null;
         setMemberBirthValid(valid);
-        setMemberBirthClass(valid ? "is-valid" : "is-invalid");
-    }, [edit]);
+        if(edit.memberBirth === null) setMemberBirthClass("");
+        else setMemberBirthClass(valid ? "is-valid" : "is-invalid");
+    },[edit]);
 
     // view
     return(
