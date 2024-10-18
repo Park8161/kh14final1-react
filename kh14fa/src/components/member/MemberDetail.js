@@ -50,17 +50,16 @@ const MemberDetail = ()=>{
     return(<>
         <div className="row mt-4">
             <div className="col-sm-5">
-                <div className="row">
-                    <h2>{memberId}</h2>
-                </div>
-                <div>
-                  거래후기
-                  {memberDetail.reviewCnt}
-                </div>
-                </div>
+                    <div className="row">
+                        <h2>{memberId}</h2>
+                    </div>
+                    <div>
+                        <small className="text-muted">거래후기</small>
+                        <h2>{memberDetail.reviewCnt}</h2>
+                    </div>
+            </div>
              <div className="col-sm-5">
-                <p className="row">신뢰지수 {memberDetail.reliability}
-                </p>
+                <p className="row">신뢰지수 {memberDetail.reliability}</p>
                 <div className="progress" style={{ height: "20px" }}>
                 <div
                     className="progress-bar"
@@ -74,9 +73,9 @@ const MemberDetail = ()=>{
             </div>
                 </div>
         </div>
-        <div className="row mt-4">
+        <div className="row mt-4 list-group">
                 <h2>판매상품</h2>
-                <div>
+                <div className="list-group-item">
                     {productList.length > 0 ? (
                         <table>
                             <thead>
@@ -88,16 +87,18 @@ const MemberDetail = ()=>{
                             <tbody>
                                 {productList.map((product) => (
                                     <tr key={product.productId}>
+                                        <td>
                                         <NavLink to={"/product/detail/"+product.productId}>
-                                        <td>{product.productName}</td>
+                                            {product.productName}
                                         </NavLink>
+                                        </td>
                                         <td>{product.productPrice}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     ) : (
-                        <p>상품 목록이 존재하지 않습니다</p>
+                        <div className="list-group-item">상품 목록이 존재하지 않습니다</div>
                     )}
                 </div>
             </div>

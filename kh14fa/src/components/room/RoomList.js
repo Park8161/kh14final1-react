@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { loginState, memberIdState } from '../../utils/recoil';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { loginState, memberIdState, memberLoadingState } from '../../utils/recoil';
 import axios from 'axios';
 import { useRecoilValue } from 'recoil';
 
@@ -8,57 +8,26 @@ const RoomList = ()=>{
     const navigate = useNavigate();
 
     // state
-    const[roomList, setRoomList] = useState([]);
-    const [input, setInput] = useState({roomName:""});
+    const [roomList, setRoomList] = useState([]);
 
     //recoil
-    const login = useRecoilValue(loginState);
     const memberId = useRecoilValue(memberIdState);
-    
+    const memberLoading = useRecoilValue(memberLoadingState);
+
     //effect
     useEffect(()=>{
+        if(memberLoading === false) return;//로딩이 완료되지 않았다면 중지
         loadRoomList();
-    },[])
+    },[memberLoading]);
 
     // callback
     const loadRoomList = useCallback(async ()=>{
-        const resp = await axios.get("/room/"+memberId);
+        const resp = await axios.get("/room/");
         console.log("/room/"+memberId);
         setRoomList(resp.data);
     },[roomList]);
 
-    const changeInput = useCallback(e=>{
-        //setInput({ roomName : e.target.value});
-        setInput({ [e.target.name] : e.target.value });
-    }, [input]);
-
-    const saveInput = useCallback(async ()=>{
-        const resp = await axios.post("/room/", input);
-        loadRoomList();
-        setInput({roomName:""});
-    }, [input]);
-
-    const enterRoom = useCallback(async (target)=>{
-        await axios.post("/room/enter", {roomNo:target.roomNo});
-        navigate("/chatroom/"+target.roomNo);
-    },[roomList]);
-
-    return(<>
-
-          {/* 방 생성 화면 */}
-          <div className="row mt-4">
-            <div className="col">
-                <div className="input-group">
-                    {/* useParam 을 통해 판매자 아이디 받는 방식으로 처리예정 */}
-                    <input type="text" name="roomName" className="form-control"
-                                value={input.roomName} onChange={changeInput}/>
-                    <button className="btn btn-primary"
-                                onClick={saveInput}>
-                        등록
-                    </button>
-                </div>
-            </div>
-        </div>
+    return(<>          
             <h1>채팅방 목록</h1>
         <div>
             {roomList.length > 0 ?(
@@ -66,9 +35,11 @@ const RoomList = ()=>{
                  <div className="col">
                      <ul className="list-group list-group-flush">
                          {roomList.map(room=>(
+                                <NavLink to={"/Aldskaldsk/chatroom/"+room.roomNo}>
                              <li className="list-group-item">
                                  {room.roomName}
                              </li>
+                                </NavLink>
                          ))}
                      </ul>
      
