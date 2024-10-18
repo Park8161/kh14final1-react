@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Jumbotron from "../../Jumbotron";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import { FaAsterisk } from "react-icons/fa6";
 
@@ -10,6 +10,8 @@ import { FaAsterisk } from "react-icons/fa6";
 const AdminMemberEdit = ()=>{
     // navigate
     const navigate = useNavigate();
+    
+    const {memberId} = useParams();
 
     // state
     const [member, setMember] = useState({});
@@ -54,17 +56,23 @@ const AdminMemberEdit = ()=>{
     
     //callback
     const loadMember = useCallback(async ()=>{
-        const response = await axios.get("/member/mypage");
-        setEdit(response.data.memberDto);
-    }, [member,edit]);
+        console.log(memberId);
+        const response = await axios.get("/admin/member/detail/" + memberId);
+        setEdit({
+            ...response.data,
+            memberContact : response.data.memberContact || "",
+            memberBirth: response.data.memberBirth || ""
+        });
+    }, [memberId]);
     const returnBack = useCallback(()=>{
         navigate(-1);
     },[]);
     const goMemberEdit = useCallback(async()=>{
         if(isAllValid === false) return;
 
-        const response = await axios.put("/admin/member/edit", edit);
-        navigate("/member/mypage");
+        const { memberPoint, memberJoin, memberLogin, ...updateData } = edit;
+        const response = await axios.put("/admin/member/edit", updateData);
+        navigate(`/Gykim94/admin/member/detail/${memberId}`);
     
         // 알림 코드
         toast.success("개인 정보 수정 완료!");
@@ -89,7 +97,7 @@ const AdminMemberEdit = ()=>{
         setMemberEmailValid(valid);
         setMemberEmailClass(valid ? "is-valid" : "is-invalid");
     },[edit]);
-    const checkMemberAddress = useCallback(()=>{
+    const checkMemberAddress = useCallback(() => {
         const check1 = (!edit.memberPost || edit.memberPost.length === 0) && 
                        (!edit.memberAddress1 || edit.memberAddress1.length === 0) && 
                        (!edit.memberAddress2 || edit.memberAddress2.length === 0);
@@ -103,20 +111,20 @@ const AdminMemberEdit = ()=>{
         if(check1) setMemberAddressClass("");
         else setMemberAddressClass(valid ? "is-valid" : "is-invalid");
     }, [edit]);
-    const checkMemberContact = useCallback(()=>{
+    const checkMemberContact = useCallback(() => {
         const regex = /^010[1-9][0-9]{6,7}$/;
-        const valid = regex.test(edit.memberContact) || edit.memberContact.length === 0;
+        // memberContact가 빈 문자열이거나 regex 검사를 통과하는지 확인
+        const valid = (edit.memberContact.length === 0 || regex.test(edit.memberContact));
         setMemberContactValid(valid);
-        if(edit.memberContact.length === 0) setMemberContactClass("");
-        else setMemberContactClass(valid ? "is-valid" : "is-invalid");
-    },[edit]);
-    const checkMemberBirth = useCallback(()=>{
+        setMemberContactClass(valid ? "is-valid" : "is-invalid");
+    }, [edit]);
+    const checkMemberBirth = useCallback(() => {
         const regex = /^(1[0-9]{3}|20([01][0-9]|2[0-9]))-(02-(0[1-9]|1[0-9]|2[0-8])|(0[469]|11)-(0[1-9]|1[0-9]|2[0-9]|30)|(0[13578]|1[02])-(0[1-9]|1[0-9]|2[0-9]|3[01]))$/;
-        const valid = regex.test(edit.memberBirth) || edit.memberBirth.length === 0;
+        // memberBirth가 빈 문자열이거나 regex 검사를 통과하는지 확인
+        const valid = (edit.memberBirth.length === 0 || regex.test(edit.memberBirth));
         setMemberBirthValid(valid);
-        if(edit.memberBirth.length === 0) setMemberBirthClass("");
-        else setMemberBirthClass(valid ? "is-valid" : "is-invalid");
-    },[edit]);
+        setMemberBirthClass(valid ? "is-valid" : "is-invalid");
+    }, [edit]);
 
     // view
     return(
@@ -213,6 +221,7 @@ const AdminMemberEdit = ()=>{
                 </div>
             </div>
             
+           
         </>
     );
 
