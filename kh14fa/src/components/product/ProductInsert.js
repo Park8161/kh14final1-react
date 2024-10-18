@@ -6,7 +6,7 @@ import { Modal } from "bootstrap";
 const ProductInsert = ()=>{
         <Jumbotron title="파일 업로드 테스트"/>
 
-    //state
+    ///state
     const [input, setInput] = useState({
         productName:"",
         productCategory: 0,
@@ -15,19 +15,24 @@ const ProductInsert = ()=>{
         productQty:0,
         attachList:[]
     });
-
-    //임시 state
-    const [temp, setTemp] = useState({
-        
-    })
-
     const [productList, setProductList] = useState([]);
+    ///임시 state 
+    const [temp, setTemp] = useState({});
+
+    ///수정
+    
     
     //effect
     useEffect(()=>{
         loadListProduct();
-        // findImageNo();
     },[]);
+
+    ///목록
+    const loadListProduct = useCallback(async()=>{
+        const resp = await axios.post("/product/list", temp)
+        setProductList(resp.data.productList);
+        console.log(resp.data.productList);
+    },[temp]);
 
     //파일 선택 Ref
     const inputFileRef = useRef(null);
@@ -44,7 +49,7 @@ const ProductInsert = ()=>{
     // const blob = new Blob([JSON.stringify(input)], {type: "application/json"});
     // formData.append("data",blob);
 
-    //파일 데이터를 비동기로 보내기
+    ///파일 데이터를 비동기로 보내기
     const productInsert = useCallback(async() =>{
         //객체 생성, multipart/form-data 형식으로 전송해줌
         const formData = new FormData();
@@ -68,30 +73,15 @@ const ProductInsert = ()=>{
               'Content-Type': 'multipart/form-data',
             },
           });
+          inputFileRef.current.value = ""
           closeModal();
+          loadListProduct();
     });  
-
-    //목록
-    const loadListProduct = useCallback(async()=>{
-        const resp = await axios.post("/product/list", temp)
-        setProductList(resp.data.productList);
-        console.log(resp.data.productList);
-    },[temp]);
-
-    // //이미지 찾아오기
-    // const findImageNo = useCallback(async()=>{
-    //     const resp = await axios.post(`/image/${productList.productNo}`);
-    //     attachmentNo = resp.data;
-    //     setProductList(...productList,
-    //                             {attachmentNo}
-    //     )
-    // },[productList]);
-          
-           
-    //모달처리
+  
+    ///모달처리
     const modal = useRef();
     
-    //memo
+    //모달-memo
     const createMode = useMemo(()=>{
         return input?.bookId === "";
     }, [input]);
@@ -117,11 +107,12 @@ const ProductInsert = ()=>{
             attachList: []
         })
     },[input]);
-
+    //수정-저장
     const saveProduct = useCallback(async()=>{
-        const copy={...input};
-        await axios.post("/product/insert", copy);
-        // //loadListProduct();
+        const copy = {...input}; //input을 복사
+        delete copy.bookId;
+        await axios.post("/product/insert", input);
+        loadListProduct();
         closeModal();
     },[input])
 
@@ -149,8 +140,10 @@ const ProductInsert = ()=>{
                     <tbody>
                         {productList.map((product)=>(
                             <tr key={product.productNo}>
-                                <td>{product.productName}</td>    
-                                <td><img src={`http://localhost:8080/attach/download/${product.attachment}`}/></td>
+                                <td>{product.productName}</td>  
+                                <td>
+                                        <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}/>
+                                </td>
                                 <td>{product.productCategory}</td>    
                                 <td>{product.productPrice}</td>    
                                 <td>{product.productDetail}</td>    
