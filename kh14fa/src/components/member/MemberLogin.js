@@ -86,7 +86,8 @@ const MemberLogin = () => {
                                 아이디
                             </label>
                             <input type="text" className="form-control" placeholder="아이디 입력"
-                                name="memberId" value={input.memberId} onChange={changeInput} />
+                                name="memberId" value={input.memberId} onChange={changeInput} 
+                                onKeyUp={e=>e.key === 'Enter' && sendLoginRequest()}/>
                         </div>
                     </div>
 
@@ -96,7 +97,8 @@ const MemberLogin = () => {
                                 비밀번호
                             </label>
                             <input type={display ? "text" : "password"} className="form-control" placeholder="비밀번호 입력"
-                                name="memberPw" value={input.memberPw} onChange={changeInput} />
+                                name="memberPw" value={input.memberPw} onChange={changeInput} 
+                                onKeyUp={e=>e.key === 'Enter' && sendLoginRequest()}/>
                         </div>
                     </div>
 

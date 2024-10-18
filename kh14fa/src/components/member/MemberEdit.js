@@ -105,16 +105,16 @@ const MemberEdit = ()=>{
     }, [edit]);
     const checkMemberContact = useCallback(()=>{
         const regex = /^010[1-9][0-9]{6,7}$/;
-        const valid = regex.test(edit.memberContact) || edit.memberContact.length === 0;
+        const valid = regex.test(edit.memberContact) || edit.memberContact === null;
         setMemberContactValid(valid);
-        if(edit.memberContact.length === 0) setMemberContactClass("");
+        if(edit.memberContact === null) setMemberContactClass("");
         else setMemberContactClass(valid ? "is-valid" : "is-invalid");
     },[edit]);
     const checkMemberBirth = useCallback(()=>{
         const regex = /^(1[0-9]{3}|20([01][0-9]|2[0-9]))-(02-(0[1-9]|1[0-9]|2[0-8])|(0[469]|11)-(0[1-9]|1[0-9]|2[0-9]|30)|(0[13578]|1[02])-(0[1-9]|1[0-9]|2[0-9]|3[01]))$/;
-        const valid = regex.test(edit.memberBirth) || edit.memberBirth.length === 0;
+        const valid = regex.test(edit.memberBirth) || edit.memberBirth === null;
         setMemberBirthValid(valid);
-        if(edit.memberBirth.length === 0) setMemberBirthClass("");
+        if(edit.memberBirth === null) setMemberBirthClass("");
         else setMemberBirthClass(valid ? "is-valid" : "is-invalid");
     },[edit]);
 
