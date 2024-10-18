@@ -32,17 +32,69 @@ const AdminMemberDetail = () => {
     //삭제 callback
     const deleteMember = useCallback(async () => {
         const isConfirmed = window.confirm("정말 삭제하시겠습니까?");
-        if(isConfirmed){
-        try {
-            await axios.delete(`/admin/member/${memberId}`);
-            navigate("/Gykim94/admin/member/memberlist");
-        } 
-        catch (error) {
-            console.error("삭제 실패", error);
+        if (isConfirmed) {
+            try {
+                await axios.delete(`/admin/member/detail/${memberId}`);
+                navigate("/admin/member/memberlist");
+            } catch (error) {
+                // 서버 오류 처리
+                if (error.response) {
+                    // 서버 응답이 있는 경우
+                    console.error("삭제 실패: ", error.response.data);
+                    alert(`삭제 실패: ${error.response.data.message || "알 수 없는 오류"}`);
+                } else if (error.request) {
+                    // 요청이 보내졌으나 응답이 없는 경우
+                    console.error("응답 없음: ", error.request);
+                    alert("서버와 연결할 수 없습니다.");
+                } else {
+                    // 요청을 설정하는 중에 오류가 발생한 경우
+                    console.error("요청 설정 오류: ", error.message);
+                    alert("삭제 요청을 처리하는 중 오류가 발생했습니다.");
+                }
+            }
+        } else {
+            console.log("삭제 취소");
         }
-        } 
+    }, [member, memberId]);
+
+    //차단 callback
+    const blockMember = useCallback(async()=>{
+        const isConfirmed = window.confirm("정말 차단하시겠습니까?");
+        if(isConfirmed){
+            try{
+                await axios.put(`/admin/member/block/${memberId}`);
+                alert("회원이 차단되었습니다.");
+                
+                loadMember();
+            }
+            catch(error){
+                console.error("차단 실패", error.request);
+                alert("서버에러.");
+            }
+        }
         else{
-            console.log("삭제 취소");            
+            console.log("차단 취소");
+        }
+    }, [memberId]);
+
+    //차단 해제 callback
+    const unblockMember = useCallback(async()=>{
+        const isConfirmed = window.confirm("차단을 해제하시겠습니까?");
+
+        if(isConfirmed){
+            try{
+                await axios.put(`/admin/member/unblock/${memberId}`);
+                alert("회원 차단이 해제되었습니다.");
+
+                loadMember();
+            }
+            catch(error){
+                console.error("차단 해제 실패: ", error);
+                alert("request 오류");
+            }
+        }
+        else{
+            console.log("차단 해제 취소");
         }
     }, [memberId]);
 
@@ -105,16 +157,24 @@ const AdminMemberDetail = () => {
             <div className="row mt-4">
                 <div className="col text-end">
                     <button type="button" className="btn btn-secondary"
-                        onClick={() => navigate("/Gykim94/admin/member/memberlist")}>
+                        onClick={() => navigate("/admin/member/memberlist")}>
                         목록보기
                     </button>
                     <button type="button" className="btn btn-warning ms-2"
-                        onClick={() => navigate("/Gykim94/admin/member/edit/" + memberId)}>
+                        onClick={() => navigate("/admin/member/edit/" + memberId)}>
                         수정하기
                     </button>
                     <button type="button" className="btn btn-danger ms-2"
                         onClick={deleteMember}>
                         삭제하기
+                    </button>
+                    <button type="button" className="btn btn-danger ms-2"
+                        onClick={blockMember}>
+                        차단하기
+                    </button>
+                    <button type="button" className="btn btn-success ms-2"
+                        onClick={unblockMember}>
+                        차단 해제
                     </button>
                 </div>
             </div>

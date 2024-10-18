@@ -60,7 +60,7 @@ const MainContent = ()=>{
                             <Route exact path="/" element={<Home/>} /> 
 
                             {/* 팀플 중 충돌 방지 임시 중첩 라우팅 */}
-                            <Route exact path="/Gykim94/*" element={<Gykim94/>} />
+                            <Route exact path="/*" element={<Gykim94/>} />
                             <Route exact path="/Jsh0713/*" element={<Jhs0713/>} />
                             <Route exact path="/Chaesujin/*" element={<Chaesujin/>} />
                             <Route exact path="/Aldskaldsk/*" element={<Aldskaldsk/>} />

@@ -72,7 +72,7 @@ const AdminMemberEdit = ()=>{
 
         const { memberPoint, memberJoin, memberLogin, ...updateData } = edit;
         const response = await axios.put("/admin/member/edit", updateData);
-        navigate(`/Gykim94/admin/member/detail/${memberId}`);
+        navigate(`/admin/member/detail/${memberId}`);
     
         // 알림 코드
         toast.success("개인 정보 수정 완료!");
