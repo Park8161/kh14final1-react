@@ -194,7 +194,7 @@ const AdminMemberDetail = () => {
                     </Button>
                     <Button variant="danger" onClick={() => {
                         deleteMember();
-                        handleCloseModal(); // 모달 닫기
+                        handleCloseModal(); // 모달 닫기 
                     }}>
                         삭제
                     </Button>
