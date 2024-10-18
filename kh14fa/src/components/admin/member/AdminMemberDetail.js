@@ -21,7 +21,7 @@ const AdminMemberDetail = () => {
     //callback
     const loadMember = useCallback(async () => {
         try {
-            const resp = await axios.get(`/admin/member/${memberId}`);
+            const resp = await axios.get(`/admin/member/detail/${memberId}`);
             setMember(resp.data);
         } catch (e) {
             setMember(null);
@@ -31,13 +31,20 @@ const AdminMemberDetail = () => {
 
     //삭제 callback
     const deleteMember = useCallback(async () => {
+        const isConfirmed = window.confirm("정말 삭제하시겠습니까?");
+        if(isConfirmed){
         try {
             await axios.delete(`/admin/member/${memberId}`);
-            navigate("/admin/member/list");
-        } catch (error) {
+            navigate("/Gykim94/admin/member/memberlist");
+        } 
+        catch (error) {
             console.error("삭제 실패", error);
         }
-    }, [memberId, navigate]);
+        } 
+        else{
+            console.log("삭제 취소");            
+        }
+    }, [memberId]);
 
     // 로딩 상태 처리
     if (!load) {
@@ -98,11 +105,11 @@ const AdminMemberDetail = () => {
             <div className="row mt-4">
                 <div className="col text-end">
                     <button type="button" className="btn btn-secondary"
-                        onClick={() => navigate("/admin/member/memberlist")}>
+                        onClick={() => navigate("/Gykim94/admin/member/memberlist")}>
                         목록보기
                     </button>
                     <button type="button" className="btn btn-warning ms-2"
-                        onClick={() => navigate("/admin/member/edit/" + memberId)}>
+                        onClick={() => navigate("/Gykim94/admin/member/edit/" + memberId)}>
                         수정하기
                     </button>
                     <button type="button" className="btn btn-danger ms-2"

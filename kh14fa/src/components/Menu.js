@@ -70,7 +70,7 @@ const Menu = () => {
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">관리자 전용</a>
                                 <div className="dropdown-menu">
-                                    <NavLink className="dropdown-item" to="/admin/member/memberlist">회원 관리 목록</NavLink>
+                                    <NavLink className="dropdown-item" to="/Gykim94/admin/member/memberlist">회원 관리 목록</NavLink>
                                     
                                 </div>
                             </li>

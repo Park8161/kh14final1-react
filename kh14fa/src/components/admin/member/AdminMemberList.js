@@ -84,7 +84,7 @@ const AdminMemberList = ()=> {
                         {memberList.map(member =>(
                             <tr key={member.memberId}>
                                 <td>
-                                    <NavLink to ={"/admin/member/detail/"+member.memberId}>
+                                    <NavLink to ={"/Gykim94/admin/member/detail/"+member.memberId}>
                                         {member.memberId}
                                     </NavLink>
                                 </td>
