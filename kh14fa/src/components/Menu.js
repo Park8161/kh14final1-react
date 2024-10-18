@@ -81,7 +81,7 @@ const Menu = () => {
                                     <NavLink className="dropdown-item" to="/search/autocomplete">자동완성</NavLink>
                                     <NavLink className="dropdown-item" to="/search/autocomplete2">자동완성2</NavLink>
                                     <NavLink className="dropdown-item" to="/search/member">멤버복합검색</NavLink>
-                                    <NavLink className="dropdown-item" to="/Chaesujin/productInsert">상품등록</NavLink>
+                     
                                 </div>
                             </li>
                             <li className="nav-item dropdown">

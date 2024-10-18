@@ -15,11 +15,18 @@ const ProductInsert = ()=>{
         productQty:0,
         attachList:[]
     });
+
+    //임시 state
+    const [temp, setTemp] = useState({
+        
+    })
+
     const [productList, setProductList] = useState([]);
     
     //effect
     useEffect(()=>{
-        //loadListProduct();
+        loadListProduct();
+        // findImageNo();
     },[]);
 
     //파일 선택 Ref
@@ -64,11 +71,21 @@ const ProductInsert = ()=>{
           closeModal();
     });  
 
-    // //목록
-    // const //loadListProduct = useCallback(async()=>{
-    //     const resp = await axios.post("/product/list");
-    //     setProductList(resp.data);
-    // },[])
+    //목록
+    const loadListProduct = useCallback(async()=>{
+        const resp = await axios.post("/product/list", temp)
+        setProductList(resp.data.productList);
+        console.log(resp.data.productList);
+    },[temp]);
+
+    // //이미지 찾아오기
+    // const findImageNo = useCallback(async()=>{
+    //     const resp = await axios.post(`/image/${productList.productNo}`);
+    //     attachmentNo = resp.data;
+    //     setProductList(...productList,
+    //                             {attachmentNo}
+    //     )
+    // },[productList]);
           
            
     //모달처리
@@ -133,18 +150,19 @@ const ProductInsert = ()=>{
                         {productList.map((product)=>(
                             <tr key={product.productNo}>
                                 <td>{product.productName}</td>    
+                                <td><img src={`http://localhost:8080/attach/download/${product.attachment}`}/></td>
                                 <td>{product.productCategory}</td>    
                                 <td>{product.productPrice}</td>    
                                 <td>{product.productDetail}</td>    
                                 <td>{product.productQty}</td>    
-                                <td>
+                                {/* <td>
                                     <button className="btn btn-success">
                                         수정하기
                                     </button>
                                     <button className="btn btn-danger">
                                         삭제하기
                                     </button>
-                                </td>
+                                </td> */}
                             </tr>
                         ))}
                     </tbody>
@@ -182,7 +200,8 @@ const ProductInsert = ()=>{
                             <div className="row mt-4">
                                 <div className="col">
                                     <label>파일</label>
-                                    <input type="file" name="attachList" ref={inputFileRef}/>
+                                    {/*  multiple accept -> 어떤 형식 받을건가*/}
+                                    <input type="file" name="attachList" multiple accept="image/*" ref={inputFileRef}/>
                                 </div>
                             </div>
                             <div className="row mt-4">
