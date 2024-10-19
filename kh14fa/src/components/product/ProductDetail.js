@@ -1,10 +1,10 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router";
 import Jumbotron from "../Jumbotron";
 import { LuDot } from "react-icons/lu";
 import { CiShare1,CiHeart } from "react-icons/ci";
-import { FaRegCommentDots } from "react-icons/fa";
+import { FaRegCommentDots, FaRegHeart } from "react-icons/fa";
 import { AiOutlineSafety } from "react-icons/ai";
 import { FaChevronRight } from "react-icons/fa";
 
@@ -16,19 +16,30 @@ const ProductDetail = ()=>{
     const {productNo} = useParams();
     const [product, setProduct] = useState({});
     const [images, setImages] = useState([]);
+    const [category, setCategory] = useState({});
+    const [relationList, setRelationList] = useState([]);
     
     // effect
     useEffect(()=>{
         loadProduct();
+        loadRelation();
     },[]);
-
-
+    
     // callback
     const loadProduct = useCallback(async()=>{
-        const response = await axios.post("/product/detail/"+productNo);
+        const response = await axios.get("/product/detail/"+productNo);
         setProduct(response.data.productDto);
         setImages(response.data.images);
+        setCategory(response.data.categoryNameVO);
+        loadRelation();
     },[product]);
+
+    const loadRelation = useCallback(async()=>{
+        const response = await axios.get("/product/relation/"+productNo);
+        // console.log(response.data.productList);
+        setRelationList(response.data.productList);
+    },[product]);
+
 
     // GPT 이용해서 만든 숫자에 콤마 찍기 함수
     const formatCurrency = (amount) => {
@@ -60,8 +71,8 @@ const ProductDetail = ()=>{
                                 : 이 설정이 없으면 active가 모든 이미지에 붙어서 초기 한바퀴를 수동으로 돌려주지 않으면 슬라이드가 진행이 안됨
                             */}
                             {images.map((image,index)=>(
-                            <div className={"carousel-item "+(index===0 && ("active"))} key={index}>
-                                <img src={process.env.REACT_APP_BASE_URL+"/attach/download/"+image} className="d-block w-100" style={{width:"100%", height:"600px"}} />
+                            <div className={"carousel-item "+(index===0 && ("active"))} key={index} style={{width:"100%", height:"100%"}}>
+                                <img src={process.env.REACT_APP_BASE_URL+"/attach/download/"+image} className="d-block w-100"/>
                                 <div className="carousel-caption d-none d-md-block">
                                     {/* 추가적인 설명 쓰는 곳 */}
                                 </div>
@@ -82,7 +93,11 @@ const ProductDetail = ()=>{
                 {/* 이미지 오른쪽에 상품 정보 및 기능 */}
                 <div className="col-6">
                     <div className="row mt-4 ps-4">
-                        <div className="col text-muted">{product.productCategory}</div>
+                        <div className="col text-muted d-flex justify-content-start align-items-center">
+                            {category.category1st} <FaChevronRight/>
+                            {category.category2nd} <FaChevronRight/>
+                            {category.category3rd}
+                        </div>
                     </div>                    
                     <div className="row">
                         <div className="col-6">
@@ -167,21 +182,8 @@ const ProductDetail = ()=>{
                         <li className="list-group-item">
                             <h3>상품 정보</h3>
                         </li>
-                        <li className="list-group-item">
-                        {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
-                            {product.productDetail} <br/>
+                        <li className="list-group-item" style={{minHeight:"500px"}}>
+                            {product.productDetail}
                         </li>
                     </ul>
                 </div>
@@ -199,10 +201,39 @@ const ProductDetail = ()=>{
                 </div>
             </div>
 
+            <hr/>
+
             {/* 연관/추천 상품, 이런 상품은 어때요? */}
-            <div className="row">
+            <div className="row mt-4">
                 <div className="col">
-                    
+                    <ul className="list-group list-group-flush">
+                        <li className="list-group-item">
+                            <big>이런 상품은 어때요?</big>
+                        </li>
+                        <li className="list-group-item">
+                            <div className="row">
+                                {relationList.map((product)=>(
+                                <div className="col-2 mt-3" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
+                                    <div className="card">
+                                        <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                                        <div className="card-body">
+                                            <h5 className="card-title text-truncate">{product.productName}</h5>
+                                            <div className="card-text text-truncate">
+                                                {product.productDetail}
+                                                <div className="text-end">
+                                                    {product.productPrice}원
+                                                    <div className="btn btn-link">
+                                                        <FaRegHeart />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                ))}
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
             

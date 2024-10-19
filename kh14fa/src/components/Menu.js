@@ -76,12 +76,10 @@ const Menu = () => {
                             </li>
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-                                    aria-haspopup="true" aria-expanded="false">검색</a>
+                                    aria-haspopup="true" aria-expanded="false">상품</a>
                                 <div className="dropdown-menu">
-                                    <NavLink className="dropdown-item" to="/search/autocomplete">자동완성</NavLink>
-                                    <NavLink className="dropdown-item" to="/search/autocomplete2">자동완성2</NavLink>
-                                    <NavLink className="dropdown-item" to="/search/member">멤버복합검색</NavLink>
-                     
+                                    <NavLink className="dropdown-item" to="/product/list">상품목록</NavLink>
+                                    <NavLink className="dropdown-item" to="/product/tempInsert">상품등록</NavLink>
                                 </div>
                             </li>
                             <li className="nav-item dropdown">
