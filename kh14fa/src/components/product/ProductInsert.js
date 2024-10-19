@@ -39,10 +39,19 @@ const ProductInsert = ()=>{
 
     //callback
     const changeInput = useCallback(e=>{
+        if (e.target.type === "file") {
+            const fileArray = Array.from(e.target.files);
+            setInput({
+                ...input,
+                attachList : fileArray
+            });
+        }
+        else{
         setInput({
             ...input,
             [e.target.name] : e.target.value
         });
+        }
     },[input]);
 
     //파일 데이터를 비동기로 보내기
