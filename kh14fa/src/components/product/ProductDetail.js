@@ -1,53 +1,212 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react"
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import Jumbotron from "../Jumbotron";
+import { LuDot } from "react-icons/lu";
+import { CiShare1,CiHeart } from "react-icons/ci";
+import { FaRegCommentDots } from "react-icons/fa";
+import { AiOutlineSafety } from "react-icons/ai";
+import { FaChevronRight } from "react-icons/fa";
 
 const ProductDetail = ()=>{
-    //state
-    const [product, setProduct] = useState();
-    const [load, setLoad] = useState(false);
-    //useParam
-    const[productNo] = useParams();
+    // navigate
+    const navigate = useNavigate();
+
+    // state
+    const {productNo} = useParams();
+    const [product, setProduct] = useState({});
+    const [images, setImages] = useState([]);
     
-    //useEffect
-    useEffect (()=>{
+    // effect
+    useEffect(()=>{
         loadProduct();
     },[]);
-  
-    //callback
-    const loadProduct = useCallback(async()=>{
-        try{
-            const resp = await axios.post(`/detail/${productNo}`);
-            setProduct(resp.data);
-        }
-        catch(e) {
-            setProduct(null);
-        }
-        setLoad(true);
-    },[product, productNo]);
 
-    const deleteProduct = useCallback(async () =>{
-        await axios.post("/product/${productId}");
+
+    // callback
+    const loadProduct = useCallback(async()=>{
+        const response = await axios.post("/product/detail/"+productNo);
+        setProduct(response.data.productDto);
+        setImages(response.data.images);
     },[product]);
+
+    // GPT 이용해서 만든 숫자에 콤마 찍기 함수
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('ko-KR').format(amount);
+    };
+
+    // url 공유하기 함수
+    const copyToClipboard = useCallback((url)=>{
+        navigator.clipboard.writeText(url);
+    },[]);
     
+    // view
     return(
         <>
+            {/* <Jumbotron title="상품 상세 정보" /> */}
+
             <div className="row mt-4">
-                <div className="clo-sm-3">
-                        {product.productName}
+                {/* 이미지 슬라이드 */}
+                <div className="col-6">
+                    <div id="carouselExampleCaptions" className="carousel slide" data-bs-ride="carousel">
+                        <div className="carousel-indicators">
+                            {images.map((image,index)=>(
+                                <button type="button" data-bs-target="#carouselExampleCaptions" key={index} data-bs-slide-to={index} className="active" aria-current="true" aria-label={"Slide "+index}></button>
+                            ))}
+                        </div>
+                        <div className="carousel-inner">
+                            {/* 
+                                active가 보여지는 이미지에만 붙어야 하는데 반복문을 사용함으로 다 붙게되어서 맨 앞 이미지만 active가 붙게끔 설정 
+                                : 이 설정이 없으면 active가 모든 이미지에 붙어서 초기 한바퀴를 수동으로 돌려주지 않으면 슬라이드가 진행이 안됨
+                            */}
+                            {images.map((image,index)=>(
+                            <div className={"carousel-item "+(index===0 && ("active"))} key={index}>
+                                <img src={process.env.REACT_APP_BASE_URL+"/attach/download/"+image} className="d-block w-100" style={{width:"100%", height:"600px"}} />
+                                <div className="carousel-caption d-none d-md-block">
+                                    {/* 추가적인 설명 쓰는 곳 */}
+                                </div>
+                            </div>
+                            ))}
+                        </div>
+                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span className="visually-hidden">Previous</span>
+                        </button>
+                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span className="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* 이미지 오른쪽에 상품 정보 및 기능 */}
+                <div className="col-6">
+                    <div className="row mt-4 ps-4">
+                        <div className="col text-muted">{product.productCategory}</div>
+                    </div>                    
+                    <div className="row">
+                        <div className="col-6">
+                            <h3>{product.productName}</h3>
+                        </div>
+                        <div className="col-6 text-end">
+                            <h4><CiShare1 /></h4>
+                        </div>
+                    </div>   
+                    <div className="row">
+                        <div className="col">
+                            <h2>{formatCurrency(product.productPrice)}원</h2>
+                        </div>
+                    </div> 
+                    <div className="row">
+                        <div className="col text-muted">
+                            <small>조회수 {(product.productLikes)} <LuDot/></small>
+                            <small>찜 {(product.productLikes)} </small>
+                        </div>
+                    </div>
+                    <div className="row my-2">
+                        <div className="col">
+                            <ul className="list-group list-group-horizontal justify-content-center align-items-center">
+                                <li className="list-group-item text-center">
+                                    <small className="text-muted mx-2">제품상태</small>
+                                    <h5>중고</h5>
+                                </li>
+                                <li className="list-group-item text-center">
+                                    <small className="text-muted mx-2">거래방식</small>
+                                    <h5>택배</h5>
+                                </li>
+                                <li className="list-group-item text-center">
+                                    <small className="text-muted mx-3">배송비</small>
+                                    <h5>별도</h5>
+                                </li>
+                                <li className="list-group-item text-center">
+                                    <small className="text-muted mx-2">안전거래</small>
+                                    <h5>사용</h5>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-3 text-muted">
+                            <small>
+                                <LuDot/>
+                                결제혜택
+                            </small>
+                        </div>
+                        <div className="col-9">
+                            <small>
+                                -
+                            </small>
+                        </div>
+                    </div>
+                    <div className="row mt-3 d-flex justify-content-center align-items-center">
+                        <div className="col-2">
+                            <div className="text-center" >
+                                <CiHeart style={{cursor:"pointer", width:"50px", height:"50px"}}/>
+                            </div>
+                        </div>
+                        <div className="col-5">
+                            <button className="btn btn-outline-dark btn-lg w-100" style={{height:"50px"}}>
+                                <FaRegCommentDots />
+                                채팅하기
+                            </button>
+                        </div>
+                        <div className="col-5">
+                            <button className="btn btn-outline-success btn-lg w-100" style={{height:"50px"}}>
+                                <AiOutlineSafety />
+                                안전거래
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {/* 하단의 상품 상세 정보 및 판매자 정보*/}
+            <div className="row mt-4">
+                <div className="col-7">
+                    <ul className="list-group list-group-flush">
+                        <li className="list-group-item">
+                            <h3>상품 정보</h3>
+                        </li>
+                        <li className="list-group-item">
+                        {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                            {product.productDetail} <br/>
+                        </li>
+                    </ul>
+                </div>
+                <div className="col-4 offset-1">
+                    <ul className="list-group list-group-flush">
+                        <li className="list-group-item">
+                            <h3>판매자 정보</h3>
+                        </li>
+                        <li className="list-group-item">
+                            {product.productMember}
+                            <FaChevronRight className="ms-4 icon-link" style={{cursor:"pointer"}}
+                            onClick={e=>navigate("/Aldskaldsk/memberdetail/"+product.productMember)}/>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
-            <div className="mt-4">
-                <div className="col-6">
-                    {product.productName}
-                    {/* <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}/> */}
-                </div>
-                <div className="col-6">
-                {/* <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}/>  */}
+            {/* 연관/추천 상품, 이런 상품은 어때요? */}
+            <div className="row">
+                <div className="col">
+                    
                 </div>
             </div>
+            
         </>
-    )
-}
+    );
+};
 export default ProductDetail;
