@@ -4,10 +4,13 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { FaRegHeart } from "react-icons/fa";
 import Carousel from 'react-bootstrap/Carousel';
+import { useNavigate } from "react-router";
 
 
 const ProductList = () => {
- 
+  // navigate
+  const navigate = useNavigate();
+
   //state
   const [productList, setProductList] = useState([]);
   //임시 state 
@@ -22,7 +25,7 @@ const ProductList = () => {
   const loadListProduct = useCallback(async()=>{
     const resp = await axios.post("/product/list", temp)
     setProductList(resp.data.productList);
-    console.log(resp.data.productList);
+    // console.log(resp.data.productList);
   },[temp]);
   
   return (<>
@@ -87,9 +90,9 @@ const ProductList = () => {
  
     <div className="row mt-4">
       {productList.map((product)=>(
-      <div className="col-sm-4 col-md-4 col-lg-3 mt-3">
-        <div className="card" key={product.productNo}>
-          <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} classNameName="card-img-top" />
+      <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
+        <div className="card">
+          <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
           <div className="card-body">
             <h5 className="card-title">{product.productName}</h5>
             <div className="card-text">
