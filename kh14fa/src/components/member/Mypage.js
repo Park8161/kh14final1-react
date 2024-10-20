@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Jumbotron from "../Jumbotron";
 import axios from "axios";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button, Collapse } from "bootstrap";
 
 const MyPage = ()=>{
+    // navigate
+    const navigate = useNavigate();
+
     //state
     const [member, setMember] = useState({});
     const [collapse, setCollpase] = useState({
@@ -17,17 +20,25 @@ const MyPage = ()=>{
         reserveButton : "btn w-100",
         soldoutButton : "btn w-100",
     });
+    const [likeList, setLikeList] = useState([]);
     
     //effect
     useEffect(()=>{
         loadMember();
+        loadLikeList();
     }, []);
-
+    
     //callback
     const loadMember = useCallback(async ()=>{
         const response = await axios.get("/member/mypage");
         setMember(response.data);
     }, [member]);
+
+    const loadLikeList = useCallback(async()=>{
+        const response = await axios.get("/member/active");
+        setLikeList(response.data.likeList);
+        console.log(response.data);
+    },[likeList]);
 
     const clearCollapse = useCallback(()=>{
         setCollpase({
@@ -50,6 +61,11 @@ const MyPage = ()=>{
             [e.target.name+"Button"] : "btn w-100 border-dark"            
         });
     },[]); // 왜 연관항목이 없어야 되는거..?
+
+    // GPT 이용해서 만든 숫자에 콤마 찍기 함수
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('ko-KR').format(amount);
+    };
 
     return (<>
         <Jumbotron title={`${member.memberId} 님의 정보`}/>
@@ -76,9 +92,9 @@ const MyPage = ()=>{
                         </div>
                         <div className="row">
                             <div className="col">
-                                <NavLink className="btn me-3" to="/">
+                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" onClick={loadLikeList}>
                                     찜한 상품
-                                </NavLink>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -212,6 +228,50 @@ const MyPage = ()=>{
                 </div>
                 )}
                 
+            </div>
+        </div>
+        
+        {/* 사이드 화면에서 메뉴 튀어나오게 하기 */}
+        {/* 찜한 상품 */}
+        <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+            <div className="offcanvas-header">
+                <h5 className="offcanvas-title" id="offcanvasWithBothOptionsLabel">내 관심</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div className="offcanvas-body">
+                {likeList.map((product)=>(
+                <div className="row" key={product.productNo}>
+                    <div className="col-6">
+                        <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                    </div>
+                    <div className="col-6">
+                        <div className="row mt-4">
+                            <div className="col">
+                                {product.productName}
+                            </div>
+                        </div>
+                        <div className="row mt-1">
+                            <div className="col">
+                                {formatCurrency(product.productPrice)}원, 
+                                {" "+product.productQty}개
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                {product.productState}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col text-end me-3">
+                                <button className="btn btn-link" onClick={e=>navigate("/product/detail/"+product.productNo)}
+                                 data-bs-dismiss="offcanvas" aria-label="Close">
+                                    자세히
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ))}
             </div>
         </div>
 
