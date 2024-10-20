@@ -4,12 +4,14 @@ import { useNavigate, useParams } from "react-router";
 import Jumbotron from "../Jumbotron";
 import { LuDot } from "react-icons/lu";
 import { CiShare1,CiHeart } from "react-icons/ci";
-import { FaRegCommentDots, FaRegHeart } from "react-icons/fa";
+import { FaRegCommentDots, FaRegHeart, FaHeart } from "react-icons/fa";
 import { AiOutlineSafety } from "react-icons/ai";
 import { FaChevronRight } from "react-icons/fa";
 import { Modal } from "bootstrap";
 import { IoMdClose } from "react-icons/io";
 import { toast } from "react-toastify";
+import { useRecoilValue } from 'recoil';
+import { memberLoadingState } from "../../utils/recoil";
 
 const ProductDetail = ()=>{
     // navigate
@@ -21,6 +23,8 @@ const ProductDetail = ()=>{
     const [images, setImages] = useState([]);
     const [category, setCategory] = useState({});
     const [relationList, setRelationList] = useState([]);
+    const [like, setLike] = useState(false); // 좋아요 여부
+    const [likes, setLikes] = useState(""); // 좋아요 개수
 
     // ref
     const modal = useRef();
@@ -37,6 +41,7 @@ const ProductDetail = ()=>{
         setImages(response.data.images);
         setCategory(response.data.categoryNameVO);
         loadRelation();
+        checkLikes();
     },[product]);
 
     // 연관 상품 목록 불러오기
@@ -68,6 +73,30 @@ const ProductDetail = ()=>{
         var tag = Modal.getInstance(modal.current);
         tag.hide();
     },[modal]);
+
+    // 좋아요 기능
+    const pushLike = useCallback(async()=>{
+        const response = await axios.get("/product/like/"+productNo);
+        if(response.data.checked){
+            setLike(true);
+        }
+        else{
+            setLike(false);
+        }
+        setLikes(response.data.count);
+        checkLikes();
+    },[like,likes]);
+
+    const checkLikes = useCallback(async()=>{
+        const response = await axios.get("/product/check/"+productNo);
+        if(response.data.checked){
+            setLike(true);
+        }
+        else{
+            setLike(false);
+        }
+        setLikes(response.data.count);
+    },[like,likes]);
 
     // GPT 이용해서 만든 숫자에 콤마 찍기 함수
     const formatCurrency = (amount) => {
@@ -137,7 +166,7 @@ const ProductDetail = ()=>{
                     </div> 
                     <div className="row">
                         <div className="col text-muted">
-                            <small>조회수 {(product.productLikes)} <LuDot/></small>
+                            <small>조회수 0 {/*{(product.productLikes)}*/}<LuDot/></small>
                             <small>찜 {(product.productLikes)} </small>
                         </div>
                     </div>
@@ -178,8 +207,13 @@ const ProductDetail = ()=>{
                     </div>
                     <div className="row mt-3 d-flex justify-content-center align-items-center">
                         <div className="col-2">
-                            <div className="text-center" >
-                                <CiHeart style={{cursor:"pointer", width:"50px", height:"50px"}}/>
+                            <div className="text-center" onClick={pushLike} >
+                                {like ? (
+                                    <FaHeart className="text-danger" style={{cursor:"pointer", width:"50px", height:"50px"}}/>
+                                ) : (
+                                    <FaRegHeart className="text-danger" style={{cursor:"pointer", width:"50px", height:"50px"}}/>
+                                )}
+                                <span className="text-danger text-center">{likes}</span>
                             </div>
                         </div>
                         <div className="col-5">
@@ -189,7 +223,8 @@ const ProductDetail = ()=>{
                             </button>
                         </div>
                         <div className="col-5">
-                            <button className="btn btn-outline-success btn-lg w-100 text-nowrap" style={{height:"50px"}}>
+                            <button className="btn btn-outline-success btn-lg w-100 text-nowrap" style={{height:"50px"}}
+                                    onClick={e=>toast.warning("미구현 기능")}>
                                 <AiOutlineSafety />
                                 안전거래
                             </button>

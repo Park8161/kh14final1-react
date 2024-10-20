@@ -27,6 +27,11 @@ const ProductList = () => {
     setProductList(resp.data.productList);
     // console.log(resp.data.productList);
   },[temp]);
+
+  // GPT 이용해서 만든 숫자에 콤마 찍기 함수
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('ko-KR').format(amount);
+  };
   
   return (<>
 
@@ -98,7 +103,7 @@ const ProductList = () => {
             <div className="card-text">
                {product.productDetail}
               <div className="text-end">
-              {product.productPrice}원
+              {formatCurrency(product.productPrice)}원
                 <div className="btn btn-link"><FaRegHeart /></div>
               </div>
             </div>
