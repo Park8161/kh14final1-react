@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router";
 import Jumbotron from "../Jumbotron";
 import { LuDot } from "react-icons/lu";
@@ -7,6 +7,9 @@ import { CiShare1,CiHeart } from "react-icons/ci";
 import { FaRegCommentDots, FaRegHeart } from "react-icons/fa";
 import { AiOutlineSafety } from "react-icons/ai";
 import { FaChevronRight } from "react-icons/fa";
+import { Modal } from "bootstrap";
+import { IoMdClose } from "react-icons/io";
+import { toast } from "react-toastify";
 
 const ProductDetail = ()=>{
     // navigate
@@ -18,11 +21,13 @@ const ProductDetail = ()=>{
     const [images, setImages] = useState([]);
     const [category, setCategory] = useState({});
     const [relationList, setRelationList] = useState([]);
+
+    // ref
+    const modal = useRef();
     
     // effect
     useEffect(()=>{
         loadProduct();
-        loadRelation();
     },[]);
     
     // callback
@@ -34,22 +39,40 @@ const ProductDetail = ()=>{
         loadRelation();
     },[product]);
 
+    // 연관 상품 목록 불러오기
     const loadRelation = useCallback(async()=>{
         const response = await axios.get("/product/relation/"+productNo);
         // console.log(response.data.productList);
         setRelationList(response.data.productList);
     },[product]);
 
+    // 연관 상품 페이지 이동
+    const goRelation = useCallback((product)=>{
+        navigate("/product/detail/"+product.productNo);
+        window.location.reload(); // 화면 새로고침 : 데이터 갱신 목적
+    },[]);
+
+    // url 공유하기 함수
+    const copyToClipboard = useCallback(()=>{
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        toast.info("주소 복사 완료\n"+url);
+    },[]);
+
+    const openModal = useCallback(()=>{
+        const tag = Modal.getOrCreateInstance(modal.current);
+        tag.show();
+    },[modal]);
+
+    const closeModal = useCallback(()=>{
+        var tag = Modal.getInstance(modal.current);
+        tag.hide();
+    },[modal]);
 
     // GPT 이용해서 만든 숫자에 콤마 찍기 함수
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('ko-KR').format(amount);
     };
-
-    // url 공유하기 함수
-    const copyToClipboard = useCallback((url)=>{
-        navigator.clipboard.writeText(url);
-    },[]);
     
     // view
     return(
@@ -92,7 +115,7 @@ const ProductDetail = ()=>{
 
                 {/* 이미지 오른쪽에 상품 정보 및 기능 */}
                 <div className="col-6">
-                    <div className="row mt-4 ps-4">
+                    <div className="row mt-4 ps-1">
                         <div className="col text-muted d-flex justify-content-start align-items-center">
                             {category.category1st} <FaChevronRight/>
                             {category.category2nd} <FaChevronRight/>
@@ -104,7 +127,7 @@ const ProductDetail = ()=>{
                             <h3>{product.productName}</h3>
                         </div>
                         <div className="col-6 text-end">
-                            <h4><CiShare1 /></h4>
+                            <h4 onClick={openModal}><CiShare1 /></h4>
                         </div>
                     </div>   
                     <div className="row">
@@ -160,13 +183,13 @@ const ProductDetail = ()=>{
                             </div>
                         </div>
                         <div className="col-5">
-                            <button className="btn btn-outline-dark btn-lg w-100" style={{height:"50px"}}>
+                            <button className="btn btn-outline-dark btn-lg w-100 text-nowrap" style={{height:"50px"}}>
                                 <FaRegCommentDots />
                                 채팅하기
                             </button>
                         </div>
                         <div className="col-5">
-                            <button className="btn btn-outline-success btn-lg w-100" style={{height:"50px"}}>
+                            <button className="btn btn-outline-success btn-lg w-100 text-nowrap" style={{height:"50px"}}>
                                 <AiOutlineSafety />
                                 안전거래
                             </button>
@@ -213,7 +236,7 @@ const ProductDetail = ()=>{
                         <li className="list-group-item">
                             <div className="row">
                                 {relationList.map((product)=>(
-                                <div className="col-2 mt-3" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
+                                <div className="col-2 mt-3" key={product.productNo} onClick={()=>(goRelation(product))}>
                                     <div className="card">
                                         <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
                                         <div className="card-body">
@@ -234,6 +257,44 @@ const ProductDetail = ()=>{
                             </div>
                         </li>
                     </ul>
+                </div>
+            </div>
+
+            {/* 링크 공유하기 모달 */}
+            <div className="modal fade" tabIndex="-1" ref={modal} /*data-bs-backdrop="static"*/>
+                <div className="modal-dialog">
+                    <div className="modal-content">
+
+                        {/* 모달 헤더 - 제목, x버튼 */}
+                        <div className="modal-header">
+                            <p className="modal-title">상품 공유하기</p>
+                            <button type="button" className="btn-close btn-manual-close" onClick={closeModal} />
+                        </div>
+
+                        {/* 모달 본문 */}
+                        <div className="modal-body">
+                            {/* 모달은 나중에 만들고 모달 내부에 있을 화면만 구현 */}
+                            <div className="row">
+                                <div className="col">
+                                    <input type="text" className="form-control" value={window.location.href} readOnly/>
+                                </div>                                
+                            </div>    
+                            <div className="row">
+                                <div className="col mt-2 text-end">
+                                    <button className="btn btn-info" onClick={copyToClipboard}>복사</button>
+                                </div>
+                            </div>    
+
+                        </div>
+
+                        {/* 모달 푸터 - 종료, 확인, 저장 등 각종 버튼 */}
+                        {/* <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                                닫기<IoMdClose className="ms-1 btn-lg-white" />
+                            </button>
+                        </div> */}
+
+                    </div>
                 </div>
             </div>
             
