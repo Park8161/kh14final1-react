@@ -26,8 +26,8 @@ const MyPage = ()=>{
     //callback
     const loadMember = useCallback(async ()=>{
         const response = await axios.get("/member/mypage");
-        setMember(response.data.memberDto);
-    }, [member,]);
+        setMember(response.data);
+    }, [member]);
 
     const clearCollapse = useCallback(()=>{
         setCollpase({
