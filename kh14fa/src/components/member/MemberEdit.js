@@ -55,7 +55,7 @@ const MemberEdit = ()=>{
     //callback
     const loadMember = useCallback(async ()=>{
         const response = await axios.get("/member/mypage");
-        setEdit(response.data.memberDto);
+        setEdit(response.data);
     }, [member,edit]);
     const returnBack = useCallback(()=>{
         navigate(-1);
