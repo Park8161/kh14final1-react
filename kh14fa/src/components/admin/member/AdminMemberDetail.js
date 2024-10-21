@@ -58,46 +58,53 @@ const AdminMemberDetail = () => {
         }
     }, [member, memberId]);
 
-    //차단 callback
-    const blockMember = useCallback(async()=>{
-        const isConfirmed = window.confirm("정말 차단하시겠습니까?");
-        if(isConfirmed){
-            try{
-                await axios.post(`/admin/member/bann/${memberId}`);
-                alert("회원이 차단되었습니다.");
-                
-                loadMember();
-            }
-            catch(error){
-                console.error("차단 실패", error.request);
-                alert("서버에러.");
-            }
-        }
-        else{
-            console.log("차단 취소");
-        }
-    }, [memberId]);
+    // 차단 callback
+const blockMember = useCallback(async () => {
+    const isConfirmed = window.confirm("정말 차단하시겠습니까?");
+    if (isConfirmed) {
+        try {            
+            const banDto = {
+                banTarget: memberId,
+                banType: '차단',
+                banMemo: '운영진에 의한 계정 차단',
+                banTime: new Date().toISOString()
+            };
 
-    //차단 해제 callback
-    const unblockMember = useCallback(async()=>{
-        const isConfirmed = window.confirm("차단을 해제하시겠습니까?");
-
-        if(isConfirmed){
-            try{
-                await axios.post(`/admin/member/free/${memberId}`);
-                alert("회원 차단이 해제되었습니다.");
-
-                loadMember();
-            }
-            catch(error){
-                console.error("차단 해제 실패: ", error);
-                alert("request 오류");
-            }
+            await axios.post("/admin/member/bann", banDto); 
+            alert("회원이 차단되었습니다.");
+            loadMember();
+        } catch (error) {
+            console.error("차단 실패", error.response || error.message);
+            alert("차단 실패: 서버에 문제가 발생했습니다.");
         }
-        else{
-            console.log("차단 해제 취소");
+    } else {
+        console.log("차단 취소");
+    }
+}, [memberId, loadMember]);
+
+   // 차단 해제 callback
+const unblockMember = useCallback(async () => {
+    const isConfirmed = window.confirm("차단을 해제하시겠습니까?");
+    if (isConfirmed) {
+        try {            
+            const banDto = {
+                banTarget: memberId,
+                banType: '해제',
+                banMemo: '운영진에 의한 차단 해제',
+                banTime: new Date().toISOString()
+            };
+
+            await axios.post("/admin/member/free", banDto);
+            alert("회원 차단이 해제되었습니다.");
+            loadMember();
+        } catch (error) {
+            console.error("차단 해제 실패", error.response || error.message);
+            alert("차단 해제 실패: 서버에 문제가 발생했습니다.");
         }
-    }, [memberId]);
+    } else {
+        console.log("차단 해제 취소");
+    }
+}, [memberId, loadMember]);
 
     // 로딩 상태 처리
     if (!load) {

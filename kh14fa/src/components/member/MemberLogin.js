@@ -38,6 +38,16 @@ const MemberLogin = () => {
             const response = await axios.post("/member/login", input);
             // console.log(response.data);
 
+            // 로그인 성공 후 차단 상태 확인
+            const banCheckResponse = await axios.get(`/member/banCheck/${input.memberId}`);
+
+            if(banCheckResponse.data){
+                //차단된 계정이면 차단 페이지로 리다이렉트
+                console.log("차단된 계정");
+                navigate("/member/ban");
+                return;
+            }
+
             // 이동하기 전에 로그인 상태(아이디, 등급)를 recoil 저장소에 저장
             setMemberId(response.data.memberId);
             setMemberLevel(response.data.memberLevel);
@@ -67,7 +77,14 @@ const MemberLogin = () => {
             navigate("/"); // 함수에서 사용해야할 경우
         }
         catch(e){
-            console.log("아이디가 없거나 비밀번호 불일치");
+            // 에러 처리 + 차단된 계정 403 처리 추가
+            if(e.response && e.response.status === 403){
+                console.log("차단된 계정");
+                navigate("/member/ban");
+            }
+            else{
+                console.log("아이디가 없거나 비밀번호 불일치");
+            }
         }
     },[input, stay]);
     
