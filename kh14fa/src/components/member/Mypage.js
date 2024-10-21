@@ -35,7 +35,8 @@ const MyPage = ()=>{
     const [sellList, setSellList] = useState([]);
     const [reserveList, setReserveList] = useState([]);
     const [soldoutList, setSoldoutList] = useState([]);
-    const [DPS, setDPS] = useState([]);
+    const [product, setProduct] = useState([]);
+    const [images, setImages] = useState([]);
     
     //effect
     useEffect(()=>{
@@ -68,8 +69,9 @@ const MyPage = ()=>{
 
     const deleteProduct = useCallback(async(productNo)=>{
         try{
-            const response = await axios.delete("/product/delete"+productNo);
+            const response = await axios.delete("/product/"+productNo);
             toast.error("상품 삭제 완료");
+            window.location.reload();
         }
         catch(e){
             toast.warning("상품 삭제 실패");
@@ -78,9 +80,9 @@ const MyPage = ()=>{
 
     const selectProduct = useCallback(async(productNo)=>{
         const response = await axios.get("/product/detail/"+productNo);
-        setDPS(response.data);
-        console.log(response.data);
-    },[DPS]);
+        setProduct(response.data.productDto);
+        setImages(response.data.images);
+    },[product,images]);
 
     const clearCollapse = useCallback(()=>{
         setCollpase({
@@ -129,7 +131,6 @@ const MyPage = ()=>{
 
     // 상품 삭제 모달
     const openDPModal = useCallback(async(productNo)=>{
-        if(productNo === null) return;
         const tag = Modal.getOrCreateInstance(DPmodal.current);
         tag.show();
         selectProduct(productNo);
@@ -614,17 +615,24 @@ const MyPage = ()=>{
                         </div>    
                         <div className="row mt-4">
                             <div className="col">
-                                {/* <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${DPS.images[0]}`} style={{width:"50px",height:"50px"}} /> */}
+                                {images.map((no)=>(
+                                <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${no}`} style={{width:"100px",height:"100px"}} key={no}/>
+                                ))}
                             </div>                                
                         </div>    
                         <div className="row mt-4">
                             <div className="col">
-                                {/* <input type="text" className="form-control" value={DPS.productDto.productName}/> */}
+                                <input type="text" className="form-control" value={product.productName}/>
                             </div>                                
                         </div>    
                         <div className="row">
                             <div className="col mt-2 text-end">
-                                
+                                <input type="text" className="form-control" value={product.productPrice}/>
+                            </div>
+                        </div>    
+                        <div className="row">
+                            <div className="col mt-2 text-end">
+                                <input type="text" className="form-control" value={product.productQty}/>
                             </div>
                         </div>    
                     </div>
@@ -634,7 +642,7 @@ const MyPage = ()=>{
                         <button type="button" className="btn btn-secondary" onClick={closeDPModal}>
                             닫기<IoMdClose className="ms-1 btn-lg-white"/>
                         </button>
-                        <button type="button" className="btn btn-danger" onClick={closeDPModal}>
+                        <button type="button" className="btn btn-danger" onClick={e=>deleteProduct(product.productNo)}>
                             삭제<MdDeleteForever className="ms-1"/>
                         </button>
                     </div>
