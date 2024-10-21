@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { FaChevronRight } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { Carousel } from "bootstrap";
 
 const ProductEdit = ()=> {
     // navigate
@@ -19,26 +20,29 @@ const ProductEdit = ()=> {
             productPrice: 0,
             productDetail:"",
             productQty: 0,
-            productState:"판매중",
+            productState:"",
             attachList:[]
         },
-        images: []
+        images: [],
     });
-    // //수정된 값을 보낼 state
-    const[target, setTarget] = useState({
-            productName:"",
-            productCategory: "",
-            productPrice: 0,
-            productDetail:"",
-            productQty: 0,
-            attachList:[]
-    });
+
+
+    // // //수정된 값을 보낼 state
+    // const[target, setTarget] = useState({
+    //         productName:"",
+    //         productCategory: "",
+    //         productPrice: 0,
+    //         productDetail:"",
+    //         productQty: 0,
+    //         attachList:[]
+    // });
 
     //파일 선택 Ref
     const inputFileRef = useRef(null);
 
     //카테고리 이미지
     const [images, setImages] = useState([]);
+    //카테고리
     const [category, setCategory] = useState([]);
     const [group1, setGroup1] = useState();
     const [group2, setGroup2] = useState();
@@ -71,6 +75,7 @@ const ProductEdit = ()=> {
                 });
             });    
             Promise.all(imageUrls).then(urls => {
+                console.log("Image URLs:", urls);
                 setImages(urls); // 모든 이미지 URL을 상태에 저장
             });
         }
@@ -88,26 +93,17 @@ const ProductEdit = ()=> {
     //특정 상품 정보 가져오기
     const loadGetProduct = useCallback(async ()=> {
         const resp = await axios.get(`/product/detail/${productNo}`);
-        setInput(prevInput => ({
-            ...prevInput,
+        setInput({
+            ...input,
             product: {
-                ...prevInput.product,
-                ...resp.data.productDto // 상품 정보를 가져와서 병합
+                ...input.product,
+                ...resp.data.productDto, // 상품 정보를 가져와서 병합
             },
-            category: [resp.data.categoryNameVO], // 카테고리
             images: resp.data.images
-        }));
-
-        setInput(prevInput => ({
-            ...prevInput,
-            product: {
-                ...prevInput,
-                ...resp.data.productDto
-            },
-            category: [resp.data.categoryNameVO], // 카테고리
-            images: resp.data.images
-        }))
-    },[productNo]);
+        });
+        //카테고리 정보 저장
+        setCategory([resp.data.categoryNameVO]);
+    },[input]);
 
     // //수정
     // const targetChange = useCallback(e=>{
@@ -119,6 +115,7 @@ const ProductEdit = ()=> {
 
     //수정 axios
     const saveProduct = useCallback(async ()=> {
+        console.log(input);
         const formData = new FormData();
         const fileList = inputFileRef.current.files;
 
@@ -131,9 +128,10 @@ const ProductEdit = ()=> {
         formData.append("productPrice", input.product.productPrice);
         formData.append("productDetail", input.product.productDetail);
         formData.append("productQty", input.product.productQty);
-        formData.append("productNo", productNo);
         formData.append("productState", input.product.productState);
+        formData.append("productNo", productNo);
        
+        console.log(input);
 
         await axios.post("/product/edit", formData, {
             headers: {
@@ -156,7 +154,6 @@ const ProductEdit = ()=> {
      const loadCategory = useCallback(async()=>{
         const response = await axios.get("/admin/category/listP"); // 주소 listP 맞음
         setCategory(response.data);
-        console.log(response.data);
     },[]);
 
     // 카테고리 경로 보여주기
@@ -203,7 +200,7 @@ const ProductEdit = ()=> {
         setGroup2(findCat.categoryUpper);
         setGroup1(findCat.categoryGroup);
         setMessage("");
-    },[input,categoryName,message]);
+    },[input,categoryName,message, category]);
 
   
     return(<>
@@ -223,7 +220,7 @@ const ProductEdit = ()=> {
                             <label className="form-label">파일</label>
                             {/*  multiple accept -> 어떤 형식 받을건가*/}
                             <input type="file" className="form-control" name="attachList" multiple accept="image/*" onChange={targetChange} ref={inputFileRef}/>
-                            {input.images.map((image, index) => (
+                            {images.map((image, index) => (
                                 <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
                             ))}                             
                         </div>
@@ -236,7 +233,7 @@ const ProductEdit = ()=> {
                             </label>
                             <div className="input-group">
                             <input type="text" className="form-control" value={categoryName} onChange={e=>setCategoryName(e.target.value)} onBlur={findCategory} />
-                            <input type="number" name="productCategory" value={categoryName.length > 0 && input.product.productCategory} className="form-control" onChange={targetChange} 
+                            <input type="number" name="productCategory" value={input.productCategory} className="form-control" onChange={targetChange} 
                             />
                             </div>
                         </div>
