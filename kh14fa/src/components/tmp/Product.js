@@ -13,7 +13,7 @@ const Product = ()=>{
             <Route path="/tempInsert" element={<ProductInsert/>}></Route>
             <Route path="/list" element={<ProductList/>}></Route>
             <Route path="/detail/:productNo" element={<ProductDetail/>}> </Route>
-            <Route path="/edit" element={<ProductEdit/>}></Route>
+            <Route path="/edit/:productNo" element={<ProductEdit/>}></Route>
         </Routes>
         </>
     );
