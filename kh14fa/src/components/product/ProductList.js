@@ -97,12 +97,23 @@ const ProductList = () => {
       {productList.map((product)=>(
       <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
         <div className="card">
+
           <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+
           <div className="card-body">
             <h5 className="card-title">{product.productName}</h5>
             <div className="card-text">
                {product.productDetail}
               <div className="text-end">
+                {product.productState === "판매중" ? (
+                  <span className='badge bg-primary me-2'>
+                    {product.productState}
+                  </span>
+                ) : (
+                  <span className='badge bg-danger  me-2'>
+                    {product.productState}
+                    </span>
+                )}
               {formatCurrency(product.productPrice)}원
                 <div className="btn btn-link"><FaRegHeart /></div>
               </div>
