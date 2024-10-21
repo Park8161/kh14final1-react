@@ -71,6 +71,7 @@ const Menu = () => {
                                     aria-haspopup="true" aria-expanded="false">관리자 전용</a>
                                 <div className="dropdown-menu">
                                     <NavLink className="dropdown-item" to="/admin/member/memberlist">회원 관리 목록</NavLink>
+                                    <NavLink className="dropdown-item" to="/admin/category/list">카테고리 관리 목록</NavLink>
                                     
                                 </div>
                             </li>
