@@ -21,6 +21,7 @@ const MyPage = ()=>{
         soldoutButton : "btn w-100",
     });
     const [likeList, setLikeList] = useState([]);
+    const [myList, setMyList] = useState([]);
     
     //effect
     useEffect(()=>{
@@ -37,7 +38,8 @@ const MyPage = ()=>{
     const loadLikeList = useCallback(async()=>{
         const response = await axios.get("/member/active");
         setLikeList(response.data.likeList);
-        console.log(response.data);
+        setMyList(response.data.myList);
+        console.log(response.data.myList);
     },[likeList]);
 
     const clearCollapse = useCallback(()=>{
@@ -201,8 +203,46 @@ const MyPage = ()=>{
 
                 {collapse.product === true && (
                 <div className="row mt-4">
-                    <div className="col text-center">
-                        내 상품
+                    <div className="col">
+                        {myList.map((product)=>(
+                        <div className="row" key={product.productNo}>
+                            <div className="col-3">
+                                <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top"/>
+                            </div>
+                            <div className="col-6">
+                                <div className="row mt-4">
+                                    <div className="col">
+                                        {product.productName}
+                                    </div>
+                                </div>
+                                <div className="row mt-1">
+                                    <div className="col">
+                                        {formatCurrency(product.productPrice)}원, 
+                                        {" "+product.productQty}개
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col">
+                                        {product.productState}
+                                    </div>
+                                </div>
+                                <div className="row text-bottom">
+                                    <div className="col text-end me-3">
+                                        <button className="btn btn-link" onClick={e=>navigate("/product/detail/"+product.productNo)}>
+                                            자세히
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="row text-bottom">
+                                    <div className="col text-end me-3">
+                                        <button className="btn btn-link" onClick={e=>navigate("/product/edit/"+product.productNo)}>
+                                            상품 정보 수정
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        ))}
                     </div>
                 </div>
                 )}
@@ -230,8 +270,10 @@ const MyPage = ()=>{
                 
             </div>
         </div>
-        
+
+
         {/* 사이드 화면에서 메뉴 튀어나오게 하기 */}
+        
         {/* 찜한 상품 */}
         <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
             <div className="offcanvas-header">
@@ -261,7 +303,7 @@ const MyPage = ()=>{
                                 {product.productState}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row mt-4">
                             <div className="col text-end me-3">
                                 <button className="btn btn-link" onClick={e=>navigate("/product/detail/"+product.productNo)}
                                  data-bs-dismiss="offcanvas" aria-label="Close">
