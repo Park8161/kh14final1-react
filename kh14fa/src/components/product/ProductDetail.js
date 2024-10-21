@@ -12,6 +12,7 @@ import { IoMdClose } from "react-icons/io";
 import { toast } from "react-toastify";
 import { useRecoilValue } from 'recoil';
 import { memberLoadingState } from "../../utils/recoil";
+import GoChat from './../room/GoChat';
 
 const ProductDetail = ()=>{
     // navigate
@@ -102,6 +103,18 @@ const ProductDetail = ()=>{
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('ko-KR').format(amount);
     };
+
+    const goChat = useCallback(async()=>{
+        try{
+            const resp = await axios.post("/room/"+productNo);
+            const roomId = resp.data; 
+            // chatroom의 경로변수가 될 숫자를 반환함 
+            navigate("/Aldskaldsk/chatroom/"+roomId);
+        }
+        catch(e){
+            console.log("Error creating or retrieving chat room:");
+        }
+    },[productNo]);
     
     // view
     return(
@@ -217,7 +230,8 @@ const ProductDetail = ()=>{
                             </div>
                         </div>
                         <div className="col-5">
-                            <button className="btn btn-outline-dark btn-lg w-100 text-nowrap" style={{height:"50px"}}>
+                            <button className="btn btn-outline-dark btn-lg w-100 text-nowrap" style={{height:"50px"}}
+                                    onClick={goChat}>
                                 <FaRegCommentDots />
                                 채팅하기
                             </button>

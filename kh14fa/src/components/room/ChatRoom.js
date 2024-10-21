@@ -8,6 +8,7 @@ import { loginState, memberIdState, memberLevelState, memberLoadingState } from 
 import Jumbotron from "../Jumbotron";
 import moment from "moment";
 
+
 const ChatRoom = ()=>{
 
     // 방번호
@@ -17,14 +18,13 @@ const ChatRoom = ()=>{
     // state
     const [input, setInput] = useState("");
     const [messageList, setMessageList] = useState([]); 
-    const [userList, setUserList] = useState([]);
     const [client, setClient] = useState(null);
     const [connect, setConnect] = useState(false);
+    const [productInfo, setProductInfo] = useState();
 
     // recoil
     const login = useRecoilValue(loginState);
     const memberId = useRecoilValue(memberIdState);
-    const memberLevel = useRecoilValue(memberLevelState);
     const memberLoading = useRecoilValue(memberLoadingState);
 
     // token
@@ -70,7 +70,6 @@ const ChatRoom = ()=>{
                 });
 
                 setConnect(true);
-                console.log(connect);
             },
             onDisconnect:()=>{
                 setConnect(false);
@@ -105,9 +104,26 @@ const ChatRoom = ()=>{
         setInput("");
     },[input, client, connect]);
 
-    // const checkRoom = useCallback(async()=>{
+    //상품정보 추출
+    const getProductInfo = useCallback(async()=>{
+        try {
+            const resp = await axios.get("/room/productInfo/" + roomNo); // Awaiting the promise
+            setProductInfo(resp.data);
+            console.log("productInfo: ", resp.data); // Now this will log the actual product info
+        } catch (error) {
+            console.error("Error fetching product info:", error);
+        }
+    },[ roomNo]);
 
-    // })
+    const leaveRoom = useCallback(()=>{
+        if(window.confirm("채팅방을 나가겠습니까?")){
+            const resp = axios.post("/room/leave", {roomNo : roomNo});
+            navigate("/chat/roomlist");
+            console.log("resp.data: "+resp.data);
+        }
+        else{}
+    },[]);
+
 
     return(
         <>
@@ -115,31 +131,27 @@ const ChatRoom = ()=>{
         {roomNo}번 채팅방
         </h1>
 
-        <Jumbotron title="웹소켓 클라이언트" 
+        <Jumbotron title="웹소켓 클라이언트(삭제예정)" 
                 content={"현재 연결 상태 = " + (connect ? "연결됨" : "종료됨")}/>
-
+    
         <div>
-
-            <div className="row mt-4">
-                <ul className="list-group">
-                    {userList.map((user, index)=>(
-                        <li className="list-group-item" key={index}>
-                            {user === memberId ? user + "(나)" : user}
-                        </li>
-                    ))}
-                </ul>
-            </div>
             {/* 메세지 목록 */}
             <div className="col-9">
                 
                 <ul className="list-group">
+
+                    <li className="list-group-item">
+                        <button type="button" className="btn"
+                        onClick={leaveRoom}>나가기</button>
+                        <button type="button" className="btn"
+                        onClick={getProductInfo}>구매하기</button>
+                    </li>
+
                     {messageList.map((message, index)=>(
                     <li className="list-group-item" key={index}>
-
-                        {/* 일반 채팅일 경우(type === chat) */}
-                        {message.type === "chat" && (
+                     
                         <div className="row">
-                            <div className={`col-5${(login && memberId === message.senderMemberId) && ' offset-7'}`}>
+                            <div className={`col-5${(login && memberId === message.senderMemberId) && 'offset-7 bg-light'}`}>
                                 {/* 발신자 정보 */}
                                 {(login && memberId !== message.senderMemberId) && (
                                 <h3>
@@ -150,7 +162,9 @@ const ChatRoom = ()=>{
                                 </h3>
                                 )}
                                 {/* 사용자가 보낸 본문 */}
-                                <p>{message.content}</p>
+                                <div className="">
+                                {message.content}
+                                </div>
                                 {/* 시간 */}
                                 <p className="text-muted">
                                     {moment(message.time).format("a h:mm")}
@@ -158,56 +172,29 @@ const ChatRoom = ()=>{
                                 </p>
                             </div>
                         </div>
-                        )}
-                        {/* DM인 경우(type === dm) */}
-                        {message.type === "dm" && (
-                        <div className="row">
-                            <div className={`col-5${(login && memberId === message.senderMemberId) && ' offset-7'}`}>
-                                {/* 수신자일 경우 ooo님으로부터 온 메세지 형태로 출력 */}
-                                {(memberId === message.receiverMemberId) && (
-                                <h3 className="text-danger">
-                                    {message.senderMemberId} 님으로 부터 온 메세지
-                                </h3>
-                                )}
-                                {/* 발신자일 경우 ooo님에게 보낸 메세지 형태로 출력 */}
-                                {(memberId === message.senderMemberId) && (
-                                <h3 className="text-danger">
-                                    {message.receiverMemberId} 님에게 보낸 메세지
-                                </h3>
-                                )}
-                                
-                                {/* 사용자가 보낸 본문 */}
-                                <p className="text-danger">{message.content}</p>
-                                {/* 시간 */}
-                                <p className="text-muted">
-                                    {moment(message.time).format("a h:mm")}
-                                    {/* ({moment(message.time).fromNow()}) */}
-                                </p>
-                            </div>
-                        </div>
-                        )}
-
+                        
+                        
                         {message.type === "system" && (<></>)}
-
+                         
                     </li>
                     ))}
-                </ul>
+               
+                    <div className="row mt-4">
+                        <div className="col">
+                            <div className="input-group">
+                                <input type="text" value={input}
+                                    onChange={e=>setInput(e.target.value)}
+                                    onKeyUp={e=>e.key === 'Enter' && sendMessage()}
+                                    className="form-control"/>
+                                <button className="btn btn-primary">보내기</button>
+                            </div>
+                        </div>
+                    </div>
 
+                </ul>
             </div>
         </div>
-            <div className="row mt-4">
-                <div className="col">
-                    <div className="input-group">
-                        <input type="text" value={input}
-                            onChange={e=>setInput(e.target.value)}
-                            onKeyUp={e=>e.key === 'Enter' && sendMessage()}
-                            className="form-control"/>
-                        <button className="btn btn-primary">보내기</button>
-                    </div>
-                </div>
-            </div>
-
-      
+    
 
        
     </>
