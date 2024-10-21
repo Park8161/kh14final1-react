@@ -2,11 +2,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Jumbotron from "../Jumbotron";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Button, Collapse } from "bootstrap";
+import { Button, Collapse, Modal } from "bootstrap";
+import { FaRegHeart } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { CiShare1,CiHeart } from "react-icons/ci";
+import { IoMdClose } from "react-icons/io";
+import { FaAsterisk } from "react-icons/fa";
+import { MdDeleteForever } from "react-icons/md";
 
 const MyPage = ()=>{
     // navigate
     const navigate = useNavigate();
+
+    // ref
+    const modal = useRef();
+    const DPmodal = useRef();
 
     //state
     const [member, setMember] = useState({});
@@ -22,6 +32,10 @@ const MyPage = ()=>{
     });
     const [likeList, setLikeList] = useState([]);
     const [myList, setMyList] = useState([]);
+    const [sellList, setSellList] = useState([]);
+    const [reserveList, setReserveList] = useState([]);
+    const [soldoutList, setSoldoutList] = useState([]);
+    const [DPS, setDPS] = useState([]);
     
     //effect
     useEffect(()=>{
@@ -33,14 +47,40 @@ const MyPage = ()=>{
     const loadMember = useCallback(async ()=>{
         const response = await axios.get("/member/mypage");
         setMember(response.data);
+        // console.log(response.data);
     }, [member]);
 
     const loadLikeList = useCallback(async()=>{
         const response = await axios.get("/member/active");
         setLikeList(response.data.likeList);
         setMyList(response.data.myList);
-        console.log(response.data.myList);
+        // console.log(response.data.myList);
+        setSellList(
+            (response.data.myList).filter(product => product.productState === '판매중')
+        );
+        setReserveList(
+            (response.data.myList).filter(product => product.productState === '예약중')
+        );
+        setSoldoutList(
+            (response.data.myList).filter(product => product.productState === '판매완료')
+        );
     },[likeList]);
+
+    const deleteProduct = useCallback(async(productNo)=>{
+        try{
+            const response = await axios.delete("/product/delete"+productNo);
+            toast.error("상품 삭제 완료");
+        }
+        catch(e){
+            toast.warning("상품 삭제 실패");
+        }
+    },[]);
+
+    const selectProduct = useCallback(async(productNo)=>{
+        const response = await axios.get("/product/detail/"+productNo);
+        setDPS(response.data);
+        console.log(response.data);
+    },[DPS]);
 
     const clearCollapse = useCallback(()=>{
         setCollpase({
@@ -69,6 +109,37 @@ const MyPage = ()=>{
         return new Intl.NumberFormat('ko-KR').format(amount);
     };
 
+    // url 공유하기 함수
+    const copyToClipboard = useCallback(()=>{
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        toast.info("주소 복사 완료\n"+url);
+    },[]);
+
+    // 링크 공유 모달
+    const openModal = useCallback(()=>{
+        const tag = Modal.getOrCreateInstance(modal.current);
+        tag.show();
+    },[modal]);
+
+    const closeModal = useCallback(()=>{
+        var tag = Modal.getInstance(modal.current);
+        tag.hide();
+    },[modal]);
+
+    // 상품 삭제 모달
+    const openDPModal = useCallback(async(productNo)=>{
+        if(productNo === null) return;
+        const tag = Modal.getOrCreateInstance(DPmodal.current);
+        tag.show();
+        selectProduct(productNo);
+    },[DPmodal]);
+
+    const closeDPModal = useCallback(()=>{
+        var tag = Modal.getInstance(DPmodal.current);
+        tag.hide();
+    },[DPmodal]);
+
     return (<>
         <Jumbotron title={`${member.memberId} 님의 정보`}/>
 
@@ -80,21 +151,21 @@ const MyPage = ()=>{
                     <div className="col ps-3">
                         <div className="row">
                             <div className="col">
-                                <NavLink className="btn me-3" to="/">
+                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas1">
                                     판매 내역
-                                </NavLink>
+                                </button>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <NavLink className="btn me-3" to="/">
+                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas2">
                                     구매 내역
-                                </NavLink>
+                                </button>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" onClick={loadLikeList}>
+                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas3" onClick={loadLikeList}>
                                     찜한 상품
                                 </button>
                             </div>
@@ -137,50 +208,92 @@ const MyPage = ()=>{
                 </div>
             </div>
 
-            <div className="col-9 offset-1">
-                <button className="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#myInfo">
-                    내 정보 확인
-                </button>
-                <div className="collapse" id="myInfo">
-                    <div className="row mt-4">
-                        <div className="col-3">이름</div>
-                        <div className="col-3">{member.memberName}</div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col-3">이메일</div>
-                        <div className="col-3">{member.memberEmail}</div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col-3">회원등급</div>
-                        <div className="col-3">{member.memberLevel}</div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col-3">주소</div>
-                        <div className="col-3">
-                            [{member.memberPost}] <br/>
-                            {member.memberAddress1} <br/>
-                            {member.memberAddress2} <br/>
+            <div className="col-9">
+
+                <div className="row">
+                    <div className="col-6 col-sm-5">
+                        <div className="row">
+                            <div className="col-9">
+                                <h2>{member.memberName}#{member.memberId}</h2>
+                            </div>
+                            <div className="col-3 text-end pe-4">
+                                <h4 onClick={openModal}><CiShare1 /></h4>
+                            </div>
                         </div>
                     </div>
-                    <div className="row mt-4">
-                        <div className="col-3">전화번호</div>
-                        <div className="col-3">{member.memberContact}</div>
+                    <div className="col-6 col-sm-5">
+                        <p className="row">신뢰지수 {member.memberReliability}</p>
+                        <div className="progress" style={{ height: "20px" }}>
+                            <div
+                                className="progress-bar"
+                                role="progressbar"
+                                style={{ width: `${member.memberReliability}%` }}
+                                aria-valuenow={member.memberReliability}
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            >
+                            </div>
+                        </div>
                     </div>
-                    <div className="row mt-4">
-                        <div className="col-3">생년월일</div>
-                        <div className="col-3">{member.memberBirth}</div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col-3">포인트</div>
-                        <div className="col-3">{member.memberPoint}</div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col-3">가입일</div>
-                        <div className="col-3">{member.memberJoin}</div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col-3">최근접속</div>
-                        <div className="col-3">{member.memberLogin}</div>
+                </div>
+
+                <div className="row">
+                    <div className="col">
+                        <button className="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#myInfo">
+                            내 정보 확인
+                        </button>
+                        <div className="collapse ms-4 mt-4 p-4 border" id="myInfo">
+                            <div className="row">
+                                <div className="col-3">
+                                    <div className="row mt-4">
+                                        <div className="col-5">이름</div>
+                                        <div className="col-7">{member.memberName}</div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div className="col-5">이메일</div>
+                                        <div className="col-7">{member.memberEmail}</div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div className="col-5">회원등급</div>
+                                        <div className="col-7">{member.memberLevel}</div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div className="col-5">포인트</div>
+                                        <div className="col-7">{member.memberPoint}</div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div className="col-5">신뢰지수</div>
+                                        <div className="col-7">{member.memberReliability}</div>
+                                    </div>
+                                </div>
+                                <div className="col-8 offset-1">
+                                    <div className="row mt-4">
+                                        <div className="col-2">주소</div>
+                                        <div className="col-10">
+                                            [{member.memberPost}] 
+                                            {" "+member.memberAddress1} 
+                                            {" "+member.memberAddress2} 
+                                        </div>
+                                    </div>                            
+                                    <div className="row mt-4">
+                                        <div className="col-2">전화번호</div>
+                                        <div className="col-10">{member.memberContact}</div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div className="col-2">생년월일</div>
+                                        <div className="col-10">{member.memberBirth}</div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div className="col-2">최근접속</div>
+                                        <div className="col-10">{member.memberLogin}</div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div className="col-2">가입일</div>
+                                        <div className="col-10">{member.memberJoin}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -201,70 +314,130 @@ const MyPage = ()=>{
 
                 <hr className="my-0"/>
 
+                {/* 내 상품 */}
                 {collapse.product === true && (
-                <div className="row mt-4">
-                    <div className="col">
-                        {myList.map((product)=>(
-                        <div className="row" key={product.productNo}>
-                            <div className="col-3">
-                                <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top"/>
-                            </div>
-                            <div className="col-6">
-                                <div className="row mt-4">
-                                    <div className="col">
-                                        {product.productName}
+                <div className="row mt-4 ms-4">
+                    {myList.map((product)=>(
+                    <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo}>
+                        <div className="card">
+                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                            <div className="card-body">
+                                <h5 className="card-title">{product.productName}</h5>
+                                <div className="card-text text-start">
+                                    <div className="row">
+                                        <div className="col">
+                                            {formatCurrency(product.productPrice)}원
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="row mt-1">
-                                    <div className="col">
-                                        {formatCurrency(product.productPrice)}원, 
-                                        {" "+product.productQty}개
+                                    <div className="row">
+                                        <div className="co d-flex align-items-center">
+                                            <FaRegHeart className="text-danger me-1"/>
+                                            {product.productLikes}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col">
-                                        {product.productState}
-                                    </div>
-                                </div>
-                                <div className="row text-bottom">
-                                    <div className="col text-end me-3">
-                                        <button className="btn btn-link" onClick={e=>navigate("/product/detail/"+product.productNo)}>
-                                            자세히
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="row text-bottom">
-                                    <div className="col text-end me-3">
-                                        <button className="btn btn-link" onClick={e=>navigate("/product/edit/"+product.productNo)}>
-                                            상품 정보 수정
-                                        </button>
+                                    <div className="row">
+                                        <div className="col text-end">
+                                            <button className="btn btn-light text-success me-2" onClick={e=>navigate("/product/detail/"+product.productNo)}>
+                                                상세
+                                            </button>
+                                            <button className="btn btn-light text-info me-2" onClick={e=>navigate("/product/edit/"+product.productNo)}>
+                                                수정
+                                            </button>
+                                            <button className="btn btn-light text-danger" onClick={e=>openDPModal(product.productNo)}>
+                                                삭제
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        ))}
                     </div>
+                    ))}
                 </div>
                 )}
+                
+                {/* 판매중 */}
                 {collapse.sell === true && (
-                <div className="row mt-4">
-                    <div className="col text-center">
-                        판매중
+                <div className="row mt-4 ms-4">
+                    {sellList.map((product)=>(
+                    <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
+                        <div className="card">
+                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                            <div className="card-body">
+                                <h5 className="card-title">{product.productName}</h5>
+                                <div className="card-text text-start">
+                                    <div className="row">
+                                        <div className="col">
+                                            {formatCurrency(product.productPrice)}원
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="co d-flex align-items-center">
+                                            <FaRegHeart className="text-danger me-1"/>
+                                            {product.productLikes}
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    ))}
                 </div>
                 )}
+
+                {/* 예약중 */}
                 {collapse.reserve === true && (
-                <div className="row mt-4">
-                    <div className="col text-center">
-                        예약중
+                <div className="row mt-4 ms-4">
+                    {reserveList.map((product)=>(
+                    <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
+                        <div className="card">
+                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                            <div className="card-body">
+                                <h5 className="card-title">{product.productName}</h5>
+                                <div className="card-text">
+                                    {/* {product.productDetail} */}
+                                    <div className="text-start">
+                                        {formatCurrency(product.productPrice)}원
+                                        <div className="row">
+                                            <div className="d-flex align-items-center col-3">
+                                                <FaRegHeart className="text-danger me-1"/>
+                                                {product.productLikes}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    ))}
                 </div>
                 )}
+
+                {/* 판매완료 */}
                 {collapse.soldout === true && (
-                <div className="row mt-4">
-                    <div className="col text-center">
-                        판매완료
+                <div className="row mt-4 ms-4">
+                    {soldoutList.map((product)=>(
+                    <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
+                        <div className="card">
+                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                            <div className="card-body">
+                                <h5 className="card-title">{product.productName}</h5>
+                                <div className="card-text">
+                                    {/* {product.productDetail} */}
+                                    <div className="text-start">
+                                        {formatCurrency(product.productPrice)}원
+                                        <div className="row">
+                                            <div className="d-flex align-items-center col-3">
+                                                <FaRegHeart className="text-danger me-1"/>
+                                                {product.productLikes}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    ))}
                 </div>
                 )}
                 
@@ -273,16 +446,16 @@ const MyPage = ()=>{
 
 
         {/* 사이드 화면에서 메뉴 튀어나오게 하기 */}
-        
-        {/* 찜한 상품 */}
-        <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+
+        {/* 판매 내역 */}
+        <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas1" aria-labelledby="offcanvas1Label">
             <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="offcanvasWithBothOptionsLabel">내 관심</h5>
+                <h5 className="offcanvas-title" id="offcanvas1Label">판매 내역</h5>
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
-                {likeList.map((product)=>(
-                <div className="row" key={product.productNo}>
+                {soldoutList.map((product)=>(
+                <div className="row" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)} data-bs-dismiss="offcanvas">
                     <div className="col-6">
                         <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
                     </div>
@@ -303,17 +476,170 @@ const MyPage = ()=>{
                                 {product.productState}
                             </div>
                         </div>
+                    </div>
+                </div>
+                ))}
+            </div>
+        </div>
+
+        {/* 구매 내역 */}
+        <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas2" aria-labelledby="offcanvas2Label">
+            <div className="offcanvas-header">
+                <h5 className="offcanvas-title" id="offcanvas2Label">구매 내역</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div className="offcanvas-body">
+                {/* {likeList.map((product)=>(
+                <div className="row" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)} data-bs-dismiss="offcanvas">
+                    <div className="col-6">
+                        <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                    </div>
+                    <div className="col-6">
                         <div className="row mt-4">
-                            <div className="col text-end me-3">
-                                <button className="btn btn-link" onClick={e=>navigate("/product/detail/"+product.productNo)}
-                                 data-bs-dismiss="offcanvas" aria-label="Close">
-                                    자세히
-                                </button>
+                            <div className="col">
+                                {product.productName}
+                            </div>
+                        </div>
+                        <div className="row mt-1">
+                            <div className="col">
+                                {formatCurrency(product.productPrice)}원, 
+                                {" "+product.productQty}개
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                {product.productState}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ))} */}
+            </div>
+        </div>
+
+        {/* 찜한 상품 */}
+        <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas3" aria-labelledby="offcanvas3Label">
+            <div className="offcanvas-header">
+                <h5 className="offcanvas-title" id="offcanvas3Label">내 관심</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div className="offcanvas-body">
+                {likeList.map((product)=>(
+                <div className="row" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)} data-bs-dismiss="offcanvas">
+                    <div className="col-6">
+                        <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                    </div>
+                    <div className="col-6">
+                        <div className="row mt-4">
+                            <div className="col">
+                                {product.productName}
+                            </div>
+                        </div>
+                        <div className="row mt-1">
+                            <div className="col">
+                                {formatCurrency(product.productPrice)}원, 
+                                {" "+product.productQty}개
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                {product.productState}
                             </div>
                         </div>
                     </div>
                 </div>
                 ))}
+            </div>
+        </div>
+
+        
+        {/* 링크 공유하기 모달 */}
+        <div className="modal fade" tabIndex="-1" ref={modal} /*data-bs-backdrop="static"*/>
+            <div className="modal-dialog">
+                <div className="modal-content">
+
+                    {/* 모달 헤더 - 제목, x버튼 */}
+                    <div className="modal-header">
+                        <p className="modal-title">공유하기</p>
+                        <button type="button" className="btn-close btn-manual-close" onClick={closeModal} />
+                    </div>
+
+                    {/* 모달 본문 */}
+                    <div className="modal-body">
+                        {/* 모달은 나중에 만들고 모달 내부에 있을 화면만 구현 */}
+                        <div className="row">
+                            <div className="col">
+                                <input type="text" className="form-control" value={window.location.href} readOnly/>
+                            </div>                                
+                        </div>    
+                        <div className="row">
+                            <div className="col mt-2 text-end">
+                                <button className="btn btn-info" onClick={copyToClipboard}>복사</button>
+                            </div>
+                        </div>    
+
+                    </div>
+
+                    {/* 모달 푸터 - 종료, 확인, 저장 등 각종 버튼 */}
+                    {/* <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                            닫기<IoMdClose className="ms-1 btn-lg-white" />
+                        </button>
+                    </div> */}
+
+                </div>
+            </div>
+        </div>
+
+        {/* 상품 삭제 모달 */}
+        <div className="modal fade" tabIndex="-1" ref={DPmodal} data-bs-backdrop="static">
+            <div className="modal-dialog">
+                <div className="modal-content">
+
+                    {/* 모달 헤더 - 제목, x버튼 */}
+                    <div className="modal-header">
+                        <p className="modal-title">상품 삭제</p>
+                        <button type="button" className="btn-close btn-manual-close" onClick={closeDPModal}/>
+                    </div>
+
+                    {/* 모달 본문 */}
+                    <div className="modal-body">
+                        {/* 모달은 나중에 만들고 모달 내부에 있을 화면만 구현 */}
+                        <div className="row">
+                            <div className="col d-flex justify-content-center align-items-center">
+                                <FaAsterisk className="text-danger" />
+                                상품 정보가 삭제됩니다 다시 한번 확인하세요
+                                <FaAsterisk className="text-danger" />
+                            </div>                                
+                        </div>    
+                        <div className="row mt-4">
+                            <div className="col">
+                                {/* <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${DPS.images[0]}`} style={{width:"50px",height:"50px"}} /> */}
+                            </div>                                
+                        </div>    
+                        <div className="row mt-4">
+                            <div className="col">
+                                {/* <input type="text" className="form-control" value={DPS.productDto.productName}/> */}
+                            </div>                                
+                        </div>    
+                        <div className="row">
+                            <div className="col mt-2 text-end">
+                                
+                            </div>
+                        </div>    
+                    </div>
+
+                    {/* 모달 푸터 - 종료, 확인, 저장 등 각종 버튼 */}
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={closeDPModal}>
+                            닫기<IoMdClose className="ms-1 btn-lg-white"/>
+                        </button>
+                        <button type="button" className="btn btn-danger" onClick={closeDPModal}>
+                            삭제<MdDeleteForever className="ms-1"/>
+                        </button>
+                    </div>
+
+                </div>
             </div>
         </div>
 
