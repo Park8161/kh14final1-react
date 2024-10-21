@@ -1,29 +1,38 @@
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { FaChevronRight } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const ProductEdit = ()=> {
     // navigate
     const navigate = useNavigate();
 
-    //state 등록(나중에 쓸일있을까봐)
+    const {productNo} = useParams();
+
+    //detail에서 불러온 값을 담을 state
     const [input, setInput] = useState({
-        productName:"",
-        productCategory: "",
-        productPrice: 0,
-        productDetail:"",
-        productQty:0,
-        attachList:[]
+        product: {
+            productNo: "",
+            productName:"",
+            productCategory: "",
+            productPrice: 0,
+            productDetail:"",
+            productQty: 0,
+            productState:"판매중",
+            attachList:[]
+        },
+        images: []
     });
-
-    //sate
-    const[target, setTarget] = useState({});
-
-    //effect
-    useEffect(()=>{
-        loadCategory();
-    },[]);
+    // //수정된 값을 보낼 state
+    const[target, setTarget] = useState({
+            productName:"",
+            productCategory: "",
+            productPrice: 0,
+            productDetail:"",
+            productQty: 0,
+            attachList:[]
+    });
 
     //파일 선택 Ref
     const inputFileRef = useRef(null);
@@ -37,9 +46,14 @@ const ProductEdit = ()=> {
     const [categoryName, setCategoryName] = useState("");
     const [message, setMessage] = useState("");
 
+      //effect
+      useEffect(()=>{
+        loadGetProduct();
+        loadCategory(); //카테고리 선택창 갖고옴
+    } ,[]);
 
     //callback
-    const changeInput = useCallback(e=>{
+    const targetChange = useCallback(e=>{
         if (e.target.type === "file") {
             const files = Array.from(e.target.files);
             setInput({
@@ -61,31 +75,75 @@ const ProductEdit = ()=> {
             });
         }
         else{
-            setInput({
-                ...input,
-                [e.target.name] : e.target.value
-            });
+            setInput(prevInput => ({
+                ...prevInput,
+                product: {
+                    ...prevInput.product,
+                    [e.target.name]: e.target.value
+                }
+            }));
         }
-    },[input]);
+    },[]);
 
-    // //특정 상품 정보 가져오기
-    // const getProduct = async() ={
-        
-    // }
+    //특정 상품 정보 가져오기
+    const loadGetProduct = useCallback(async ()=> {
+        const resp = await axios.get(`/product/detail/${productNo}`);
+        setInput(prevInput => ({
+            ...prevInput,
+            product: {
+                ...prevInput.product,
+                ...resp.data.productDto // 상품 정보를 가져와서 병합
+            },
+            category: [resp.data.categoryNameVO], // 카테고리
+            images: resp.data.images
+        }));
 
-    ///수정
-    const targetChange = useCallback(e=>{
-        setTarget({
-            ...target,
-            [e.target.name] : e.target.value
-        })
-    },[target])
+        setInput(prevInput => ({
+            ...prevInput,
+            product: {
+                ...prevInput,
+                ...resp.data.productDto
+            },
+            category: [resp.data.categoryNameVO], // 카테고리
+            images: resp.data.images
+        }))
+    },[productNo]);
+
+    // //수정
+    // const targetChange = useCallback(e=>{
+    //     setTarget({
+    //         ...target,
+    //         [e.target.name] : e.target.value
+    //     })
+    // },[target])
 
     //수정 axios
     const saveProduct = useCallback(async ()=> {
-        await axios.post("/product/edit", target);
+        const formData = new FormData();
+        const fileList = inputFileRef.current.files;
 
-    },[target]);
+        for(let i =0; i < fileList.length; i++) {
+            formData.append("attachList", fileList[i]);
+        }
+        // input에서 직접 값 가져오기
+        formData.append("productName", input.product.productName);
+        formData.append("productCategory", input.product.productCategory);
+        formData.append("productPrice", input.product.productPrice);
+        formData.append("productDetail", input.product.productDetail);
+        formData.append("productQty", input.product.productQty);
+        formData.append("productNo", productNo);
+        formData.append("productState", input.product.productState);
+       
+
+        await axios.post("/product/edit", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+            inputFileRef.current.value = ""
+            navigate("/product/list");
+            toast.success("상품 수정완료");
+    },[input]);
 
     //수정
     // const editProduct = useCallback(async (product)=>{
@@ -94,11 +152,12 @@ const ProductEdit = ()=> {
     // });
 
 
-     // 카테고리 리스트 가져오기
+     //카테고리 리스트 가져오기
      const loadCategory = useCallback(async()=>{
         const response = await axios.get("/admin/category/listP"); // 주소 listP 맞음
         setCategory(response.data);
-    },[category]);
+        console.log(response.data);
+    },[]);
 
     // 카테고리 경로 보여주기
     const loadRoot = useMemo(()=>{
@@ -108,10 +167,13 @@ const ProductEdit = ()=> {
             group3Name : category.filter(category => category.categoryNo === group3)[0]?.categoryName || ""
         }
         setCategoryName(name.group3Name);
-        setInput({
-            ...input,
-            productCategory : group3
-        });
+        setInput(prevInput => ({
+            ...prevInput,
+            product: {
+                ...prevInput.product,
+                productCategory : group3
+            }
+        }));
         return name;
     },[category,group1,group2,group3]);
 
@@ -120,16 +182,23 @@ const ProductEdit = ()=> {
         const findCat = category.filter(category => category.categoryName === categoryName)[0] || "";
         if(findCat === "" && categoryName.length > 0) {
             setMessage("없는 카테고리 번호");
-            setInput({
-                ...input,
-                productCategory : ""
-            });
+            setInput(prevInput=> ({
+                ...prevInput,
+                product: {
+                    ...prevInput.product,
+                    productCategory: ""
+
+                }
+            }));
             return;
         }
-        setInput({
-            ...input,
-            productCategory : findCat.categoryNo
-        });
+        setInput(prevInput => ({
+            ...prevInput,
+            product: {
+                ...prevInput.product,
+                productCategory : findCat.categoryNo                
+            }
+        }));
         setGroup3(findCat.categoryNo);
         setGroup2(findCat.categoryUpper);
         setGroup1(findCat.categoryGroup);
@@ -145,7 +214,7 @@ const ProductEdit = ()=> {
                     <div className="row mt-4">
                         <div className="col">
                             <label>상품명</label>
-                            <input type="text" name="productName" value={target.productName} placeholder="중고나라장난감"
+                            <input type="text" name="productName" value={input.product.productName} 
                                 className="form-control" onChange={targetChange}/>
                         </div>
                     </div>
@@ -154,7 +223,7 @@ const ProductEdit = ()=> {
                             <label className="form-label">파일</label>
                             {/*  multiple accept -> 어떤 형식 받을건가*/}
                             <input type="file" className="form-control" name="attachList" multiple accept="image/*" onChange={targetChange} ref={inputFileRef}/>
-                            {images.map((image, index) => (
+                            {input.images.map((image, index) => (
                                 <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
                             ))}                             
                         </div>
@@ -166,8 +235,9 @@ const ProductEdit = ()=> {
                                 <span className="text-danger ms-1">{message}</span>
                             </label>
                             <div className="input-group">
-                                <input type="text" className="form-control" value={categoryName} onChange={e=>setCategoryName(e.target.value)} onBlur={findCategory} />
-                                <input type="number" name="productCategory" value={categoryName.length > 0 && input.productCategory} className="form-control" onChange={changeInput} />
+                            <input type="text" className="form-control" value={categoryName} onChange={e=>setCategoryName(e.target.value)} onBlur={findCategory} />
+                            <input type="number" name="productCategory" value={categoryName.length > 0 && input.product.productCategory} className="form-control" onChange={targetChange} 
+                            />
                             </div>
                         </div>
                     </div>
@@ -213,21 +283,21 @@ const ProductEdit = ()=> {
                     <div className="row mt-4">
                         <div className="col">
                             <label>가격</label>
-                            <input type="number" name="productPrice" value={target.productPrice}
+                            <input type="number" name="productPrice" value={input.product.productPrice} 
                                 className="form-control" onChange={targetChange}/>
                         </div>
                     </div>
                     <div className="row mt-4">
                         <div className="col">
                             <label>상품상세</label>
-                            <textarea type="text" name="productDetail" value={target.productDetail}
-                                className="form-control" onChange={targetChange}/>
+                            <textarea type="text" name="productDetail" value={input.product.productDetail}
+                               className="form-control" onChange={targetChange}/>
                         </div>
                     </div>
                     <div className="row mt-4">
                         <div className="col">
                             <label>수량</label>
-                            <input type="number" name="productQty" value={target.productQty}
+                            <input type="number" name="productQty" value={input.product.productQty}
                                 className="form-control" onChange={targetChange} />
                         </div>
                     </div>
@@ -236,7 +306,7 @@ const ProductEdit = ()=> {
                             <button type="button" className="btn btn-danger me-3" onClick={e=>(navigate)}>
                                 돌아가기
                             </button>
-                            <button className="btn btn-success">
+                            <button className="btn btn-success" onClick={saveProduct}>
                                 상품수정
                             </button>
                         </div>
