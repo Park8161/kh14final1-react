@@ -21,7 +21,7 @@ const QnaDetail = ()=>{
     //callback
     const loadQna = useCallback(async ()=>{
         try{
-            const resp = await axios.get("/qna/" + qnaNo);
+            const resp = await axios.get("/qna/detail/" + qnaNo);
             setQna(resp.data);
         }
         catch(e){
@@ -132,7 +132,7 @@ const QnaDetail = ()=>{
 
         <div className="row mt-4">
             <div className="col-sm-3">
-                종류
+                분류
             </div>
             <div className="col-sm-9">
                 {qna.qnaType}
@@ -187,8 +187,6 @@ const QnaDetail = ()=>{
         {/*버튼*/}
         <div className="row mt-4">
             <div className="col text-end">
-                <button className="btn btn-success"
-                onClick={e=>navigate("/qna/insert")}>등록</button>
                 <button className="btn btn-secondary ms-2"
                     onClick={e=>navigate("/qna/list")}>목록</button>
                 <button className="btn btn-warning ms-2"

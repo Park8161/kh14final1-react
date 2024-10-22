@@ -23,7 +23,7 @@ const QnaInsert = ()=>{
     }, [input]);
 
     const saveQna = useCallback(async ()=>{
-        const resp = await axios.Axios.post("/qna/", input);
+        const resp = await axios.post("/qna/insert", input);
         navigate("/qna/list");
     }, [input]);
 
@@ -33,7 +33,7 @@ const QnaInsert = ()=>{
 
         <div className="row mt-4">
             <div className="col">
-                <label>종류</label>
+                <label>분류</label>
                 <select name="qnaType" className="form-select"
                     value={input.qnaType} onChange={changeInput}>
                     <option value="">선택하세요</option>

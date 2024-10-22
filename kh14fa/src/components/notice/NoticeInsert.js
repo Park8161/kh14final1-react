@@ -37,7 +37,7 @@ const NoticeInsert = () => {
 
         <div className="row mt-4">
             <div className="col">
-                <label>종류</label>
+                <label>분류</label>
                 <select name="noticeType" className="form-select"
                     value={input.noticeType} onChange={changeInput}>
                     <option value="">선택하세요</option>
