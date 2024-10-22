@@ -179,6 +179,13 @@ const MyPage = ()=>{
                         <h3>내 정보</h3>
                         <div className="row">
                             <div className="col">
+                                <button className="btn me-3" onClick={member.memberLevel === "일반회원" ? (e=>navigate("/member/cert/"+member.memberEmail+"/"+member.memberReliability)) : (e=>navigate(""))} >
+                                    이메일 인증하기
+                                </button>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
                                 <NavLink className="btn me-3" to="/member/changepw">
                                     비밀번호 변경
                                 </NavLink>

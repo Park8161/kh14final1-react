@@ -12,6 +12,7 @@ import MemberChangePw from "../member/MemberChangePw";
 import MemberExit from "../member/MemberExit";
 import BlockList from "../member/BlockList";
 import PrivateRoute from "../router/PrivateRoute";
+import MemberCert from "../member/MemberCert";
 
 const Member = ()=>{
     return (
@@ -30,6 +31,7 @@ const Member = ()=>{
             <Route path="/changepw" element={<PrivateRoute element={<MemberChangePw/>}/>}/>
             <Route path="/exit" element={<PrivateRoute element={<MemberExit/>}/>}/>
             <Route path="/block/list" element={<PrivateRoute element={<BlockList/>}/>}/>
+            <Route path="/cert/:memberEmail/:memberReliability" element={<PrivateRoute element={<MemberCert/>}/>}/>
             <Route />
         </Routes>
         </>
