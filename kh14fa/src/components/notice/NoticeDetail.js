@@ -133,7 +133,7 @@ const NoticeDetail = ()=>{
 
         <div className="row mt-4">
             <div className="col-sm-3">
-                종류
+                분류
             </div>
             <div className="col-sm-9">
                 {notice.noticeType}
@@ -188,8 +188,6 @@ const NoticeDetail = ()=>{
         {/*버튼들*/}
         <div className="row mt-4">
             <div className="col text-end">
-                <button className="btn btn-success"
-                onClick={e=>navigate("/notice/insert")}>등록</button>
                 <button className="btn btn-secondary ms-2"
                     onClick={e=>navigate("/notice/list")}>목록</button>
                 <button className="btn btn-warning ms-2"

@@ -35,7 +35,7 @@ const QnaEdit =()=>{
 
     const editQna = useCallback(async ()=>{
         await axios.put("", qna);
-        navigate("/qna/" + qnaNo);//상세
+        navigate("/qna/detail" + qnaNo);//상세
     }, [qna]);
 
     //view
