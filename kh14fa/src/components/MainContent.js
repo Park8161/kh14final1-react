@@ -26,6 +26,7 @@ import Chat from "./tmp/Chat";
 import Notice from "./tmp/Notice";
 import Qna from "./tmp/Qna";
 import Pay from "./tmp/Pay";
+import Review from "./tmp/Review";
 
 // component
 const MainContent = ()=>{
@@ -63,6 +64,7 @@ const MainContent = ()=>{
                             <Route path="/notice/*" element={<Notice/>} />
                             <Route path="/qna/*" element={<Qna/>} />
                             <Route path="/pay/*" element={<Pay/>} />
+                            <Route path="/review/*" element={<Review/>} />
 
                             {/* exact path : 정확하게 일치할때만 나오게 할 수 있다 */}
                             {/* 경로변수를 사용할 경우 콜론과 이름을 합쳐 변수명으로 지정 ("/book/detail/{bookID}") */}
