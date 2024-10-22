@@ -20,7 +20,7 @@ const ChatRoom = ()=>{
     const [messageList, setMessageList] = useState([]); 
     const [client, setClient] = useState(null);
     const [connect, setConnect] = useState(false);
-    const [productInfo, setProductInfo] = useState();
+    const [productInfo, setProductInfo] = useState({});
 
     // recoil
     const login = useRecoilValue(loginState);
@@ -36,10 +36,12 @@ const ChatRoom = ()=>{
     const location = useLocation();
 
     useEffect(()=>{
+        loadProductInfo();
+    },[]);
+
+    useEffect(()=>{
         if(memberLoading === false) return;
-
-        // checkRoom();
-
+        
         const client = connectToServer();
         setClient(client);
         return()=>{
@@ -105,15 +107,16 @@ const ChatRoom = ()=>{
     },[input, client, connect]);
 
     //상품정보 추출
-    const getProductInfo = useCallback(async()=>{
+    const loadProductInfo = useCallback(async()=>{
         try {
-            const resp = await axios.get("/room/productInfo/" + roomNo); // Awaiting the promise
+            const resp = await axios.get("/room/productInfo/" + roomNo); 
             setProductInfo(resp.data);
-            console.log("productInfo: ", resp.data); // Now this will log the actual product info
+            console.log("productInfo: ", resp.data); 
+           
         } catch (error) {
             console.error("Error fetching product info:", error);
         }
-    },[ roomNo]);
+    },[roomNo]);
 
     const leaveRoom = useCallback(()=>{
         if(window.confirm("채팅방을 나가겠습니까?")){
@@ -127,10 +130,6 @@ const ChatRoom = ()=>{
 
     return(
         <>
-        <h1>
-        {roomNo}번 채팅방
-        </h1>
-
         <Jumbotron title="웹소켓 클라이언트(삭제예정)" 
                 content={"현재 연결 상태 = " + (connect ? "연결됨" : "종료됨")}/>
     
@@ -139,12 +138,31 @@ const ChatRoom = ()=>{
             <div className="col-9">
                 
                 <ul className="list-group">
+                    <li className="list-group-item fs-5">
+                        {productInfo.productMember}
+                    </li>
+                    <li className="list-group-item">
+                        <div className="row"> {/* row는 여기서 정의 */}
+                            <div className="col"> {/* 첫 번째 컬럼 */}
+                                <div className="text-muted">
+                                    {productInfo.productName}({productInfo.productState})
+                                </div>
+                                <div className="font-weight-bold">
+                                    {productInfo.productPrice}원
+                                </div>
+                            </div>
+                            <div className="col d-flex justify-content-end"> {/* 두 번째 컬럼 */}
+                                <button type="button" className="btn btn-primary"
+                                    onClick={e=>{navigate("/Pay/chooseoption/"+productInfo.productNo)}}>
+                                    구매하기
+                                </button>
+                            </div>
+                        </div>
+                    </li>
 
                     <li className="list-group-item">
                         <button type="button" className="btn"
                         onClick={leaveRoom}>나가기</button>
-                        <button type="button" className="btn"
-                        onClick={getProductInfo}>구매하기</button>
                     </li>
 
                     {messageList.map((message, index)=>(

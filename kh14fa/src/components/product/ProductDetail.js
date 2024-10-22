@@ -109,7 +109,7 @@ const ProductDetail = ()=>{
             const resp = await axios.post("/room/"+productNo);
             const roomId = resp.data; 
             // chatroom의 경로변수가 될 숫자를 반환함 
-            navigate("/Aldskaldsk/chatroom/"+roomId);
+            navigate("/Chat/chatroom/"+roomId);
         }
         catch(e){
             console.log("Error creating or retrieving chat room:");
@@ -267,7 +267,7 @@ const ProductDetail = ()=>{
                         <li className="list-group-item">
                             {product.productMember}
                             <FaChevronRight className="ms-4 icon-link" style={{cursor:"pointer"}}
-                            onClick={e=>navigate("/Aldskaldsk/memberdetail/"+product.productMember)}/>
+                            onClick={e=>navigate("/member/detail/"+product.productMember)}/>
                         </li>
                     </ul>
                 </div>

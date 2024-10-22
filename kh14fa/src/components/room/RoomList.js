@@ -35,7 +35,7 @@ const RoomList = ()=>{
                  <div className="col">
                      <ul className="list-group list-group-flush">
                          {roomList.map(room=>(
-                                <NavLink to={"/Aldskaldsk/chatroom/"+room.roomNo}>
+                                <NavLink to={"/chat/chatroom/"+room.roomNo}>
                              <li className="list-group-item">
                                  {room.roomName}
                              </li>
