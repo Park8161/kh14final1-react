@@ -64,7 +64,7 @@ const ReviewInsert = ()=>{
 
             <div className="row mt-4">
                 <div className="col border">
-                    <h2>구매 상품 정보</h2>
+                    <h2 className="mt-3">구매 상품 정보</h2>
 
                     <div className="row">
                         <label className="ps-4">상품 이미지</label>
@@ -77,7 +77,7 @@ const ReviewInsert = ()=>{
                         ))}
                     </div>
 
-                    <div className="row mt-1 text-center">
+                    <div className="row mt-1 mb-4 text-center">
                         <div className="col-2">
                             <label>품명</label>
                             <div className="form-control text-truncate" name="review">{product.productName}</div>
