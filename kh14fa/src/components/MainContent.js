@@ -20,7 +20,6 @@ import MemberResetPw from "./member/MemberResetPw";
 import MemberExit from "./member/MemberExit";
 import BlockList from './member/BlockList';
 import Chaesujin from "./tmp/Chaesujin";
-import Jhs0713 from "./tmp/Jhs0713";
 import Gykim94 from "./tmp/Gykim94";
 import Aldskaldsk from "./tmp/Aldskaldsk";
 import Admin from "./tmp/Admin";
@@ -61,7 +60,6 @@ const MainContent = ()=>{
 
                             {/* 팀플 중 충돌 방지 임시 중첩 라우팅 */}
                             <Route exact path="/*" element={<Gykim94/>} />
-                            <Route exact path="/Jsh0713/*" element={<Jhs0713/>} />
                             <Route exact path="/Chaesujin/*" element={<Chaesujin/>} />
                             <Route exact path="/Aldskaldsk/*" element={<Aldskaldsk/>} />
                             <Route path="/admin/*" element={<Admin/>} />

@@ -1,44 +1,43 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router"
+import { Navigate, useNavigate, useParams } from "react-router";
 import Jumbotron from "../Jumbotron";
 
-const NoticeDetail = ()=>{
+const QnaDetail = ()=>{
     //파라미터 읽는 명령
-    const {noticeNo} = useParams();
+    const {qnaNo} = useParams();
 
-    //이동 도구
     const navigate = useNavigate();
 
     //state
-    const [notice, setNotice] = useState(null);
+    const [qna, setQna] = useState(null);
     const [load, setLoad] = useState(false);
 
     //effect
     useEffect(()=>{
-        loadNotice();
+        loadQna();
     }, []);
 
     //callback
-    const loadNotice = useCallback(async ()=>{
+    const loadQna = useCallback(async ()=>{
         try{
-            const resp = await axios.get("/notice/detail/" + noticeNo);
-            setNotice(resp.data);
+            const resp = await axios.get("/qna/" + qnaNo);
+            setQna(resp.data);
         }
         catch(e){
-            setNotice(null);
+            setQna(null);
         }
         setLoad(true);
-    }, [notice, noticeNo]);
-    
-    const deleteNotice = useCallback(async ()=>{
-        await axios.delete("/notice/" + noticeNo);
-        navigate("/notice/list");
-    }, [notice, noticeNo]);
+    }, [qna, qnaNo]);
+
+    const deleteQna = useCallback(async ()=>{
+        await axios.delete("/qna/" + qnaNo);
+        navigate("/qna/list");
+    }, [qna, qnaNo]);
 
     if(load === false){
         return (<>
-            <Jumbotron title={"?번 글 상세정보"}/>
+            <Jumbotron title={"?번 글 상세 정보"}/>
 
             <div className="row mt-4">
                 <div className="col-sm-3">
@@ -103,7 +102,7 @@ const NoticeDetail = ()=>{
                 </div>
             </div>
 
-            {/*버튼들*/}
+            {/*버튼*/}
             <div className="row mt-4">
                 <div className="col text-end">
                     <button className="btn btn-success placeholder col-2">등록</button>
@@ -112,23 +111,23 @@ const NoticeDetail = ()=>{
                     <button className="btn btn-danger placeholder col-2 ms-2">삭제</button>
                 </div>
             </div>
-        </>);
+            </>);
     }
 
-    if(notice === null){
-        return <Navigate to="/notFound"/>
+    if(qna === null){
+        return <Navigate to ="/notFound"/>
     }
 
     return(<>
-        <Jumbotron title={noticeNo + "번 글 상세정보"}/>
+        <Jumbotron title={qnaNo + "번 글 상세정보"}/>
 
         <div className="row mt-4">
-            <div className="col-sm-3">
+            <div className="row sm-3">
                 작성자
-            </div>
-            <div className="col-sm-9">
-                {notice.noticeWriter}
-            </div>
+        </div>
+        <div className="col-sm-9">
+            {qna.qnaWriter}
+        </div>
         </div>
 
         <div className="row mt-4">
@@ -136,7 +135,7 @@ const NoticeDetail = ()=>{
                 종류
             </div>
             <div className="col-sm-9">
-                {notice.noticeType}
+                {qna.qnaType}
             </div>
         </div>
 
@@ -145,7 +144,7 @@ const NoticeDetail = ()=>{
                 제목
             </div>
             <div className="col-sm-9">
-                {notice.noticeTitle}
+                {qna.qnaTitle}
             </div>
         </div>
 
@@ -154,7 +153,7 @@ const NoticeDetail = ()=>{
                 내용
             </div>
             <div className="col-sm-9">
-                {notice.noticeContent}
+                {qna.qnaContent}
             </div>
         </div>
 
@@ -163,7 +162,7 @@ const NoticeDetail = ()=>{
                 작성시간
             </div>
             <div className="col-sm-9">
-                {notice.noticeWtime}
+                {qna.qnaWtime}
             </div>
         </div>
 
@@ -172,7 +171,7 @@ const NoticeDetail = ()=>{
                 수정시간
             </div>
             <div className="col-sm-9">
-                {notice.noticeUtime}
+                {qna.qnaUtime}
             </div>
         </div>
 
@@ -181,25 +180,24 @@ const NoticeDetail = ()=>{
                 조회수
             </div>
             <div className="col-sm-9">
-                {notice.noticeViews}
+                {qna.qnaViews}
             </div>
         </div>
 
-        {/*버튼들*/}
+        {/*버튼*/}
         <div className="row mt-4">
             <div className="col text-end">
                 <button className="btn btn-success"
-                onClick={e=>navigate("/notice/insert")}>등록</button>
+                onClick={e=>navigate("/qna/insert")}>등록</button>
                 <button className="btn btn-secondary ms-2"
-                    onClick={e=>navigate("/notice/list")}>목록</button>
+                    onClick={e=>navigate("/qna/list")}>목록</button>
                 <button className="btn btn-warning ms-2"
-                    onClick={e=>navigate("/notice/edit/"+noticeNo)}>수정</button>
+                    onClick={e=>navigate("/qna/edit/"+qnaNo)}>수정</button>
                 <button className="btn btn-danger ms-2"
-                    onClick={deleteNotice}>삭제</button>
+                    onClick={deleteQna}>삭제</button>
             </div>
         </div>
-
     </>);
 };
 
-export default NoticeDetail;
+export default QnaDetail;

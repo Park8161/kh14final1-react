@@ -18,7 +18,7 @@ const NoticeEdit = () => {
     //callback
     const loadNotice = useCallback(async () => {
         try {
-            const resp = await axios.get("/notice/", noticeNo);
+            const resp = await axios.get("/notice/edit", noticeNo);
             setNotice(resp.data);
         }
         catch (e) {
@@ -36,7 +36,7 @@ const NoticeEdit = () => {
 
 const editNotice = useCallback(async () => {
     await axios.put("", notice);
-    navigate("/notice/" + noticeNo);//상세
+    navigate("/notice/detail" + noticeNo);//상세
 }, [notice]);
 
 //view

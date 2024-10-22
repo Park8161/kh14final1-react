@@ -9,7 +9,6 @@ const NoticeInsert = () => {
 
     //state
     const [input, setInput] = useState({
-        noticeNo: "",
         noticeType: "",
         noticeTitle: "",
         noticeContent: "",
@@ -26,7 +25,7 @@ const NoticeInsert = () => {
     const saveNotice = useCallback(async () => {
         //input의 형식 검사 후 차단 또는 허용
 
-        const resp = await axios.post("/notice/", input);
+        const resp = await axios.post("/notice/insert", input);
         //알림코드
         navigate("/notice/list");
     }, [input]);
