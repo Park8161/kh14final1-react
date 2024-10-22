@@ -19,9 +19,6 @@ import MemberFindPw from "./member/MemberFindPw";
 import MemberResetPw from "./member/MemberResetPw";
 import MemberExit from "./member/MemberExit";
 import BlockList from './member/BlockList';
-import Chaesujin from "./tmp/Chaesujin";
-import Gykim94 from "./tmp/Gykim94";
-import Aldskaldsk from "./tmp/Aldskaldsk";
 import Admin from "./tmp/Admin";
 import Member from "./tmp/Member";
 import Product from "./tmp/Product";
@@ -59,9 +56,6 @@ const MainContent = ()=>{
                             <Route exact path="/" element={<Home/>} /> 
 
                             {/* 팀플 중 충돌 방지 임시 중첩 라우팅 */}
-                            <Route exact path="/*" element={<Gykim94/>} />
-                            <Route exact path="/Chaesujin/*" element={<Chaesujin/>} />
-                            <Route exact path="/Aldskaldsk/*" element={<Aldskaldsk/>} />
                             <Route path="/admin/*" element={<Admin/>} />
                             <Route path="/member/*" element={<Member/>} />
                             <Route path="/product/*" element={<Product/>} />
