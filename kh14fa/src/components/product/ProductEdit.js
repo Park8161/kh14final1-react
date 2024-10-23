@@ -30,8 +30,8 @@ const ProductEdit = () => {
     //파일 선택 Ref
     const inputFileRef = useRef(null);
 
-    //카테고리 이미지
-    const [images, setImages] = useState([]);
+    const [attachImages, setAttachImages] = useState([]);
+    const [loadImages, setLoadImages] = useState([]);
     //카테고리
     const [category, setCategory] = useState([]);
     const [group1, setGroup1] = useState();
@@ -39,6 +39,7 @@ const ProductEdit = () => {
     const [group3, setGroup3] = useState();
     const [categoryName, setCategoryName] = useState("");
     const [message, setMessage] = useState("");
+    const [deleteList, setDeleteList] = useState([]);
 
     //effect
     useEffect(() => {
@@ -66,7 +67,7 @@ const ProductEdit = () => {
             });
             Promise.all(imageUrls).then(urls => {
                 console.log("Image URLs:", urls);
-                setImages(urls); // 모든 이미지 URL을 상태에 저장
+                setAttachImages(urls); // 모든 이미지 URL을 상태에 저장
             });
         }
         else {
@@ -92,11 +93,14 @@ const ProductEdit = () => {
                 ...prevInput.product,
                 ...resp.data.productDto, // 상품 정보를 가져와서 병합
             },
-            // setImages(resp.data.images);
-            images: resp.data.images.map(image => `${process.env.REACT_APP_BASE_URL}/attach/download/${image}`),
+            // setLoadImages(resp.data.images);
+            images: resp.data.images,
+            // images: resp.data.images.map(image => `${process.env.REACT_APP_BASE_URL}/attach/download/${image}`),
             categoryName: resp.data.categoryNameVO.category3rd
 
         }));
+
+        setLoadImages(resp.data.images);
 
         //카테고리 정보저장
         // 이전 카테고리 상태 업데이트
@@ -188,6 +192,11 @@ const ProductEdit = () => {
         setMessage("");
     }, [input, categoryName, message, category]);
 
+    const deleteImage = useCallback((target)=>{
+        setDeleteList(target);
+        setLoadImages(image => image.filter(image => image !== target));
+    },[deleteList,loadImages]);
+
 
     return (<>
         {/* <Jumbotron title="상품 등록 테스트"/> */}
@@ -203,13 +212,24 @@ const ProductEdit = () => {
                 </div>
                 <div className="row mt-4">
                     <div className="col">
+                        <label>기존 이미지 파일</label>
+                        <div className="border">
+                            <button onClick={e=>setLoadImages(input.images)}>되돌리기</button>
+                        </div>
+                    </div>
+                </div>
+                <div className="row mt-4">
+                    <div className="col">
                         <label className="form-label">파일</label>
                         {/*  multiple accept -> 어떤 형식 받을건가*/}
-
                         <input type="file" className="form-control" name="attachList" multiple accept="image/*"
                             onChange={targetChange} ref={inputFileRef} />
-                        {images.map((image, index) => (
-                            <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
+                            {loadImages.map((image, index) => (
+                                <img key={index} src={`${process.env.REACT_APP_BASE_URL}/attach/download/${image}`} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }}
+                                    onClick={e=>deleteImage(image)} />
+                            ))}
+                        {attachImages.map((image, index) => (
+                            <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }}/>
                         ))}
                     </div>
                 </div>
