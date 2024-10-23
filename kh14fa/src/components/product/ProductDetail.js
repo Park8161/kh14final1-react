@@ -26,6 +26,8 @@ const ProductDetail = ()=>{
     const [relationList, setRelationList] = useState([]);
     const [like, setLike] = useState(false); // 좋아요 여부
     const [likes, setLikes] = useState(""); // 좋아요 개수
+    const [productMember, setProductMember] = useState("");
+    const [review, setReview] = useState(); // 판매자 리뷰 개수
 
     // ref
     const modal = useRef();
@@ -43,6 +45,7 @@ const ProductDetail = ()=>{
         setCategory(response.data.categoryNameVO);
         loadRelation();
         checkLikes();
+        countReview(response.data.productDto.productMember);
     },[product]);
 
     // 연관 상품 목록 불러오기
@@ -98,6 +101,12 @@ const ProductDetail = ()=>{
         }
         setLikes(response.data.count);
     },[like,likes]);
+
+    // 판매자에 대한 리뷰 개수 카운트 불러오기
+    const countReview = useCallback(async(productMember)=>{
+        const response = await axios.get("/review/count/"+productMember);
+        setReview(response.data);
+    },[review]);
 
     // GPT 이용해서 만든 숫자에 콤마 찍기 함수
     const formatCurrency = (amount) => {
@@ -268,6 +277,24 @@ const ProductDetail = ()=>{
                             {product.productMember}
                             <FaChevronRight className="ms-4 icon-link" style={{cursor:"pointer"}}
                             onClick={e=>navigate("/member/detail/"+product.productMember)}/>
+                            <div className="row my-4">
+                                <div className="col">
+                                    <ul className="list-group list-group-horizontal">
+                                        <li className="list-group-item text-center">
+                                            <small className="text-muted mx-2">거래횟수</small>
+                                            <h5>0</h5>
+                                        </li>
+                                        <li className="list-group-item text-center">
+                                            <small className="text-muted mx-2">거래후기</small>
+                                            <h5>{review}</h5>
+                                        </li>
+                                        <li className="list-group-item text-center">
+                                            <small className="text-muted mx-4">단골</small>
+                                            <h5>0</h5>
+                                        </li>                                        
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>
