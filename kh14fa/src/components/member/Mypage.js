@@ -165,7 +165,7 @@ const MyPage = ()=>{
                         </div>
                         <div className="row">
                             <div className="col">
-                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas2">
+                                <button className="btn me-3" type="button" /*data-bs-toggle="offcanvas" data-bs-target="#offcanvas2"*/ onClick={e=>toast.warning("미구현 기능")}>
                                     구매 내역
                                 </button>
                             </div>
