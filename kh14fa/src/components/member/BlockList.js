@@ -40,6 +40,7 @@ const BlockList = ()=>{
             endRow : page * size
         });
     },[page,size]);
+    
     useEffect(()=>{
         // console.log(input.beginRow,input.endRow);
         if(page === null) setFirstPage(); // 초기상태
@@ -50,6 +51,7 @@ const BlockList = ()=>{
             loadMoreBlockList();
         }
     },[input.beginRow, input.endRow]);
+
     // 스크롤 관련된 처리
     useEffect(()=>{
         if(page === null) return; // 결과를 검색하지 않았을 때
@@ -80,6 +82,7 @@ const BlockList = ()=>{
         setResult(response.data);
         loading.current = false;
     },[input]);
+
     const loadMoreBlockList = useCallback(async()=>{
         loading.current = true;
         const response = await axios.post("/member/block/list", input);
@@ -90,12 +93,14 @@ const BlockList = ()=>{
         });
         loading.current = false;
     },[input.beginRow, input.endRow]);
+
     const setFirstPage = useCallback(()=>{
         setPage(prev=>null);
         setTimeout(()=>{
             setPage(prev=>1);
         }, 1); // 이 코드는 1ms 뒤에 실행해라
     },[page]);
+
     // - 스크롤의 현재 위치를 퍼센트로 계산하는 함수(Feat.ChatGPT)
     const getScrollPercent = useCallback(()=>{
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -103,6 +108,7 @@ const BlockList = ()=>{
         const scrollPercent = (scrollTop / documentHeight) * 100;
         return scrollPercent;
     },[]);
+
     const goBack = useCallback(()=>{
         navigate(-1);
     },[]);
