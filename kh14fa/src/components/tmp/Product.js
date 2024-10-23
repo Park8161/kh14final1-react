@@ -10,7 +10,7 @@ const Product = ()=>{
         <>
         <Routes>
             {/* <Route path="/autocomplete" element={<AutoComplete/>} /> */}
-            <Route path="/tempInsert" element={<ProductInsert/>}></Route>
+            <Route path="/insert" element={<ProductInsert/>}></Route>
             <Route path="/list" element={<ProductList/>}></Route>
             <Route path="/detail/:productNo" element={<ProductDetail/>}> </Route>
             <Route path="/edit/:productNo" element={<ProductEdit/>}></Route>
