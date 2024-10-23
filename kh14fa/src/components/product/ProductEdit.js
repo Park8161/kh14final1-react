@@ -3,7 +3,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { FaChevronRight } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { MdCancel } from "react-icons/md";
 import { Carousel } from "bootstrap";
+import { FaArrowRotateLeft } from "react-icons/fa6";
 
 const ProductEdit = () => {
     // navigate
@@ -30,7 +32,13 @@ const ProductEdit = () => {
     //파일 선택 Ref
     const inputFileRef = useRef(null);
 
-    const [attachImages, setAttachImages] = useState([]);
+
+    //const [attachDeleteList, setAttachDeleteList] = useState([]);//구현 안된기능 state 삭제된 추가첨부사진이미지
+    //const [attachImageValue, setAttachImageValue] = useState([]);//구현 안된기능 state  선택된파일에 담겨있는 값
+    
+    const [attachImages, setAttachImages] = useState([]);//보낼 추가첨부사진이미지
+    const [updateFileList, setUpdateFileList] = useState([]);
+
     const [loadImages, setLoadImages] = useState([]);
     //카테고리
     const [category, setCategory] = useState([]);
@@ -55,6 +63,7 @@ const ProductEdit = () => {
                 ...prevInput,
                 attachList: files
             }));
+            //setAttachImageValue(files);
             // 이미지 미리보기
             const imageUrls = files.map(file => {
                 const reader = new FileReader();
@@ -85,7 +94,6 @@ const ProductEdit = () => {
     const loadGetProduct = useCallback(async () => {
         const resp = await axios.get(`/product/detail/${productNo}`);
         console.log("API 응답:", resp.data);
-        const categoryData = [resp.data.categoryNameVO];
 
         setInput(prevInput => ({
             ...prevInput,
@@ -109,16 +117,23 @@ const ProductEdit = () => {
         setGroup3(resp.data.productDto.productCategory);
     }, [input]);
 
-    //수정 axios
+    //수정 axios -> 선택된 파일이 가짐
     const saveProduct = useCallback(async () => {
-        console.log(input);
         const formData = new FormData();
+        console.log("전송할 파일 목록:", updateFileList); // 상태 확인
         const fileList = inputFileRef.current.files;
-
+        
         for (let i = 0; i < fileList.length; i++) {
             formData.append("attachList", fileList[i]);
         }
+
+        //구현 안된기능
+        // const fileList = attachImageValue;
+        // updateFileList.forEach(file => {
+        //     formData.append("attachList", file); // FormData에 추가
+        // });
         // input에서 직접 값 가져오기
+
         formData.append("productName", input.product.productName);
         formData.append("productCategory", input.product.productCategory);
         formData.append("productPrice", input.product.productPrice);
@@ -126,18 +141,18 @@ const ProductEdit = () => {
         formData.append("productQty", input.product.productQty);
         formData.append("productState", input.product.productState);
         formData.append("productNo", productNo);
+        formData.append("originList", loadImages);
 
-        console.log(input);
+        console.log(input, loadImages);
 
         await axios.post("/product/edit", formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
-        inputFileRef.current.value = ""
         navigate("/product/list");
         toast.success("상품 수정완료");
-    }, [input]);
+    }, [input, loadImages, updateFileList]);
 
 
     //카테고리 리스트 가져오기
@@ -192,10 +207,27 @@ const ProductEdit = () => {
         setMessage("");
     }, [input, categoryName, message, category]);
 
-    const deleteImage = useCallback((target)=>{
+    const deleteImage = useCallback((target) => {
         setDeleteList(target);
         setLoadImages(image => image.filter(image => image !== target));
-    },[deleteList,loadImages]);
+    }, [deleteList, loadImages]);
+
+    // //attachList이미지 삭제
+     const deleteAttachImage = useCallback((target)=>{
+        // 이미지 미리보기에서 삭제
+        setAttachImages(prevImages => prevImages.filter(image => image !== target));
+    
+    //     // 선택된 파일에서 삭제
+    //     setAttachImageValue(prevFiles => {
+    //         const updatedFiles = prevFiles.filter(file => file.name !== target.name);
+    //         console.log("업데이트된 파일:", updatedFiles); // 상태 확인
+    //         setUpdateFileList(updatedFiles); // 선택된 파일 목록 업데이트
+        
+    //     // input 파일 값 초기화
+    //     inputFileRef.current.value = ""; // 선택된 파일을 해제   
+    //     return updatedFiles;
+    //     });
+    }, []);
 
 
     return (<>
@@ -212,24 +244,49 @@ const ProductEdit = () => {
                 </div>
                 <div className="row mt-4">
                     <div className="col">
-                        <label>기존 이미지 파일</label>
-                        <div className="border">
-                            <button onClick={e=>setLoadImages(input.images)}>되돌리기</button>
-                        </div>
+                        <label>기존 이미지 파일     
+                            <button  className="btn btn-secondary ms-2"onClick={e => setLoadImages(input.images)}>되돌리기</button> 
+                        </label> 
                     </div>
                 </div>
+                {/*
+                <div className="row mt-4">
+                    <div className="col"> */}
+                        {/*  multiple accept -> 어떤 형식 받을건가*/}
+                        {/* {loadImages.map((image, index) => (
+                            <div key={index} style={{ position: "relative", display: "inline-block" }}>
+                                <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${image}`}
+                                    alt={`미리보기 ${index + 1}`}
+                                    style={{ maxWidth: '100px', margin: '5px', display: "block" }} />
+                                <MdCancel style={{ position: "absolute", top: "10px", right: "10px", color:"red"}}
+                                                size={20} onClick={e => deleteImage(image)}/>
+                            </div>
+                        ))}
+                    </div>
+                </div> */}
                 <div className="row mt-4">
                     <div className="col">
                         <label className="form-label">파일</label>
-                        {/*  multiple accept -> 어떤 형식 받을건가*/}
+
                         <input type="file" className="form-control" name="attachList" multiple accept="image/*"
                             onChange={targetChange} ref={inputFileRef} />
-                            {loadImages.map((image, index) => (
-                                <img key={index} src={`${process.env.REACT_APP_BASE_URL}/attach/download/${image}`} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }}
-                                    onClick={e=>deleteImage(image)} />
-                            ))}
+
                         {attachImages.map((image, index) => (
-                            <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }}/>
+                             <div key={index} style={{ position: "relative", display: "inline-block" }}>
+                                <img src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px', display: "block"  }} />
+                                <MdCancel style={{ position: "absolute", top: "10px", right: "10px", color:"red"}}
+                                                size={20} onClick={() => deleteAttachImage(image)}/>
+                            </div>
+                        ))}
+                          {/*  multiple accept -> 어떤 형식 받을건가*/}
+                          {loadImages.map((image, index) => (
+                            <div key={index} style={{ position: "relative", display: "inline-block" }}>
+                                <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${image}`}
+                                    alt={`미리보기 ${index + 1}`}
+                                    style={{ maxWidth: '100px', margin: '5px', display: "block" }} />
+                                <MdCancel style={{ position: "absolute", top: "10px", right: "10px", color:"red"}}
+                                                size={20} onClick={() => deleteImage(image)}/>
+                            </div>
                         ))}
                     </div>
                 </div>
