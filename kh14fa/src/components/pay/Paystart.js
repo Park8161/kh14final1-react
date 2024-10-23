@@ -3,8 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { NavLink } from "react-router-dom";
 
-const ChooseOption = ()=>{
 
+const Paystart = ()=>{
+    
     const {productNo} = useParams();
     const [delivery, setDelivery] = useState("");
     const [total, setTotal] = useState(0);
@@ -189,7 +190,5 @@ const ChooseOption = ()=>{
         </>
       );
     
-  
 };
-
-export default ChooseOption;
+export default Paystart;

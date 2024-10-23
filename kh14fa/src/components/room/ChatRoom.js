@@ -153,7 +153,7 @@ const ChatRoom = ()=>{
                             </div>
                             <div className="col d-flex justify-content-end"> {/* 두 번째 컬럼 */}
                                 <button type="button" className="btn btn-primary"
-                                    onClick={e=>{navigate("/Pay/chooseoption/"+productInfo.productNo)}}>
+                                    onClick={e=>{navigate("/Pay/paystart/"+productInfo.productNo)}}>
                                     구매하기
                                 </button>
                             </div>
