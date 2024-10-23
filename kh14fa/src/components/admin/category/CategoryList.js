@@ -17,7 +17,7 @@ const CategoryList = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get("/admin/category/listP");
+                const response = await axios.get("/admin/category/listP");                
                 setCategories(response.data);  // 전체 카테고리 리스트
                 setFilteredCategories(response.data); // 초기 필터된 카테고리 리스트도 전체로 설정
             } catch (error) {
@@ -182,7 +182,7 @@ const CategoryList = () => {
                 <div className="col text-center">
                     <button
                         className="btn btn-outline-primary"
-                        disabled={page === 1}
+                        disabled={page === 1 || filteredCategories.length === 0}
                         onClick={() => setPage(page - 1)}>
                         이전
                     </button>

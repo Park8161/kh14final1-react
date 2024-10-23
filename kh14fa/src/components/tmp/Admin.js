@@ -19,7 +19,7 @@ const Admin = ()=>{
             <Route path="/category/list" element={<PrivateRoute element={<CategoryList/>}/>}/>
             <Route path="/category/insert" element={<PrivateRoute element={<CategoryInsert/>}/>}/>
             <Route path="/category/remove" element={<PrivateRoute element={<CategoryRemove/>}/>}/>
-            <Route path="/category/edit" element={<PrivateRoute element={<CategoryEdit/>}/>}/>
+            <Route path="/category/edit/:categoryNo" element={<PrivateRoute element={<CategoryEdit/>}/>}/>
         </Routes>
         </>
     );
