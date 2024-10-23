@@ -300,9 +300,10 @@ const ProductDetail = ()=>{
                 </div>
             </div>
 
-            <hr/>
+            {/* <hr/> */}
 
             {/* 연관/추천 상품, 이런 상품은 어때요? */}
+            {relationList.length !== 0 && (
             <div className="row mt-4">
                 <div className="col">
                     <ul className="list-group list-group-flush">
@@ -335,6 +336,7 @@ const ProductDetail = ()=>{
                     </ul>
                 </div>
             </div>
+            )}
 
             {/* 링크 공유하기 모달 */}
             <div className="modal fade" tabIndex="-1" ref={modal} /*data-bs-backdrop="static"*/>
