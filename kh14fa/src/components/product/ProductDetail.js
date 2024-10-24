@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import { useRecoilValue } from 'recoil';
 import { memberLoadingState } from "../../utils/recoil";
 import GoChat from './../room/GoChat';
+import userImage from './userImage.jpg';
 
 const ProductDetail = ()=>{
     // navigate
@@ -28,6 +29,8 @@ const ProductDetail = ()=>{
     const [likes, setLikes] = useState(""); // 좋아요 개수
     const [productMember, setProductMember] = useState("");
     const [review, setReview] = useState(); // 판매자 리뷰 개수
+    const [reviewList, setReviewList] = useState([]); // 판매자 리뷰 목록
+    const [reviewProduct, setReviewProduct] = useState("");
 
     // ref
     const modal = useRef();
@@ -46,6 +49,7 @@ const ProductDetail = ()=>{
         loadRelation();
         checkLikes();
         countReview(response.data.productDto.productMember);
+        loadReview(response.data.productDto.productMember);
     },[product]);
 
     // 연관 상품 목록 불러오기
@@ -108,11 +112,14 @@ const ProductDetail = ()=>{
         setReview(response.data);
     },[review]);
 
-    // GPT 이용해서 만든 숫자에 콤마 찍기 함수
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('ko-KR').format(amount);
-    };
-
+    // 판매자 거래 후기 목록 불러오기
+    const loadReview = useCallback(async(productMember)=>{
+        const response = await axios.get("/review/list/"+productMember);
+        console.log(response.data);
+        setReviewList(response.data);
+    },[reviewList]);
+    
+    // 채팅방 이동하기
     const goChat = useCallback(async()=>{
         try{
             const resp = await axios.post("/room/"+productNo);
@@ -124,6 +131,11 @@ const ProductDetail = ()=>{
             console.log("Error creating or retrieving chat room:");
         }
     },[productNo]);
+    
+    // GPT 이용해서 만든 숫자에 콤마 찍기 함수
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('ko-KR').format(amount);
+    };
     
     // view
     return(
@@ -277,20 +289,46 @@ const ProductDetail = ()=>{
                             {product.productMember}
                             <FaChevronRight className="ms-4 icon-link" style={{cursor:"pointer"}}
                             onClick={e=>navigate("/member/detail/"+product.productMember)}/>
-                            <div className="row my-4">
+                            <div className="row mt-4">
                                 <div className="col">
-                                    <ul className="list-group list-group-horizontal">
+                                    <ul className="list-group list-group-horizontal" style={{maxHeight:"75px"}}>
                                         <li className="list-group-item text-center">
-                                            <small className="text-muted mx-2">거래횟수</small>
-                                            <h5>0</h5>
+                                            <div className="row">
+                                                <div className="col">
+                                                    <small className="text-muted mx-2">거래횟수</small>
+                                                </div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="col mt-1">
+                                                    <h5>0</h5>
+                                                </div>
+                                            </div>                                            
                                         </li>
                                         <li className="list-group-item text-center">
-                                            <small className="text-muted mx-2">거래후기</small>
-                                            <h5>{review}</h5>
+                                            <div className="row">
+                                                <div className="col">
+                                                    <small className="text-muted mx-2">거래후기</small>
+                                                </div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="col">
+                                                    <button className="btn btn-link btn-sm text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas1">
+                                                        <h5>{review}</h5>
+                                                    </button> 
+                                                </div>
+                                            </div>
                                         </li>
                                         <li className="list-group-item text-center">
-                                            <small className="text-muted mx-4">단골</small>
-                                            <h5>0</h5>
+                                            <div className="row">
+                                                <div className="col">
+                                                    <small className="text-muted mx-4">단골</small>
+                                                </div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="col mt-1">
+                                                    <h5>0</h5>
+                                                </div>
+                                            </div>                                          
                                         </li>                                        
                                     </ul>
                                 </div>
@@ -373,6 +411,50 @@ const ProductDetail = ()=>{
                         </div> */}
 
                     </div>
+                </div>
+            </div>
+            
+            {/* 거래 후기 목록 */}
+            <div className="offcanvas offcanvas-end" data-bs-scroll="true" tabIndex="-1" id="offcanvas1" aria-labelledby="offcanvas1Label">
+                <div className="offcanvas-header">
+                    <h5 className="offcanvas-title" id="offcanvas1Label">거래 후기</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div className="offcanvas-body">
+                <p>{product.productMember}님에 대한 거래 후기</p>
+                {reviewList.map((review)=>(
+                    <div className="row mt-4" key={review.reviewNo}>
+                        <div className="col">
+                            <div className="row">
+                                <div className="col-2 mt-2">
+                                    <img src={userImage} className="rounded-circle" style={{width:"60px",height:"60px"}}/>
+                                </div>
+                                <div className="col-10">
+                                    <div className="row" onClick={e=>navigate("/member/detail/"+review.reviewWriter)} data-bs-dismiss="offcanvas" aria-label="Close">
+                                        <div className="col">
+                                            {review.reviewWriter}
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <small className="text-muted">{"구매자 | "+review.reviewWtime}</small>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <small className="text-muted">{"구매상품 | "+review.productName}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row mt-2">
+                                <div className="col">
+                                    <input className="form-control bg-light border-0" value={review.reviewContent} disabled/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
                 </div>
             </div>
             

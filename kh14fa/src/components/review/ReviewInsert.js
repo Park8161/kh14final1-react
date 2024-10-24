@@ -60,8 +60,8 @@ const ReviewInsert = ()=>{
             toast.error("내용을 작성해주세요");
             return;
         }
-        else if(input.reviewContent.length > 1000) {
-            toast.error("1000자 글자 제한");
+        else if(input.reviewContent.length > 100) {
+            toast.error("100자 글자 제한");
             return;
         }
         setInput({
@@ -155,10 +155,10 @@ const ReviewInsert = ()=>{
                         <div className="col">
                             <h5 className="mt-3 mb-0">따뜻한 거래 경험을 알려주세요!</h5>
                             <small className="text-muted">남겨주신 거래 후기는 상대방의 프로필에 공개돼요</small>
-                            <textarea className="form-control mt-2" style={{height:"100px",resize:"none"}} placeholder="여기에 적어주세요(1000자 제한)"
+                            <textarea className="form-control mt-2" style={{height:"100px",resize:"none"}} placeholder="여기에 적어주세요(100자 제한)"
                                     name="reviewContent" value={input.reviewContent} onInput={changeInput}></textarea>
                         </div>
-                        <span className="text-end">{input.reviewContent.length}/1000</span>
+                        <span className="text-end">{input.reviewContent.length}/100</span>
                     </div>
 
                     <div className="row mt-4 mb-4 ">
