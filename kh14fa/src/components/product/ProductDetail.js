@@ -115,7 +115,7 @@ const ProductDetail = ()=>{
     // 판매자 거래 후기 목록 불러오기
     const loadReview = useCallback(async(productMember)=>{
         const response = await axios.get("/review/list/"+productMember);
-        console.log(response.data);
+        // console.log(response.data);
         setReviewList(response.data);
     },[reviewList]);
     
