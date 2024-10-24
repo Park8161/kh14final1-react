@@ -71,7 +71,7 @@ const PayList = ()=>{
                                                 onClick={e=>confirmBuy(payment.paymentNo)}>구매확정</button>
                                         </div>
                                         <div className="text-end mb-2">
-                                            <NavLink to={`/Review/insert/${payment.productNo}`} className="btn btn-secondary w-100">구매취소</NavLink>
+                                            <NavLink to={``} className="btn btn-secondary w-100">구매취소</NavLink>
                                         </div>
                                     </div>
                                 )}
