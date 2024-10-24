@@ -6,7 +6,7 @@ import { FaRegHeart } from "react-icons/fa";
 import Carousel from 'react-bootstrap/Carousel';
 import { useNavigate } from "react-router";
 import { throttle } from "lodash";
-
+import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 
 const ProductList = () => {
   // navigate
@@ -116,6 +116,24 @@ const ProductList = () => {
   // ref - 로딩중에 추가로딩이 불가능하게 처리
   const loading = useRef(false);
 
+  // callback
+  const changeInput = useCallback(e=>{
+    setInput({
+        ...input,
+        [e.target.name] : e.target.value
+    });
+  },[input]);
+
+  const clearInput = useCallback(()=>{
+    setInput({
+      column : "",
+      keyword : "",
+      beginRow : "",
+      endRow : ""
+    });
+    setFirstPage();
+  },[input]);
+
   // GPT 이용해서 만든 숫자에 콤마 찍기 함수
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('ko-KR').format(amount);
@@ -177,6 +195,30 @@ const ProductList = () => {
       </Carousel.Item>
     </div>
     </div> */}
+
+    {/* 검색창 */}
+    <div className="row">
+      <div className="col">
+      <div className="input-group">
+        <div className="col-3">
+            <select className="form-select" name="column" value={input.column} onChange={changeInput}>
+                <option value="">선택</option>  
+                <option value="product_name">상품명</option>
+                <option value="product_member">판매자</option>
+            </select>
+        </div>
+        <div className="col-7">
+            <input type="search" className="form-control" name="keyword" value={input.keyword} onChange={changeInput} />
+        </div>
+        <div className="col-2">
+            <button type="button" className="btn btn-secondary w-100" onClick={loadProductList}>
+                <FaMagnifyingGlass />
+                검색
+            </button>
+        </div>
+    </div>
+      </div>
+    </div>
 
 
     {/* 상품 목록 */} 
