@@ -111,7 +111,6 @@ const NoticeList = () => {
                                     <th>제목</th>
                                     <th>분류</th>
                                     <th>작성자</th>
-                                    <th>내용</th>
                                     <th>작성일</th>
                                     <th>수정일</th>
                                     <th>조회수</th>
@@ -128,7 +127,6 @@ const NoticeList = () => {
                                         </td>
                                         <td>{n.noticeType}</td>
                                         <td>{n.noticeWriter}</td>
-                                        <td>{n.noticeContent}</td>
                                         <td>{n.noticeWtime}</td>
                                         <td>{n.noticeUtime}</td>
                                         <td>{n.noticeViews}</td>

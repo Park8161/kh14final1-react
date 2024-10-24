@@ -2,71 +2,92 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import Jumbotron from "../Jumbotron";
+import { toast } from "react-toastify";
+import { FaAsterisk } from "react-icons/fa6";
 
-const QnaEdit =()=>{
-    const { qnaNo } = useParams();
+const QnaEdit = () => {
+    //navigate
     const navigate = useNavigate();
 
+    const {qnaNo} = useParams();
+
     //state
-    const [qna, setQna] = useState(null);
+    const [qna, setQna] = useState({});
+    const [edit, setEdit] = useState({
+        qnaType: "",
+        qnaTitle: "",
+        qnaContent: "",
+    });
 
     //effect
-    useEffect(()=>{
+    useEffect(() => {
         loadQna();
     }, []);
-    
+
     //callback
-    const loadQna = useCallback(async ()=>{
-        try{
-            const resp = await axios.get("/qna/", qnaNo);
-            setQna(resp.data);
-        }
-        catch(e){
-            setQna(null);
-        }
-    }, [qna, qnaNo]);
+    const loadQna = useCallback(async () => {
+        const resp = await axios.get("/qna/detail/" + qnaNo);
+        setEdit(resp.data);
+    }, [qna, edit]);
+    const returnBack = useCallback(() => {
+        navigate(-1);
+    }, []); 
+    const goQnaEdit = useCallback(async () => {
+        const resp = await axios.put("/qna/edit/"+qnaNo, edit);
+        navigate("/qna/list");
 
-    const changeQna = useCallback(e=>{
-        setQna({
-            ...qna,
-            [e.target.name] : e.target.value
+        //알림코드
+        toast.success("게시글 수정 완료!");
+    }, [edit]);
+    const changeEdit = useCallback((e) => {
+        setEdit({
+            ...edit,
+            [e.target.name]: e.target.value
         });
-    }, [qna]);
-
-    const editQna = useCallback(async ()=>{
-        await axios.put("", qna);
-        navigate("/qna/detail" + qnaNo);//상세
-    }, [qna]);
+    }, [edit]);
 
     //view
-    return (qna !== null ? (<>
-        <Jumbotron title={qna.qnaNo+"번 Qna 수정"}/>
+    return (
+        <>
+            <Jumbotron title={`${edit.qnaWriter}의 게시글`} content="게시글 수정" />
 
-        <div className="row mt-4">
-            <div className="col">
-                <label>종류0</label>
-                <input type="text" name="qnaType" className="form-control"
-                    value={qna.qnaType} onChange={changeQna}/>
-            </div>
-        </div>
+            <div className="row mt-4">
+            <div className="col-3">분류<FaAsterisk className="text-danger" /></div> 
+                        <select type="text" className="form-control" placeholder="분류"
+                            name="qnaType" value={edit.qnaType} onChange={changeEdit}>
+                            <option value="">선택하세요</option>
+                    <option>일반문의</option>
+                    <option>거래문의</option>
+                    <option>사이트오류</option>
+                    <option>차단문의</option>
+                    <option>기타</option>
+                    </select>
+                    </div>
 
-        <div className="row mt-4">
-            <div className="col">
-                <label>내용</label>
-                <input type="text" name="qnaContent" className="form-control"
-                    value={qna.qnaContent} onChange={changeQna}/>
-            </div>
-        </div>
+                <div className="row mt-4">
+                <div className="col-3">제목<FaAsterisk className="text-danger" /></div>
+                    <input className="form-control" placeholder="제목"
+                        name="qnaTitle" value={edit.qnaTitle} onChange={changeEdit}></input>
+                </div>
+                <div className="row mt-4">
+                    <div className="col-3">내용<FaAsterisk className="text-danger" /></div>
+                        <textarea className="form-control" placeholder="내용"
+                            name="qnaContent" value={edit.qnaContent} onChange={changeEdit}  rows={15}
+                            style={{ resize : 'none'}} />
+                </div>
 
-        <div className="row mt-4">
-            <div className="col text-center">
-                <button type="button" className="btn btn-lg btn-success"
-                    onClick={editQna}>수정</button>
-                <button type="button" className="btn btn-lg btn-success"
-                    onClick={navigate("/qna/list")}>목록</button>
-            </div>
-        </div>
-    </>) : (<></>));
+                <div className="row mt-4 text-end">
+                    <div className="col mt-4">
+                        <button className="btn btn-danger me-3" onClick={returnBack}>
+                            돌아가기
+                        </button>
+                        <button className="btn btn-info" onClick={goQnaEdit} >
+                            수정하기
+                        </button>
+                    </div>
+                </div>
+        </>
+
+    );
 };
-
 export default QnaEdit;

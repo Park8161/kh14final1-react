@@ -68,10 +68,10 @@ const NoticeInsert = () => {
     </div>
 
         <div className="row mt-4">
-            <div className="col text-center">
-                <button type="button" className="btn btn-lg btn-success"
+            <div className="col mt-4">
+                <button type="button" className="btn btn-success me-3"
                     onClick={saveNotice}>등록</button>
-                <button type="button" className="btn btn-lg btn-secondary ms-2"
+                <button type="button" className="btn btn-secondary"
                     onClick={e => navigate("/notice/list")}>목록</button>
             </div>
         </div>

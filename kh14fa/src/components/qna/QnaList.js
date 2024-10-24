@@ -1,9 +1,8 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Jumbotron from "../Jumbotron";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
-import { GoPencil } from "react-icons/go";
 
 const QnaList = () => {
     const [qna, setQna] = useState([]); // 전체 공지사항 리스트
@@ -15,30 +14,20 @@ const QnaList = () => {
 
     const navigate = useNavigate();
 
-    // 공지사항 목록을 불러오는 API 호출
     useEffect(() => {
-        // const fetchQnas = async () => {
-        //     try {
-        //         const response = await axios.get('http://localhost:8080/qna/list');
-        //         setQna(response.data);
-        //         setFilteredQna(response.data); // 초기 필터된 공지사항 리스트도 전체로 설정
-        //     } catch (error) {
-        //         console.error("Error fetching qna data", error);
-        //     }
-        // };
+        const fetchQnas = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/qna/list');
+                setQna(response.data);
+                setFilteredQna(response.data); // 초기 필터된 공지사항 리스트도 전체로 설정
+            } catch (error) {
+                console.error("Error fetching qna data", error);
+            }
+        };
 
         fetchQnas();
     }, []);
 
-    const fetchQnas = useCallback( async () => {
-        try {
-            const response = await axios.get('http://localhost:8080/qna/list');
-            setQna(response.data);
-            setFilteredQna(response.data); // 초기 필터된 공지사항 리스트도 전체로 설정
-        } catch (error) {
-            console.error("Error fetching qna data", error);
-        }
-    },[qna, filteredQna]);
 
 
     // 공지사항 정렬 (최근 글이 위로)
@@ -51,14 +40,7 @@ const QnaList = () => {
         return sortedFilteredQna.slice(startIndex, endIndex);
     };
 
-    // 공지사항 삭제 처리
-    const deleteQna = useCallback(async(qna)=>{
-        const choice = window.confirm("정말 삭제하시겠습니까?");
-        // if(choice == false) return;
 
-        await axios.delete("http://localhost/qna/" + qna.qnaNo);
-        fetchQnas();
-    })
 
     // 검색 기능 실행
     const searchQnaList = () => {
@@ -75,7 +57,7 @@ const QnaList = () => {
 
     return (
         <>
-            <Jumbotron title="1:1문의 게시글" />
+            <Jumbotron title="1:1문의 게시글" content="목록" />
             {/* 검색창 */}
             <div className="row mt-4">
                 <div className="col">
@@ -120,7 +102,6 @@ const QnaList = () => {
                                     <th>제목</th>
                                     <th>분류</th>
                                     <th>작성자</th>
-                                    <th>내용</th>
                                     <th>작성일</th>
                                     <th>수정일</th>
                                     <th>조회수</th>
@@ -137,14 +118,9 @@ const QnaList = () => {
                                         </td>
                                         <td>{q.qnaType}</td>
                                         <td>{q.qnaWriter}</td>
-                                        <td>{q.qnaContent}</td>
                                         <td>{q.qnaWtime}</td>
                                         <td>{q.qnaUtime}</td>
                                         <td>{q.qnaViews}</td>
-                                        <td>
-                                            <GoPencil className="text-warning"
-                                                onClick={e=>deleteQna(qna)}/>
-                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
