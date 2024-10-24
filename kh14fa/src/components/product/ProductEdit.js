@@ -312,7 +312,7 @@ const ProductEdit = () => {
                     </div>
                 </div>
                 <div className="row mt-2">
-                    <div className="col-3">
+                    <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
                         {category.filter(category => category.categoryDepth === 1).map((cat) => (
                             <ul className="list-group" key={cat.categoryNo}>
                                 <li className={"list-group-item list-group-item-action " + (group1 === cat.categoryNo && "bg-secondary text-light")}
@@ -322,7 +322,7 @@ const ProductEdit = () => {
                             </ul>
                         ))}
                     </div>
-                    <div className="col-3">
+                    <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
                         {category.filter(category => (category.categoryDepth === 2 && category.categoryGroup === group1)).map((cat) => (
                             <ul className="list-group" key={cat.categoryNo}>
                                 <li className={"list-group-item list-group-item-action " + (group2 === cat.categoryNo && "bg-secondary text-light")}
@@ -332,7 +332,7 @@ const ProductEdit = () => {
                             </ul>
                         ))}
                     </div>
-                    <div className="col-3">
+                    <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
                         {category.filter(category => (category.categoryDepth === 3 && category.categoryGroup === group1 && category.categoryUpper === group2)).map((cat) => (
                             <ul className="list-group" key={cat.categoryNo}>
                                 <li className={"list-group-item list-group-item-action " + (group3 === cat.categoryNo && "bg-secondary text-light")}
