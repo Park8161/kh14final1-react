@@ -10,6 +10,7 @@ import { IoMdClose } from "react-icons/io";
 import { FaAsterisk } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import userImage from '../product/userImage.jpg';
+import { CiEdit } from "react-icons/ci";
 
 const MyPage = ()=>{
     // navigate
@@ -18,6 +19,8 @@ const MyPage = ()=>{
     // ref
     const modal = useRef();
     const DPmodal = useRef();
+    const deleteReviewModal = useRef();
+    const editReviewModal = useRef();
 
     //state
     const [member, setMember] = useState({});
@@ -39,6 +42,7 @@ const MyPage = ()=>{
     const [product, setProduct] = useState([]);
     const [images, setImages] = useState([]);
     const [reviewList, setReviewList] = useState([]);
+    const [review, setReview] = useState([]);
     const [edit, setEdit] = useState({
         reviewNo : "",
         reviewContent : ""
@@ -99,14 +103,27 @@ const MyPage = ()=>{
     },[reviewList]);
 
     // 리뷰 삭제
-    const deleteReview = useCallback(async()=>{
-        const response = await axios.delete("/review/"+reviewList.reviewNo);
-    },[reviewList]);
+    const deleteReview = useCallback(async(reviewNo)=>{
+        const response = await axios.delete("/review/"+reviewNo);
+        toast.error("거래 후기 삭제 완료");
+        closeDRModal();
+        loadReview();
+    },[]);
 
     // 리뷰 수정
     const editReview = useCallback(async()=>{
-        const response = await axios.post("/review/update", edit);
-    },[reviewList, edit]);
+        const response = await axios.put("/review/update", edit);
+        toast.info("거래 후기 수정 완료");
+        closeERModal();
+        loadReview();
+    },[edit]);
+
+    const changeEdit = useCallback((e)=>{
+        setEdit({
+            ...edit,
+            [e.target.name] : e.target.value
+        });
+    },[edit]);
 
     const clearCollapse = useCallback(()=>{
         setCollpase({
@@ -164,6 +181,31 @@ const MyPage = ()=>{
         var tag = Modal.getInstance(DPmodal.current);
         tag.hide();
     },[DPmodal]);
+
+    // 리뷰 삭제 모달
+    const openDRModal = useCallback((review)=>{
+        const tag = Modal.getOrCreateInstance(deleteReviewModal.current);
+        tag.show();
+        setReview(review);
+    },[deleteReviewModal]);
+
+    const closeDRModal = useCallback(()=>{
+        var tag = Modal.getInstance(deleteReviewModal.current);
+        tag.hide();
+    },[deleteReviewModal]);
+
+    // 리뷰 수정 모달
+    const openERModal = useCallback((review)=>{
+        const tag = Modal.getOrCreateInstance(editReviewModal.current);
+        tag.show();
+        setEdit(review);
+    },[editReviewModal]);
+
+    const closeERModal = useCallback(()=>{
+        var tag = Modal.getInstance(editReviewModal.current);
+        tag.hide();
+    },[editReviewModal]);
+
 
     // 인증회원 이상이 이메일 인증할 경우 튕겨내기용 함수
     const alreadyCert = useCallback(()=>{
@@ -697,15 +739,72 @@ const MyPage = ()=>{
 
         {/* 내가 쓴 거래 후기 목록 */}
         <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas4" aria-labelledby="offcanvas4Label">
-                <div className="offcanvas-header">
-                    <h5 className="offcanvas-title" id="offcanvas4Label">거래 후기</h5>
-                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div className="offcanvas-body">
+            <div className="offcanvas-header">
+                <h5 className="offcanvas-title" id="offcanvas4Label">거래 후기</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div className="offcanvas-body">
                 <p>{member.memberId}님이 쓴 거래 후기</p>
                 {reviewList.map((review)=>(
-                    <div className="row mt-4" key={review.reviewNo}>
-                        <div className="col">
+                <div className="row mt-4" key={review.reviewNo}>
+                    <div className="col">
+                        <div className="row">
+                            <div className="col-2 mt-2">
+                                <img src={userImage} className="rounded-circle" style={{width:"60px",height:"60px"}}/>
+                            </div>
+                            <div className="col-10">
+                                <div className="row">
+                                    <div className="col">
+                                        {review.reviewWriter}
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col">
+                                        <small className="text-muted">{"구매일시 | "+review.reviewWtime}</small>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col">
+                                        <small className="text-muted">{"구매상품 | "+review.productName}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row mt-2">
+                            <div className="col input-group">
+                                <input className="form-control bg-light border-0" value={review.reviewContent} disabled/>
+                                <button className="btn btn-info text-light btn-sm" onClick={e=>openERModal(review)}>수정</button>
+                                <button className="btn btn-danger btn-sm" onClick={e=>openDRModal(review)}>삭제</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ))}
+            </div>
+        </div>
+
+        {/* 리뷰 삭제 모달 */}
+        <div className="modal fade" tabIndex="-1" ref={deleteReviewModal} data-bs-backdrop="static">
+            <div className="modal-dialog">
+                <div className="modal-content">
+
+                    {/* 모달 헤더 - 제목, x버튼 */}
+                    <div className="modal-header">
+                        <p className="modal-title">거래 후기 삭제</p>
+                        <button type="button" className="btn-close btn-manual-close" onClick={closeDRModal}/>
+                    </div>
+
+                    {/* 모달 본문 */}
+                    <div className="modal-body">
+                        {/* 모달은 나중에 만들고 모달 내부에 있을 화면만 구현 */}
+                        <div className="row mt-4">
+                            <div className="col d-flex justify-content-center align-items-center">
+                                <FaAsterisk className="text-danger" />
+                                거래 후기가 삭제됩니다 다시 한번 확인하세요
+                                <FaAsterisk className="text-danger" />
+                            </div>     
+                        </div>
+                        <div className="border m-4">
                             <div className="row">
                                 <div className="col-2 mt-2">
                                     <img src={userImage} className="rounded-circle" style={{width:"60px",height:"60px"}}/>
@@ -718,7 +817,7 @@ const MyPage = ()=>{
                                     </div>
                                     <div className="row">
                                         <div className="col">
-                                            <small className="text-muted">{"구매자 | "+review.reviewWtime}</small>
+                                            <small className="text-muted">{"구매일시 | "+review.reviewWtime}</small>
                                         </div>
                                     </div>
                                     <div className="row">
@@ -727,19 +826,95 @@ const MyPage = ()=>{
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="row mt-2">
-                                <div className="col input-group">
-                                    <input className="form-control bg-light border-0" value={review.reviewContent} disabled/>
-                                    <button className="btn btn-info text-light btn-sm" onClick={editReview}>수정</button>
-                                    <button className="btn btn-danger btn-sm" onClick={deleteReview}>삭제</button>
+                                <div className="row pe-0">
+                                    <div className="col pe-0">
+                                        <input className="form-control bg-light border-0 pe-0" value={review.reviewContent} disabled/>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            </div> 
+                        </div> 
                     </div>
-                ))}
+
+                    {/* 모달 푸터 - 종료, 확인, 저장 등 각종 버튼 */}
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={closeDRModal}>
+                            닫기<IoMdClose className="ms-1 btn-lg-white"/>
+                        </button>
+                        <button type="button" className="btn btn-danger" onClick={e=>deleteReview(review.reviewNo)}>
+                            삭제<MdDeleteForever className="ms-1"/>
+                        </button>
+                    </div>
+
                 </div>
             </div>
+        </div>
+
+        {/* 리뷰 수정 모달 */}
+        <div className="modal fade" tabIndex="-1" ref={editReviewModal} data-bs-backdrop="static">
+            <div className="modal-dialog">
+                <div className="modal-content">
+
+                    {/* 모달 헤더 - 제목, x버튼 */}
+                    <div className="modal-header">
+                        <p className="modal-title">거래 후기 수정</p>
+                        <button type="button" className="btn-close btn-manual-close" onClick={closeDPModal}/>
+                    </div>
+
+                    {/* 모달 본문 */}
+                    <div className="modal-body">
+                        {/* 모달은 나중에 만들고 모달 내부에 있을 화면만 구현 */}
+                        {/* <div className="row">
+                            <div className="col d-flex justify-content-center align-items-center">
+                                <FaAsterisk className="text-danger" />
+                                상품 정보가 삭제됩니다 다시 한번 확인하세요
+                                <FaAsterisk className="text-danger" />
+                            </div>                                
+                        </div> */}
+                        <div className="border m-4">
+                            <div className="row">
+                                <div className="col-2 mt-2">
+                                    <img src={userImage} className="rounded-circle" style={{width:"60px",height:"60px"}}/>
+                                </div>
+                                <div className="col-10">
+                                    <div className="row">
+                                        <div className="col">
+                                            {edit.reviewWriter}
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <small className="text-muted">{"구매일시 | "+edit.reviewWtime}</small>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <small className="text-muted">{"구매상품 | "+edit.productName}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row pe-0">
+                                    <div className="col pe-0">
+                                        <input className="form-control bg-light border-0 pe-0" value={edit.reviewContent} name="reviewContent" onInput={changeEdit} />
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>   
+                    </div>
+
+                    {/* 모달 푸터 - 종료, 확인, 저장 등 각종 버튼 */}
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={closeERModal}>
+                            닫기<IoMdClose className="ms-1 btn-lg-white"/>
+                        </button>
+                        <button type="button" className="btn btn-info text-light" onClick={e=>editReview(edit.reviewNo)}>
+                            수정<CiEdit className="ms-1"/>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
                 
     </>);
 };
