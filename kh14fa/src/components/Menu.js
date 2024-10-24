@@ -80,7 +80,7 @@ const Menu = () => {
                                     aria-haspopup="true" aria-expanded="false">상품</a>
                                 <div className="dropdown-menu">
                                     <NavLink className="dropdown-item" to="/product/list">상품목록</NavLink>
-                                    <NavLink className="dropdown-item" to="/product/tempInsert">상품등록</NavLink>
+                                    <NavLink className="dropdown-item" to="/product/insert">상품등록</NavLink>
                                 </div>
                             </li>
                             <li className="nav-item dropdown">

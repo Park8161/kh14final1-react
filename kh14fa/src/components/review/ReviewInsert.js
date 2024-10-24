@@ -163,7 +163,7 @@ const ReviewInsert = ()=>{
 
                     <div className="row mt-4 mb-4 ">
                         <div className="col text-end">
-                            <button className="btn btn-danger me-2" onClick={e=>navigate(-1)}>돌아가기</button>
+                            <button className="btn btn-danger me-2" onClick={e=>navigate("/member/mypage")}>돌아가기</button>
                             <button className="btn btn-success me-2" onClick={insertReview}>작성하기</button>
                         </div>
                     </div>
