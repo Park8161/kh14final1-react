@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Jumbotron from "../Jumbotron";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -7,31 +7,35 @@ import { NavLink, useNavigate } from "react-router-dom";
 const QnaList = () => {
     const [qna, setQna] = useState([]); // 전체 공지사항 리스트
     const [filteredQna, setFilteredQna] = useState([]); // 검색 필터된 공지사항 리스트
-    const [column, setColumn] = useState('qna_title');
-    const [keyword, setKeyword] = useState('');
+    const [column, setColumn] = useState("");
+    const [keyword, setKeyword] = useState("");
     const [page, setPage] = useState(1); // 현재 페이지
     const [pageSize, setPageSize] = useState(10); // 한 페이지 당 항목 수
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchQnas = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/qna/list');
-                setQna(response.data);
-                setFilteredQna(response.data); // 초기 필터된 공지사항 리스트도 전체로 설정
-            } catch (error) {
-                console.error("Error fetching qna data", error);
-            }
-        };
-
-        fetchQnas();
+        loadQnaList();
     }, []);
 
+    // 기본적인 리스트 불러오기 (검색X)
+    const loadQnaList = useCallback(async()=>{
+        const response = await axios.get("/qna/list");
+        setQna(response.data);
+    },[qna]);
 
+    // 검색기능 있는 리스트
+    const searchQnaList = useCallback(async()=>{
+        // column, keyword가 없다면 차단
+        if(column.trim().length === 0) return loadQnaList();
+        if(keyword.trim().length === 0) return loadQnaList();
+
+        const response = await axios.get(`/qna/list/column/${encodeURIComponent(column)}/keyword/${encodeURIComponent(keyword)}`);
+        setQna(response.data);
+    },[column,keyword]);
 
     // 공지사항 정렬 (최근 글이 위로)
-    const sortedFilteredQna = [...filteredQna].sort((a, b) => new Date(b.qnaWtime) - new Date(a.qnaWtime));
+    const sortedFilteredQna = [...qna].sort((a, b) => new Date(b.qnaWtime) - new Date(a.qnaWtime));
 
     // 페이지 
     const getPagedQna = () => {
@@ -40,20 +44,18 @@ const QnaList = () => {
         return sortedFilteredQna.slice(startIndex, endIndex);
     };
 
-
-
     // 검색 기능 실행
-    const searchQnaList = () => {
-        if (keyword.trim() === "") {
-            setFilteredQna(qna); // 검색어가 없으면 전체 공지사항으로 복원
-        } else {
-            const filtered = qna.filter(qn => {
-                return qn[column] && qn[column].toString().toLowerCase().includes(keyword.toLowerCase());
-            });
-            setFilteredQna(filtered); // 필터된 공지사항 리스트 업데이트
-        }
-        setPage(1); // 검색 시 첫 페이지로 돌아가도록 설정
-    };
+    // const searchQnaList = () => {
+        // if (keyword.trim() === "") {
+        //     setFilteredQna(qna); // 검색어가 없으면 전체 공지사항으로 복원
+        // } else {
+        //     const filtered = qna.filter(qn => {
+        //         return qn[column] && qn[column].toString().toLowerCase().includes(keyword.toLowerCase());
+        //     });
+        //     setFilteredQna(filtered); // 필터된 공지사항 리스트 업데이트
+        // }
+        // setPage(1); // 검색 시 첫 페이지로 돌아가도록 설정
+    // };
 
     return (
         <>
@@ -63,13 +65,14 @@ const QnaList = () => {
                 <div className="col">
                     <div className="input-group">
                         <div className="col-3">
-                            <select className="form-select" value={column} onChange={e => setColumn(e.target.value)}>
+                            <select className="form-select" name="column" value={column} onChange={e => setColumn(e.target.value)}>
+                                <option value="">선택</option>  
                                 <option value="qna_title">제목</option>
                                 <option value="qna_type">분류</option>
                             </select>
                         </div>
                         <div className="col-7">
-                            <input type="text" className="form-control" value={keyword} onChange={e => setKeyword(e.target.value)} />
+                            <input type="search" className="form-control" name="keyword" value={keyword} onChange={e => setKeyword(e.target.value)} />
                         </div>
                         <div className="col-2">
                             <button type="button" className="btn btn-secondary w-100" onClick={searchQnaList}>
