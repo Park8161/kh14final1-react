@@ -224,7 +224,10 @@ const BlockList = ()=>{
             <Jumbotron title="차단 목록 페이지" content={`${memberId}님의 차단 목록을 확인할 수 있습니다`}/>
 
             <div className="row mt-4">
-                <div className="col text-end">
+                <div className="col-6">
+                    <p>목록이 보이지 않을 시 새로고침 한번 하시면 나타납니다</p>
+                </div>
+                <div className="col-6 text-end">
                     <button className="btn btn-info me-3" onClick={openInsertModal} >
                         차단하기
                     </button>
