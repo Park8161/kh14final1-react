@@ -9,6 +9,7 @@ import { CiShare1,CiHeart } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import { FaAsterisk } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
+import userImage from '../product/userImage.jpg';
 
 const MyPage = ()=>{
     // navigate
@@ -37,6 +38,11 @@ const MyPage = ()=>{
     const [soldoutList, setSoldoutList] = useState([]);
     const [product, setProduct] = useState([]);
     const [images, setImages] = useState([]);
+    const [reviewList, setReviewList] = useState([]);
+    const [edit, setEdit] = useState({
+        reviewNo : "",
+        reviewContent : ""
+    });
     
     //effect
     useEffect(()=>{
@@ -49,6 +55,7 @@ const MyPage = ()=>{
         const response = await axios.get("/member/mypage");
         setMember(response.data);
         // console.log(response.data);
+        loadReview();
     }, [member]);
 
     const loadLikeList = useCallback(async()=>{
@@ -83,6 +90,23 @@ const MyPage = ()=>{
         setProduct(response.data.productDto);
         setImages(response.data.images);
     },[product,images]);
+
+    // 내가 쓴 리뷰 목록 불러오기
+    const loadReview = useCallback(async()=>{
+        const response = await axios.get("/review/myList");
+        // console.log(response.data);
+        setReviewList(response.data);
+    },[reviewList]);
+
+    // 리뷰 삭제
+    const deleteReview = useCallback(async()=>{
+        const response = await axios.delete("/review/"+reviewList.reviewNo);
+    },[reviewList]);
+
+    // 리뷰 수정
+    const editReview = useCallback(async()=>{
+        const response = await axios.post("/review/update", edit);
+    },[reviewList, edit]);
 
     const clearCollapse = useCallback(()=>{
         setCollpase({
@@ -165,8 +189,8 @@ const MyPage = ()=>{
                         </div>
                         <div className="row">
                             <div className="col">
-                                <button className="btn me-3" type="button" /*data-bs-toggle="offcanvas" data-bs-target="#offcanvas2"*/ onClick={e=>toast.warning("미구현 기능")}>
-                                    구매 내역
+                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas2" >
+                                    결제 내역
                                 </button>
                             </div>
                         </div>
@@ -183,6 +207,13 @@ const MyPage = ()=>{
                 <div className="row mt-4">
                     <div className="col">
                         <h3>내 정보</h3>
+                        <div className="row">
+                            <div className="col">
+                                <button className="btn me-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas4" >
+                                    거래 후기 
+                                </button>
+                            </div>
+                        </div>
                         <div className="row">
                             <div className="col">
                                 <button className="btn me-3" onClick={member.memberLevel === "일반회원" ? (e=>navigate("/member/cert/"+member.memberEmail+"/"+member.memberReliability)) : (alreadyCert)} >
@@ -496,10 +527,10 @@ const MyPage = ()=>{
             </div>
         </div>
 
-        {/* 구매 내역 */}
+        {/* 결제 내역 */}
         <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas2" aria-labelledby="offcanvas2Label">
             <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="offcanvas2Label">구매 내역</h5>
+                <h5 className="offcanvas-title" id="offcanvas2Label">결제 내역</h5>
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
@@ -664,6 +695,52 @@ const MyPage = ()=>{
             </div>
         </div>
 
+        {/* 내가 쓴 거래 후기 목록 */}
+        <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas4" aria-labelledby="offcanvas4Label">
+                <div className="offcanvas-header">
+                    <h5 className="offcanvas-title" id="offcanvas4Label">거래 후기</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div className="offcanvas-body">
+                <p>{member.memberId}님이 쓴 거래 후기</p>
+                {reviewList.map((review)=>(
+                    <div className="row mt-4" key={review.reviewNo}>
+                        <div className="col">
+                            <div className="row">
+                                <div className="col-2 mt-2">
+                                    <img src={userImage} className="rounded-circle" style={{width:"60px",height:"60px"}}/>
+                                </div>
+                                <div className="col-10">
+                                    <div className="row">
+                                        <div className="col">
+                                            {review.reviewWriter}
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <small className="text-muted">{"구매자 | "+review.reviewWtime}</small>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <small className="text-muted">{"구매상품 | "+review.productName}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row mt-2">
+                                <div className="col input-group">
+                                    <input className="form-control bg-light border-0" value={review.reviewContent} disabled/>
+                                    <button className="btn btn-info text-light btn-sm" onClick={editReview}>수정</button>
+                                    <button className="btn btn-danger btn-sm" onClick={deleteReview}>삭제</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+                </div>
+            </div>
+                
     </>);
 };
 
