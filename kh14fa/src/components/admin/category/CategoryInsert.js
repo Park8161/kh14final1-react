@@ -1,253 +1,140 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
+import { GrRefresh } from "react-icons/gr";
 
 const CategoryInsert = () => {
-    const [categoryDepth, setCategoryDepth] = useState('');
-    const [categoryName, setCategoryName] = useState('');
-    const [categoryGroup, setCategoryGroup] = useState(0);
-    const [categoryUpper, setCategoryUpper] = useState('');
-    const [categoryLower, setCategoryLower] = useState('');
-
-    const [filteredCategoryGroup, setFilteredCategoryGroup] = useState([]);
-    const [filteredCategoryUpper, setFilteredCategoryUpper] = useState([]);
-    const [filteredCategoryLower, setFilteredCategoryLower] = useState([]);
-
+    // navigate
     const navigate = useNavigate();
 
+    ///state
+    const [category, setCategory] = useState([]);
+    const [group1, setGroup1] = useState();
+    const [group2, setGroup2] = useState();
+    const [group3, setGroup3] = useState();
+    const [categoryName, setCategoryName] = useState("");
+    const [input, setInput] = useState({
+        categoryDepth: "",
+        categoryName: "",
+        categoryUpper: 0
+    });
+
+    //effect
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await axios.get("/admin/category/listP");
-                const data = response.data;
-                setFilteredCategoryGroup(data.filter(cat => cat.categoryDepth === 1));
-                // console.log(response.data);
-                setFilteredCategoryLower(data.filter(cat => cat.categoryDepth === 2));
-                console.log(filteredCategoryLower);
-            } catch (error) {
-                toast.error('카테고리 목록을 가져오는 데 실패했습니다.');
-            }
-        };
-        fetchCategories();
+        loadCategory();
     }, []);
 
-    const handleCategoryDepthChange = (e) => {
-        const value = e.target.value;
-        setCategoryDepth(value);
-        setCategoryGroup('');
-        setCategoryUpper('');
-        setCategoryName('');
-        setFilteredCategoryUpper([]);
-    };
+    // 카테고리 리스트 가져오기
+    const loadCategory = useCallback(async () => {
+        const response = await axios.get("/admin/category/listP"); // 주소 listP 맞음
+        setCategory(response.data);
+    }, [category]);
 
-    const handleCategoryGroupChange = async (e) => {
-        const value = e.target.value;
-        setCategoryGroup(value);
-        setCategoryUpper('');
-        setCategoryName('');
+    // 카테고리 찾아주기
+    const findCategory = useCallback(() => {
+        const findCat = category.filter(category => category.categoryName === categoryName)[0] || "";
+        setGroup3(findCat.categoryNo);
+        setGroup2(findCat.categoryUpper);
+        setGroup1(findCat.categoryGroup);
+    }, [categoryName]);
 
-        // 중분류 목록 필터링
-        // try {
-        //     const response = await axios.get(`/admin/category/upper/${value}`);
-        //     const upperCategories = response.data;
-        //     setFilteredCategoryUpper(upperCategories);
-        // } catch (error) {
-        //     toast.error('중분류 목록을 가져오는 데 실패했습니다.');
-        // }
-        setFilteredCategoryUpper(filteredCategoryGroup.filter(category => category.categoryDepth == 2));
-        // console.log(filteredCategoryGroup);
-    };
+    // 카테고리 입력 하다가 갑자기 대분류 선택하고 싶어질 때 누르는 카테고리 리셋 버튼
+    const resetCategory = useCallback(() => {
+        setGroup1();
+        setGroup2();
+        setGroup3();
+    }, [group1, group2, group3]);
 
-    const handleCategoryUpperChange = useCallback((e) => {
-        setCategoryUpper(e.target.value);
-    }, [categoryUpper]);
+    const existenceCategory = useCallback(()=>{
+        return category.some(category => category.categoryName === categoryName);
+    },[category, categoryName]);
 
-    const handleCategoryLowerChange = useCallback((e) => {
-        setCategoryLower(e.target.value);
-    }, [categoryLower]);
-
-
-    const handleSubmit = useCallback(async () => {
-        // 입력값 검증
-        if (!categoryName.trim()) {
-            toast.error("카테고리 이름을 입력해주세요.");
-            return;
-        }
-        if (categoryDepth === '1' && !categoryName) {
-            toast.error("대분류 이름을 입력해주세요.");
-            return;
-        }
-        if (categoryDepth === '2' && !categoryUpper) {
-            toast.error("대분류를 먼저 선택해주세요.");
-            return;
-        }
-        if (categoryDepth === '2' && !categoryName) {
-            toast.error("중분류 이름을 입력해주세요.");
-            return;
-        }
-        if (categoryDepth === '3' && !categoryUpper) {
-            toast.error("중분류를 먼저 선택해주세요.");
-            return;
-        }
-        if (categoryDepth === '3' && !categoryName) {
-            toast.error("소분류 이름을 입력해주세요.");
-            return;
-        }
-        // console.log(categoryUpper);
-
-        // 카테고리 데이터 구성
-        const newCategory = {
-            categoryName,
-            categoryGroup,
-            categoryUpper: parseInt(categoryLower),
-            categoryDepth: parseInt(categoryDepth, 10) // 숫자로 변환
-        };
-
-        // console.log(newCategory.categoryUpper);
-        // 카테고리 추가 API 호출
+    const insertCategory = useCallback(async (input) => {
         try {
-            await axios.post("/admin/category/insert", newCategory);
-            toast.success('카테고리가 추가되었습니다.');
-            // 상태 초기화
-            setCategoryDepth('');
-            setCategoryGroup('');
-            setCategoryUpper('');
-            setCategoryName('');
-            setFilteredCategoryUpper([]);
-            navigate("/admin/category/list");
-        } catch (error) {
-            toast.error('카테고리 추가에 실패했습니다.');
+            if(existenceCategory()){
+                toast.error("이미 존재하는 카테고리");
+                return;
+            }
+            const response = await axios.post("/admin/category/insert", input);
+            toast.success("카테고리 등록 완료");
+            navigate("/admin/category/list")
         }
-    }, [categoryDepth, categoryName, categoryUpper, categoryGroup]);
+        catch (e) {
+            toast.error("카테고리 정보 재확인 바람");
+        }
+    }, [existenceCategory]);
 
-    return (
-        <div className="container">
-            <h2>카테고리 추가</h2>
+    // 매우 중요한것임, 카테고리 선택에 따라 값 바꿔서 input에다가 넣어줌 
+    const changeInput = useMemo(() => {
+        const depth = (group1 === (null || 0) ? (1) : (group2 === (null || 0) ? 2 : 3))
+        setInput({
+            categoryDepth: depth,
+            categoryName: categoryName,
+            categoryUpper: (depth === 1 ? (0) : (depth === 2 ? (group1) : (group2)))
+        });
+    }, [group1, group2, categoryName]);
 
-            {/* 카테고리 항목 선택 */}
-            <div className="form-group">
-                <label>카테고리 항목 선택</label>
-                <select
-                    className="form-control"
-                    value={categoryDepth}
-                    onChange={handleCategoryDepthChange}
-                >
-                    <option value="">선택하세요</option>
-                    <option value="1">대분류</option>
-                    <option value="2">중분류</option>
-                    <option value="3">소분류</option>
-                </select>
+
+
+    return (<>
+
+        <div className="row mt-4">
+            <div className="col-9">
+                <label>
+                    카테고리
+                </label>
+                <div className="input-group">
+                    <button className='btn btn-secondary text-light' onClick={resetCategory}>
+                        <GrRefresh />
+                    </button>
+                    <input type="text" className="form-control" value={categoryName} onChange={e => setCategoryName(e.target.value)} />
+                </div>
             </div>
-
-            {/* 대분류 추가 */}
-            {categoryDepth === '1' && (
-                <div className="form-group">
-                    <label>대분류 이름</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={categoryName}
-                        onChange={(e) => setCategoryName(e.target.value)}
-                        placeholder="대분류 이름을 입력하세요"
-                    />
-                    <button className="btn btn-primary mt-2" onClick={handleSubmit}>대분류 추가</button>
-                </div>
-            )}
-
-            {/* 중분류 추가 */}
-            {categoryDepth === '2' && (
-                <div>
-                    <div className="form-group">
-                        <label>대분류 선택</label>
-                        <select
-                            className="form-control"
-                            value={categoryUpper}
-                            onChange={handleCategoryUpperChange}
-                        >
-                            <option value="">대분류 선택</option>
-                            {filteredCategoryGroup.map(cat => (
-                                <option key={cat.categoryNo} value={cat.categoryNo}>
-                                    {cat.categoryName}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    {categoryUpper && (
-                        <div className="form-group">
-                            <label>중분류 이름</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                value={categoryName}
-                                onChange={(e) => setCategoryName(e.target.value)}
-                                placeholder="중분류 이름을 입력하세요"
-                            />
-                            <button className="btn btn-primary mt-2" onClick={handleSubmit}>중분류 추가</button>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* 소분류 추가 */}
-            {categoryDepth === '3' && (
-                <div>
-                    <div className="form-group">
-                        <label>대분류 선택</label>
-                        <select
-                            className="form-control"
-                            value={categoryUpper}
-                            onChange={handleCategoryUpperChange}
-                        >
-                            <option value="">대분류 선택</option>
-                            {filteredCategoryGroup.map(cat => (
-                                <option key={cat.categoryNo} value={cat.categoryNo}>
-                                    {cat.categoryName}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {categoryUpper && (
-                        <div className="form-group">
-                            <label>중분류 선택</label>
-                            <select
-                                className="form-control"
-                                value={categoryLower}
-                                onChange={handleCategoryLowerChange}
-                            >
-                                <option value="">중분류 선택</option>
-                                {filteredCategoryLower.map(cat => (
-                                    <option key={cat.categoryNo} value={cat.categoryNo}>
-                                        {cat.categoryName}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-
-                    {categoryLower && (
-                        <div className="form-group">
-                            <label>소분류 이름</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                value={categoryName}
-                                onChange={(e) => setCategoryName(e.target.value)}
-                                placeholder="소분류 이름을 입력하세요"
-                            />
-                            <button className="btn btn-primary mt-2" onClick={handleSubmit}>소분류 추가</button>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* 취소 버튼 추가 */}
-            <button className="btn btn-secondary mt-3" onClick={() => navigate('/admin/category/list')}>
-                취소
-            </button>
         </div>
-    );
+        <div className="row mt-2">
+            <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
+                {category.filter(category => category.categoryDepth === 1).map((cat) => (
+                    <ul className="list-group" key={cat.categoryNo}>
+                        <li className={"list-group-item list-group-item-action " + (group1 === cat.categoryNo && "bg-secondary text-light")}
+                            onClick={e => (setGroup1(parseInt(e.target.value)), setGroup2(0))} value={cat.categoryNo}>
+                            {cat.categoryName}
+                        </li>
+                    </ul>
+                ))}
+            </div>
+            <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
+                {category.filter(category => (category.categoryDepth === 2 && category.categoryGroup === group1)).map((cat) => (
+                    <ul className="list-group" key={cat.categoryNo}>
+                        <li className={"list-group-item list-group-item-action " + (group2 === cat.categoryNo && "bg-secondary text-light")}
+                            onClick={e => (setGroup2(parseInt(e.target.value)), setGroup3(0))} value={cat.categoryNo}>
+                            {cat.categoryName}
+                        </li>
+                    </ul>
+                ))}
+            </div>
+            <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
+                {category.filter(category => (category.categoryDepth === 3 && category.categoryGroup === group1 && category.categoryUpper === group2)).map((cat) => (
+                    <ul className="list-group" key={cat.categoryNo}>
+                        <li className={"list-group-item list-group-item-action " + (group3 === cat.categoryNo && "bg-secondary text-light")} value={cat.categoryNo}>
+                            {cat.categoryName}
+                        </li>
+                    </ul>
+                ))}
+            </div>
+        </div>
+
+        {/* 취소 버튼 추가 */}
+        <div className="d-flex justify-content-end mt-3">
+                <button className="btn btn-success mt-3" onClick={e => insertCategory(input)}>
+                    완료
+                </button>
+                <button className="btn btn-secondary mt-3" onClick={() => navigate('/admin/category/list')}>
+                    취소
+                </button>            
+        </div>
+
+    </>);
 };
 
 export default CategoryInsert;

@@ -121,6 +121,9 @@ const unblockMember = useCallback(async () => {
         <>
             <Jumbotron title={memberId + "님의 상세정보"} />
 
+            <div className="card mt-3">
+            <div className="card-body">
+        
             <div className="row mt-4">
                 <div className="col-sm-3">회원 아이디</div>
                 <div className="col-sm-9">{member.memberId}</div>
@@ -160,6 +163,9 @@ const unblockMember = useCallback(async () => {
                 <div className="col-sm-3">회원 포인트</div>
                 <div className="col-sm-9">{member.memberPoint}</div>
             </div>
+</div>
+</div>
+        
 
             {/* 이동 버튼 */}
             <div className="row mt-4">
@@ -168,7 +174,7 @@ const unblockMember = useCallback(async () => {
                         onClick={() => navigate("/admin/member/memberlist")}>
                         목록보기
                     </button>
-                    <button type="button" className="btn btn-warning ms-2"
+                    <button type="button" className="btn btn-primary ms-2"
                         onClick={() => navigate("/admin/member/edit/" + memberId)}>
                         수정하기
                     </button>
