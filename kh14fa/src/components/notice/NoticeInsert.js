@@ -62,7 +62,7 @@ const NoticeInsert = () => {
             value={input.noticeContent} 
             onChange={changeInput} 
             rows={15} // 초기 높이
-            style={{ resize: 'none' }} // 크기 조절 비활성화 (선택 사항)
+            style={{ resize: 'none' }} // 크기 조절 비활성화 (선택 사항) 
         />
         </div>
     </div>
