@@ -1,5 +1,17 @@
 // import
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import event1 from '../assets/event1.jpg';
+import event2 from '../assets/event2.gif';
+import event3 from '../assets/event3.gif';
+import event4 from '../assets/event4.jpg';
+import event5 from '../assets/event5.jpg';
+import event6 from '../assets/event6.jpg';
+import event7 from '../assets/event7.jpg';
+import event8 from '../assets/event8.jpg';
+import event9 from '../assets/event9.jpg';
+import event10 from '../assets/event10.jpg';
+import event11 from '../assets/event11.jpg';
+import event12 from '../assets/event12.jpg';
 
 // component
 const Home = () => {
@@ -8,24 +20,18 @@ const Home = () => {
 
     // 배너 데이터 (예시)
     const banners = [
-        ["https://placehold.co/400x200", "배너 1"],
-        ["https://placehold.co/400x200", "배너 2"],
-        ["https://placehold.co/400x200", "배너 3"],
-        ["https://placehold.co/400x200", "배너 4"],
-        ["https://placehold.co/400x200", "배너 5"],
-        ["https://placehold.co/400x200", "배너 6"],
-        ["https://placehold.co/400x200", "배너 7"],
-        ["https://placehold.co/400x200", "배너 8"],
-        ["https://placehold.co/400x200", "배너 9"],
-        ["https://placehold.co/400x200", "배너 10"],
-        ["https://placehold.co/400x200", "배너 11"],
-        ["https://placehold.co/400x200", "배너 12"],
-        ["https://placehold.co/400x200", "배너 13"],
-        ["https://placehold.co/400x200", "배너 14"],
-        ["https://placehold.co/400x200", "배너 15"],
-        ["https://placehold.co/400x200", "배너 16"],
-        ["https://placehold.co/400x200", "배너 17"],
-        ["https://placehold.co/400x200", "배너 18"],
+        [event1, "배너 1"],
+        [event2, "배너 2"],
+        [event3, "배너 3"],
+        [event4, "배너 4"],
+        [event5, "배너 5"],
+        [event6, "배너 6"],
+        [event7, "배너 7"],
+        [event8, "배너 8"],
+        [event9, "배너 9"],
+        [event10, "배너 10"],
+        [event11, "배너 11"],
+        [event12, "배너 12"],       
     ];
 
     // 다음 배너로 이동하는 함수
@@ -42,6 +48,16 @@ const Home = () => {
     const displayedBanners = banners.slice(currentIndex * 3, currentIndex * 3 + 3);
     const totalPages = Math.ceil(banners.length / 3);
 
+        // 자동으로 배너를 변경하는 효과
+        useEffect(() => {
+            const timer = setInterval(() => {
+                nextBanner();
+            }, 4000); // 4초마다 다음 배너로 이동
+    
+            // 컴포넌트가 언마운트될 때 타이머를 정리
+            return () => clearInterval(timer);
+        }, [currentIndex]);
+
     // view
     return (
         <>
@@ -53,7 +69,7 @@ const Home = () => {
                             <div className="row">
                                 {displayedBanners.map((banner, index) => (
                                     <div className="col" key={index}>
-                                        <img src={banner[0]} className="d-block w-100" alt={banner[1]} style={{ width: '500px' , height: '300px', objectFit: 'cover' }} />
+                                        <img src={banner[0]} className="d-block w-100" alt={banner[1]} style={{ width: '300px' , height: '300px', objectFit: 'contain', margin:'0 5px'}} />
                                     </div>
                                 ))}
                             </div>
