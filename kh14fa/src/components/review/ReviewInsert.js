@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { FaChevronRight } from "react-icons/fa";
 import { useRecoilValue } from 'recoil';
 import { memberIdState } from "../../utils/recoil";
+import { FaRegThumbsUp,FaRegThumbsDown,FaRegHandshake } from "react-icons/fa";
 
 const ReviewInsert = ()=>{
     // navigate
@@ -71,8 +72,18 @@ const ReviewInsert = ()=>{
         await axios.post("/review/insert/"+productNo, input);
         toast.success("작성 완료");
         navigate(); // 결제내역으로 이동 : 주소 나중에 추가
+        const memberReliability = (await axios.get("/member/mypage")).data.memberReliability;
+        await axios.patch("/member/patch", {memberReliability : memberReliability+reviewscore});
     },[input,reviewscore]);
-
+    
+    // 리뷰 아이콘 누르면 점수가 state로 전송되게 하기
+    const changeRS = useMemo(()=>{
+        setInput({
+            ...input,
+            reviewScore : reviewscore
+        });
+    },[reviewscore]);
+    
     // GPT 이용해서 만든 숫자에 콤마 찍기 함수
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('ko-KR').format(amount);
@@ -134,21 +145,20 @@ const ReviewInsert = ()=>{
                     <h5 className="mt-3 mb-0">{memberId}님,</h5>
                     <h5 className="mt-0">{product.productMember}님과 거래는 어떠셨나요?</h5>
                     <small className="text-muted">거래 선호도는 나만 볼 수 있어요</small>
-
-                    <div className="row mt-3 text-center">
-                        <div className="col-2">
-                            <img src="https://placehold.co/400x200" className="d-block w-100" onClick={e=>setReviewscore(-1)}/>
-                            <p className="mt-2">별로에요</p>
-                        </div>
-                        <div className="col-2">
-                            <img src="https://placehold.co/400x200" className="d-block w-100" onClick={e=>setReviewscore(0)}/>
-                            <p className="mt-2">좋아요!</p>
-                        </div>
-                        <div className="col-2">
-                            <img src="https://placehold.co/400x200" className="d-block w-100" onClick={e=>setReviewscore(1)}/>
+                    <div className="row mt-3 ms-3 text-center">
+                        <div className={"col-2 pt-3 "+(reviewscore === 1 && "border")} name="reviewScore" value={1} onClick={e=>setReviewscore(1)}>
+                            <FaRegThumbsUp className="d-block w-100"/>
                             <p className="mt-2">최고에요!</p>
                         </div>
-                        <div>{reviewscore}</div>
+                        <div className={"col-2 pt-3 "+(reviewscore === 0 && "border")} name="reviewScore" value={0} onClick={e=>setReviewscore(0)}>
+                            <FaRegHandshake className="d-block w-100"/>
+                            <p className="mt-2">좋아요!</p>
+                        </div>
+                        <div className={"col-2 pt-3 "+(reviewscore === -1 && "border")} name="reviewScore" value={-1} onClick={e=>setReviewscore(-1)}>
+                            <FaRegThumbsDown className="d-block w-100"/>
+                            <p className="mt-2">별로에요</p>
+                        </div>
+                        {/* <div>{reviewscore}</div> */}
                     </div>
 
                     <div className="row mt-1">
