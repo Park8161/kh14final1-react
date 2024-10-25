@@ -107,7 +107,6 @@ const QnaList = () => {
                                     <th>작성자</th>
                                     <th>작성일</th>
                                     <th>수정일</th>
-                                    <th>조회수</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -123,7 +122,6 @@ const QnaList = () => {
                                         <td>{q.qnaWriter}</td>
                                         <td>{q.qnaWtime}</td>
                                         <td>{q.qnaUtime}</td>
-                                        <td>{q.qnaViews}</td>
                                     </tr>
                                 ))}
                             </tbody>
