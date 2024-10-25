@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { FaRegHeart } from "react-icons/fa";
@@ -7,10 +7,16 @@ import Carousel from 'react-bootstrap/Carousel';
 import { useNavigate } from "react-router";
 import { throttle } from "lodash";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
+import { useRecoilValue } from "recoil";
+import { productColumnState, productKeywordState } from "../../utils/recoil";
 
 const ProductList = () => {
   // navigate
   const navigate = useNavigate();
+
+  // recoil
+  const productColumn = useRecoilValue(productColumnState);
+  const productKeyword = useRecoilValue(productKeywordState);
 
   //state
   const [productList, setProductList] = useState([]);
@@ -84,7 +90,7 @@ const ProductList = () => {
     // console.log(response.data.productList);
     setResult(response.data);
     loading.current = false;
-  },[input]);
+  },[input,productColumn,productKeyword]);
 
   const loadMoreProductList = useCallback(async()=>{
     loading.current = true;
@@ -133,6 +139,15 @@ const ProductList = () => {
     });
     setFirstPage();
   },[input]);
+
+  const checkColumnKeyword = useMemo(()=>{
+    if(productColumn !== null && productKeyword !== null){
+      setInput({
+        column : productColumn,
+        keyword : productKeyword
+      });
+    }
+  },[productColumn,productKeyword]);
 
   // GPT 이용해서 만든 숫자에 콤마 찍기 함수
   const formatCurrency = (amount) => {

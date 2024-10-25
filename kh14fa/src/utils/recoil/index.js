@@ -48,3 +48,16 @@ const memberLoadingState = atom({
 });
 
 export {memberLoadingState};
+
+// 상품 검색창을 다른 페이지에서 만들기 위해 사용하는 state
+const productColumnState = atom({
+    key : "productColumnState",
+    default : ""
+});
+
+const productKeywordState = atom({
+    key : "productKeywordState",
+    default : ""
+});
+
+export {productColumnState,productKeywordState};
