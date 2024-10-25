@@ -12,6 +12,7 @@ import { MdDeleteForever } from "react-icons/md";
 import userImage from '../product/userImage.jpg';
 import { CiEdit } from "react-icons/ci";
 import { FaRegThumbsUp,FaRegThumbsDown,FaRegHandshake } from "react-icons/fa";
+import PacmanLoader from "react-spinners/PacmanLoader";
 
 const MyPage = ()=>{
     // navigate
@@ -50,11 +51,13 @@ const MyPage = ()=>{
         reviewScore : 0
     });
     const [reviewscore, setReviewscore] = useState(0);
+    const [payList, setPayList] = useState([]);
     
     //effect
     useEffect(()=>{
         loadMember();
         loadLikeList();
+        loadPayList();
     }, []);
     
     //callback
@@ -64,7 +67,8 @@ const MyPage = ()=>{
         // console.log(response.data);
         loadReview();
     }, [member]);
-
+    
+    // 내가 찜한 상품 불러오기
     const loadLikeList = useCallback(async()=>{
         const response = await axios.get("/member/active");
         setLikeList(response.data.likeList);
@@ -80,6 +84,19 @@ const MyPage = ()=>{
             (response.data.myList).filter(product => product.productState === '판매완료')
         );
     },[likeList]);
+
+    // 결제 내역 불러오기
+    const loadPayList = useCallback(async()=>{
+        const response = await axios.get("/pay/listWithImage");
+        setPayList(response.data);
+        // console.log(response.data);
+    }, [payList]);
+
+    //
+    const confirmBuy = useCallback(async(paymentNo)=>{
+        const resp = await axios.post("/pay/confirmBuy/"+paymentNo);
+        loadPayList();
+    },[payList]);
 
     const deleteProduct = useCallback(async(productNo)=>{
         try{
@@ -586,31 +603,77 @@ const MyPage = ()=>{
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
-                {/* {likeList.map((product)=>(
-                <div className="row" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)} data-bs-dismiss="offcanvas">
-                    <div className="col-6">
-                        <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                {payList.map((payment)=>(
+                <div className="row mt-2" key={payment.paymentNo} /*onClick={e=>navigate("/product/detail/"+product.productNo)}*/ data-bs-dismiss="offcanvas">
+                    <div className="col-5">
+                        <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${payment.attachment}`} className="card-img-top" />
                     </div>
-                    <div className="col-6">
-                        <div className="row mt-4">
-                            <div className="col">
-                                {product.productName}
-                            </div>
-                        </div>
+                    <div className="col-7">
                         <div className="row mt-1">
                             <div className="col">
-                                {formatCurrency(product.productPrice)}원, 
-                                {" "+product.productQty}개
+                                {payment.paymentName}
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col">
-                                {product.productState}
+                            <div className="col text-muted ms-1">
+                                <small className="text-muted">
+                                    {"판매가 | "+formatCurrency(payment.paymentTotal)+"원"}
+                                </small>
                             </div>
                         </div>
+                        <div className="row">
+                            <div className="col text-muted ms-1">
+                                <small className="text-muted">
+                                    {"판매자 | "+payment.paymentSeller}
+                                </small>
+                            </div>
+                        </div>
+                        {payment.paymentStatus === "승인" && (
+                        <div>
+                            <div className="row">
+                                <div className="col">
+                                    <small className="text-muted ms-1">
+                                        {"승인시각 | "+payment.paymentTime}
+                                    </small>
+                                </div>
+                            </div>
+                            <div className="row mt-1">
+                                <div className="col btn-group text-end">
+                                    <button className="btn btn-primary w-100 btn-sm me-1" /*onClick={e=>confirmBuy(payment.paymentNo)}*/>
+                                        <small>
+                                            구매확정
+                                        </small>
+                                    </button>
+                                    <NavLink to={``} className="btn btn-secondary w-100 btn-sm ms-1">
+                                        <small>
+                                            구매취소
+                                        </small>
+                                    </NavLink>
+                                </div>
+                            </div>
+                        </div>
+                        )}
+                        {payment.paymentStatus === "확정" && (
+                        <div>
+                            <div className="row">
+                                <div className="col">
+                                    <small className="text-muted ms-1">
+                                        {"구매완료 | "+payment.paymentTime}
+                                    </small>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col text-end mt-1">
+                                    <NavLink to={`/Review/insert/${payment.productNo}`} className="btn btn-primary w-100 btn-sm">
+                                        후기 남기기
+                                    </NavLink>
+                                </div>
+                            </div> 
+                        </div>                              
+                        )}
                     </div>
                 </div>
-                ))} */}
+                ))}
             </div>
         </div>
 
