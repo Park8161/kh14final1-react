@@ -2,27 +2,25 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { useParams } from "react-router";
+import { NavLink } from "react-router-dom";
 
 const PayFail2 = ()=>{
 
-    const [product, setProduct] = useState({});
-    const productNo = 195;
-
-    useEffect(() => {
-            console.log("productNo(in useEffect) "+productNo);
-            loadProduct();
-    }, []);
-
-    const loadProduct = useCallback(async ()=>{
-        if(productNo !== 0){
-            const resp = await axios.get("/product/detail/"+productNo);
-            setProduct(resp.data.productDto);
-        }
-    },[]);
-
     return(<>
-        <h1>결제 실패</h1>
-        
+         <div className="row d-flex align-items-middle" style={{ minHeight: "100vh" }}>
+            <div className="col text-center">
+                <div className="my-5">
+                    <p className="fs-5 mt-2">결제에 실패했습니다.</p>
+                    <NavLink to="/">
+                    <p className="fs-6 mt-2">메인 페이지로</p>
+                    </NavLink>
+                    <NavLink to="/qna/list">
+                    <p className="fs-6 mt-2">문의하기</p>
+                    </NavLink>
+                </div>
+            </div>
+        </div>
     </>);
+
 };
 export default PayFail2;
