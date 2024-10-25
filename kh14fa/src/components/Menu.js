@@ -2,7 +2,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { loginState, memberIdState, memberLevelState } from "../utils/recoil";
+import { loginState, memberIdState, memberLevelState, productColumnState, productKeywordState } from "../utils/recoil";
 import { RiLoginBoxLine, RiLogoutBoxLine } from "react-icons/ri";
 import axios from "axios";
 import { MdContactPage } from "react-icons/md";
@@ -35,10 +35,26 @@ const Menu = () => {
 
         navigate("/");
     },[memberId, memberLevel]);
-    
-    // effect
 
-    // memo
+    // 검색창 테스트
+    const [productColumn, setProductColumn] = useRecoilState(productColumnState);
+    const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
+    const [input, setInput] = useState({
+        column : "",
+        keyword : ""
+    });
+    const changeInput = useCallback((e)=>{
+        setInput({
+            ...input,
+            [e.target.name] : e.target.value
+        });
+    },[input]);
+
+    const sendToProduct = useCallback(()=>{
+        setProductColumn(input.column);
+        setProductKeyword(input.keyword);
+        navigate("/product/list");
+    },[input]);
 
     // view
     return (
@@ -109,7 +125,24 @@ const Menu = () => {
                                     <NavLink className="dropdown-item" to="/notice/list">공지사항 게시판</NavLink>
                                 </div>
                             </li>
+                            <li>
+                                {/* 검색창 테스트 */}
+                                <div className="row mx-4">
+                                    <div className="col input-group w-auto">
+                                        <select type="search" className="form-select bg-white border-0" 
+                                                name="column" value={input.column} onChange={changeInput}>
+                                            <option value="">선택</option>
+                                            <option value="product_name">상품명</option>
+                                            <option value="product_member">판매자</option>
+                                        </select>
+                                        <input type="search" className="form-control bg-white border-0" 
+                                                name="keyword" value={input.keyword} onChange={changeInput}/>
+                                        <button className="btn btn-dark" onClick={sendToProduct}>검색</button>
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
+                        
                         
                         <ul className="navbar-nav">
                             {/* 로그인이 되어있다면 아이디(등급) 형태로 출력 */}
