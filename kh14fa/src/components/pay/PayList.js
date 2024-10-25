@@ -30,6 +30,11 @@ const PayList = ()=>{
         loadPayList();
     },[payList]);
 
+    const cancelBuy = useCallback(async(paymentNo)=>{
+        const resp = await axios.delete("/kakaopay/cancelAll/"+paymentNo);
+        loadPayList();
+    },[payList]);
+
     if(dataLoad===true && payList.length === 0){
         return(<>
             구매내역이 없습니다
@@ -64,14 +69,13 @@ const PayList = ()=>{
                                 {/* Conditionally render buttons based on paymentStatus */}
                                 {payment.paymentStatus === "승인" && (
                                     <div>
-                                        {payment.paymentStatus}
-                                        {payment.paymentNo}
                                         <div className="text-end mb-2">
                                             <button className="btn btn-primary w-100"
                                                 onClick={e=>confirmBuy(payment.paymentNo)}>구매확정</button>
                                         </div>
                                         <div className="text-end mb-2">
-                                            <NavLink to={``} className="btn btn-secondary w-100">구매취소</NavLink>
+                                            <button className="btn btn-secondary w-100"
+                                                onClick={e=>cancelBuy(payment.paymentNo)}>구매취소</button>
                                         </div>
                                     </div>
                                 )}
@@ -79,6 +83,12 @@ const PayList = ()=>{
                                 {payment.paymentStatus === "확정" && (                               
                                     <div className="text-end">
                                         <NavLink to={`/Review/insert/${payment.productNo}`} className="btn btn-primary w-100">후기 남기기</NavLink>
+                                    </div>                                    
+                                )}
+
+                                {payment.paymentStatus === "취소" && (                               
+                                    <div className="text-end">
+                                        취소된 구매 항목입니다.
                                     </div>                                    
                                 )}
                           </div>
