@@ -113,7 +113,6 @@ const NoticeList = () => {
                                     <th>작성자</th>
                                     <th>작성일</th>
                                     <th>수정일</th>
-                                    <th>조회수</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -129,7 +128,6 @@ const NoticeList = () => {
                                         <td>{n.noticeWriter}</td>
                                         <td>{n.noticeWtime}</td>
                                         <td>{n.noticeUtime}</td>
-                                        <td>{n.noticeViews}</td>
                                     </tr>
                                 ))}
                             </tbody>

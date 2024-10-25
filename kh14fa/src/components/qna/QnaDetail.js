@@ -157,10 +157,6 @@ const QnaDetail = () => {
                 <div className="col-sm-3">수정시간</div>
                 <div className="col-sm-9">{qna.qnaUtime}</div>
             </div>
-            <div className="row mt-4">
-                <div className="col-sm-3">조회수</div>
-                <div className="col-sm-9">{qna.qnaViews}</div>
-            </div>
 
             {/* 답글 입력창 */}
             <div className="mt-4">
