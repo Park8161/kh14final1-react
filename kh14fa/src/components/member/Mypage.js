@@ -451,13 +451,13 @@ const MyPage = ()=>{
                                     </div>
                                     <div className="row">
                                         <div className="col text-end">
-                                            <button className="btn btn-light text-success me-2" onClick={e=>navigate("/product/detail/"+product.productNo)}>
+                                            <button className="btn btn-light btn-sm text-success " onClick={e=>navigate("/product/detail/"+product.productNo)}>
                                                 상세
                                             </button>
-                                            <button className="btn btn-light text-info me-2" onClick={e=>navigate("/product/edit/"+product.productNo)}>
+                                            <button className="btn btn-light btn-sm text-info ms-2" onClick={e=>navigate("/product/edit/"+product.productNo)}>
                                                 수정
                                             </button>
-                                            <button className="btn btn-light text-danger" onClick={e=>openDPModal(product.productNo)}>
+                                            <button className="btn btn-light btn-sm text-danger ms-2" onClick={e=>openDPModal(product.productNo)}>
                                                 삭제
                                             </button>
                                         </div>
