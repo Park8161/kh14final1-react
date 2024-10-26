@@ -7,11 +7,10 @@ const Chat = ()=>{
     return (
         <>
         <Routes>
-            {/* <Route path="/autocomplete" element={<AutoComplete/>} /> */}
-            <Route path="/roomlist" element={<RoomList/>}></Route>
-            <Route path="/chatroom/:roomNo" element={<ChatRoom/>}></Route>
-            <Route path="/websocketclient" element={<WebSocketClient/>}></Route>
-            <Route />
+            {/* 중첩 라우팅 : path="/chat/*" */}
+            <Route path="/roomlist" element={<RoomList/>} />
+            <Route path="/chatroom/:roomNo" element={<ChatRoom/>} />
+            <Route path="/websocketclient" element={<WebSocketClient/>} />
         </Routes>
         </>
     );

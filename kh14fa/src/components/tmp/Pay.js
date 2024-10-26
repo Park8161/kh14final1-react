@@ -11,7 +11,7 @@ const Pay = ()=>{
     return (
         <>
         <Routes>
-            {/* <Route path="/autocomplete" element={<AutoComplete/>} /> */}
+            {/* 중첩 라우팅 : path="/pay/*" */}
             <Route path="/paystart/:productNo" element={<Paystart/>} /> 
             <Route path="/paystart/:productNo/success/:partnerOrderId" element={<Paysuccess/>} /> 
             <Route path="/paystart/:productNo/fail" element={<PayFail2/>} /> 

@@ -86,7 +86,7 @@ const Menu = () => {
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">관리자 전용</a>
                                 <div className="dropdown-menu">
-                                    <NavLink className="dropdown-item" to="/admin/member/memberlist">회원 관리 목록</NavLink>
+                                    <NavLink className="dropdown-item" to="/admin/member/list">회원 관리 목록</NavLink>
                                     <NavLink className="dropdown-item" to="/admin/category/list">카테고리 관리 목록</NavLink>
                                     
                                 </div>
@@ -97,21 +97,6 @@ const Menu = () => {
                                 <div className="dropdown-menu">
                                     <NavLink className="dropdown-item" to="/product/list">상품목록</NavLink>
                                     <NavLink className="dropdown-item" to="/product/insert">상품등록</NavLink>
-                                </div>
-                            </li>
-                            <li className="nav-item dropdown">
-                                <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-                                    aria-haspopup="true" aria-expanded="false">데이터</a>
-                                <div className="dropdown-menu">
-                                    <NavLink className="dropdown-item" to="/poketmon">포켓몬</NavLink>
-                                    {login === true && (<>
-                                    <NavLink className="dropdown-item" to="/emp">사원</NavLink>
-                                    <NavLink className="dropdown-item" to="/emp2">사원2</NavLink>
-                                    <NavLink className="dropdown-item" to="/book/spa">도서(SPA)</NavLink>
-                                    <NavLink className="dropdown-item" to="/book/list">도서(Multi)</NavLink>
-                                    </>)}
-                                    {/* <div className="dropdown-divider"></div> */}
-                                    <a className="dropdown-item" href="#">기타</a>
                                 </div>
                             </li>
                             <li className="nav-item dropdown">

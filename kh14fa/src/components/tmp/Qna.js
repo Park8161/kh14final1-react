@@ -3,16 +3,17 @@ import QnaInsert from "../qna/QnaInsert";
 import QnaList from "../qna/QnaList";
 import QnaDetail from "../qna/QnaDetail";
 import QnaEdit from "../qna/QnaEdit";
+import PrivateRoute from "../router/PrivateRoute";
 
 const Qna = ()=>{
     return (
         <>
         <Routes>
-            {/* <Route path="/autocomplete" element={<AutoComplete/>} /> */}
-            <Route path="/insert" element={<QnaInsert/>}></Route>
-            <Route path="/list" element={<QnaList/>}></Route>
-            <Route path="/detail/:qnaNo" element={<QnaDetail/>}></Route>
-            <Route path="/edit/:qnaNo" element={<QnaEdit/>}></Route>
+            {/* 중첩 라우팅 : path="/qna/*" */}
+            <Route path="/insert" element={<PrivateRoute element={<QnaInsert/>}/>} />
+            <Route path="/list" element={<QnaList/>} />
+            <Route path="/detail/:qnaNo" element={<QnaDetail/>} />
+            <Route path="/edit/:qnaNo" element={<PrivateRoute element={<QnaEdit/>}/>} />
             <Route />
         </Routes>
         </>

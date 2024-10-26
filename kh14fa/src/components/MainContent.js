@@ -27,6 +27,7 @@ import Notice from "./tmp/Notice";
 import Qna from "./tmp/Qna";
 import Pay from "./tmp/Pay";
 import Review from "./tmp/Review";
+import AdminRoute from "./router/AdminRoute";
 
 // component
 const MainContent = ()=>{
@@ -55,16 +56,15 @@ const MainContent = ()=>{
                         */}
                         <Routes>
                             <Route exact path="/" element={<Home/>} /> 
-
-                            {/* 팀플 중 충돌 방지 임시 중첩 라우팅 */}
-                            <Route path="/admin/*" element={<Admin/>} />
+                            {/* 중첩 라우팅 */}
                             <Route path="/member/*" element={<Member/>} />
                             <Route path="/product/*" element={<Product/>} />
-                            <Route path="/chat/*" element={<Chat/>} />
-                            <Route path="/notice/*" element={<Notice/>} />
-                            <Route path="/qna/*" element={<Qna/>} />
-                            <Route path="/pay/*" element={<Pay/>} />
+                            <Route path="/chat/*" element={<PrivateRoute element={<Chat/>}/>} /> {/* 회원만 접근 가능 */}
+                            <Route path="/pay/*" element={<PrivateRoute element={<Pay/>}/>} />
                             <Route path="/review/*" element={<Review/>} />
+                            <Route path="/qna/*" element={<Qna/>} />
+                            <Route path="/notice/*" element={<Notice/>} />
+                            <Route path="/admin/*" element={<AdminRoute element={<Admin/>}/>}/> {/* 관리자만 접근 가능 */}
 
                             {/* exact path : 정확하게 일치할때만 나오게 할 수 있다 */}
                             {/* 경로변수를 사용할 경우 콜론과 이름을 합쳐 변수명으로 지정 ("/book/detail/{bookID}") */}
@@ -72,13 +72,7 @@ const MainContent = ()=>{
                             {/* 변경 : 중첩 라우팅 */}
                             {/* <Route path="/search/*" element={<Search/>} /> */}
 
-                            {/* 접속 제한 하기 */}
-                            {/* <PrivateRoute>children</PrivateRoute> */}
-                            {/* <Route path="/emp" element={<PrivateRoute><Emp/></PrivateRoute>} />  */}
-                            {/* <PrivateRoute target={element} /> */}
-                            {/* <Route path="/emp" element={<PrivateRoute element={<Emp/>} />} />  */}
-                            
-                            <Route path="/member/login" element={<MemberLogin/>} />
+                            {/* <Route path="/member/login" element={<MemberLogin/>} />
                             <Route path="/member/findpw" element={<MemberFindPw/>}/>
                             <Route path="/member/resetpw" element={<MemberResetPw/>}/>
                             <Route path="/member/check" element={<MemberCheck/>} />
@@ -87,7 +81,7 @@ const MainContent = ()=>{
                             <Route path="/member/edit" element={<PrivateRoute element={<MemberEdit/>}/>}/>
                             <Route path="/member/changepw" element={<PrivateRoute element={<MemberChangePw/>}/>}/>
                             <Route path="/member/exit" element={<PrivateRoute element={<MemberExit/>}/>}/>
-                            <Route path="/member/block/list" element={<PrivateRoute element={<BlockList/>}/>}/>
+                            <Route path="/member/block/list" element={<PrivateRoute element={<BlockList/>}/>}/> */}
                             
                             {/* 나머지 경로(*) 패턴을 지정해서 미 지정된 페이지를 모두 연결 할 수 있다 */}
                             <Route path="*" element={<PageNotFound/>} />
