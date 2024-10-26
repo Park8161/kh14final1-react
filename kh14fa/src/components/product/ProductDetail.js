@@ -11,7 +11,7 @@ import { Modal } from "bootstrap";
 import { IoMdClose } from "react-icons/io";
 import { toast } from "react-toastify";
 import { useRecoilValue } from 'recoil';
-import { memberLoadingState } from "../../utils/recoil";
+import { memberIdState, memberLoadingState } from "../../utils/recoil";
 import GoChat from './../room/GoChat';
 import userImage from './userImage.jpg';
 
@@ -20,6 +20,7 @@ const ProductDetail = ()=>{
     const navigate = useNavigate();
 
     // state
+    const memberId = useRecoilValue(memberIdState);
     const {productNo} = useParams();
     const [product, setProduct] = useState({});
     const [images, setImages] = useState([]);
@@ -122,6 +123,11 @@ const ProductDetail = ()=>{
     // 채팅방 이동하기
     const goChat = useCallback(async()=>{
         try{
+            // 구매자와 판매자가 같으면 채팅 및 거래 불가능
+            if(memberId === product.productMember) {
+                toast.warning("본인 상품 구매 불가능");
+                return;
+            }
             const resp = await axios.post("/room/"+productNo);
             const roomId = resp.data; 
             // chatroom의 경로변수가 될 숫자를 반환함 
@@ -130,7 +136,7 @@ const ProductDetail = ()=>{
         catch(e){
             console.log("Error creating or retrieving chat room:");
         }
-    },[productNo]);
+    },[productNo,product]);
     
     // GPT 이용해서 만든 숫자에 콤마 찍기 함수
     const formatCurrency = (amount) => {
