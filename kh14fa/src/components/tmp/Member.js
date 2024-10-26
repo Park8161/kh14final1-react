@@ -18,7 +18,7 @@ const Member = ()=>{
     return (
         <>
         <Routes>
-            {/* <Route path="/autocomplete" element={<AutoComplete/>} /> */}
+            {/* 중첩 라우팅 : path="/member/*" */}
             <Route path="/ban" element={<BanPage/>} /> 
             <Route path="/detail/:memberId" element={<MemberDetail/>}></Route>
             <Route path="/login" element={<MemberLogin/>} />

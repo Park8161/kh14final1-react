@@ -6,7 +6,7 @@ const Review = ()=>{
     return (
         <>
         <Routes>
-            {/* <Route path="/autocomplete" element={<AutoComplete/>} /> */}
+            {/* 중첩 라우팅 : path="/review/*" */}
             <Route path="/insert/:productNo" element={<PrivateRoute element={<ReviewInsert/>}/>}/>
             
         </Routes>
