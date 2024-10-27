@@ -43,14 +43,20 @@ const ProductDetail = ()=>{
     
     // callback
     const loadProduct = useCallback(async()=>{
-        const response = await axios.get("/product/detail/"+productNo);
-        setProduct(response.data.productDto);
-        setImages(response.data.images);
-        setCategory(response.data.categoryNameVO);
-        loadRelation();
-        checkLikes();
-        countReview(response.data.productDto.productMember);
-        loadReview(response.data.productDto.productMember);
+        try{
+            const response = await axios.get("/product/detail/"+productNo);
+            setProduct(response.data.productDto);
+            setImages(response.data.images);
+            setCategory(response.data.categoryNameVO);
+            loadRelation();
+            checkLikes();
+            countReview(response.data.productDto.productMember);
+            loadReview(response.data.productDto.productMember);
+        }
+        catch(e){
+            navigate("/notPound");
+            return(<></>);
+        }
     },[product]);
 
     // 연관 상품 목록 불러오기
@@ -126,6 +132,10 @@ const ProductDetail = ()=>{
             // 구매자와 판매자가 같으면 채팅 및 거래 불가능
             if(memberId === product.productMember) {
                 toast.warning("본인 상품 구매 불가능");
+                return;
+            }
+            else if(product.productState === "판매보류"){
+                toast.warning("보류 중 상품 구매 불가능");
                 return;
             }
             const resp = await axios.post("/room/"+productNo);

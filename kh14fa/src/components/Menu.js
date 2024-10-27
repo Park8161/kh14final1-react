@@ -7,6 +7,7 @@ import { RiLoginBoxLine, RiLogoutBoxLine } from "react-icons/ri";
 import axios from "axios";
 import { MdContactPage } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
+import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 
 // component
 const Menu = () => {
@@ -88,6 +89,7 @@ const Menu = () => {
                                 <div className="dropdown-menu">
                                     <NavLink className="dropdown-item" to="/admin/member/list">회원 관리 목록</NavLink>
                                     <NavLink className="dropdown-item" to="/admin/category/list">카테고리 관리 목록</NavLink>
+                                    <NavLink className="dropdown-item" to="/admin/product/list">상품 관리 목록</NavLink>
                                     
                                 </div>
                             </li>
@@ -111,7 +113,7 @@ const Menu = () => {
                                 </div>
                             </li>
                             <li>
-                                {/* 검색창 테스트 */}
+                                {/* 검색창 */}
                                 <div className="row mx-4">
                                     <div className="col input-group w-auto">
                                         <select type="search" className="form-select bg-white border-0" 
@@ -120,9 +122,12 @@ const Menu = () => {
                                             <option value="product_name">상품명</option>
                                             <option value="product_member">판매자</option>
                                         </select>
-                                        <input type="search" className="form-control bg-white border-0" 
+                                        <input type="search" className="form-control w-auto bg-white border-0" 
                                                 name="keyword" value={input.keyword} onChange={changeInput}/>
-                                        <button className="btn btn-dark" onClick={sendToProduct}>검색</button>
+                                        <button className="btn btn-dark d-flex justify-content-center align-items-center" onClick={sendToProduct}>
+                                            <FaMagnifyingGlass />
+                                            검색
+                                        </button>
                                     </div>
                                 </div>
                             </li>
