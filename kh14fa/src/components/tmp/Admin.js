@@ -5,6 +5,7 @@ import AdminMemberEdit from "../admin/member/AdminMemberEdit";
 import CategoryList from "../admin/category/CategoryList";
 import CategoryEdit from "../admin/category/CategoryEdit";
 import CategoryInsert from "../admin/category/CategoryInsert";
+import Product from "../admin/Product";
 
 const Admin = ()=>{
     return (
@@ -17,6 +18,7 @@ const Admin = ()=>{
             <Route path="/category/list" element={<CategoryList/>} />
             <Route path="/category/insert" element={<CategoryInsert/>} />
             <Route path="/category/edit/:categoryNo" element={<CategoryEdit/>} />
+            <Route path="/product/list" element={<Product/>} />
         </Routes>
         </>
     );
