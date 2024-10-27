@@ -212,25 +212,21 @@ const ProductList = () => {
     </div> */}
 
 		{/* 검색창 */}
-		<div className="row">
-			<div className="col">
-				<div className="input-group">
-					<div className="col-3">
-						<select className="form-select" name="column" value={input.column} onChange={changeInput}>
-							<option value="">선택</option>
-							<option value="product_name">상품명</option>
-							<option value="product_member">판매자</option>
-						</select>
-					</div>
-					<div className="col-7">
-						<input type="search" className="form-control" name="keyword" value={input.keyword} onChange={changeInput} />
-					</div>
-					<div className="col-2">
-						<button type="button" className="btn btn-secondary w-100" onClick={loadProductList}>
-							<FaMagnifyingGlass />
-							검색
-						</button>
-					</div>
+		<div className="row mt-4">
+			<div className="col-6 offset-3">
+				<div className="input-group w-auto">
+					<select type="search" className="form-select bg-white" 
+							name="column" value={input.column} onChange={changeInput}>
+						<option value="">선택</option>
+						<option value="product_name">상품명</option>
+						<option value="product_member">판매자</option>
+					</select>
+					<input type="search" className="form-control w-auto bg-white" 
+							name="keyword" value={input.keyword} onChange={changeInput}/>
+					<button type="button" className="btn btn-dark d-flex justify-content-center align-items-center" onClick={loadProductList}>
+						<FaMagnifyingGlass />
+						검색
+					</button>
 				</div>
 			</div>
 		</div>
