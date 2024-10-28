@@ -246,15 +246,21 @@ const ProductList = () => {
                             {product.productDetail}
                             <div className="text-start">
                                 {formatCurrency(product.productPrice)}원
-                                {product.productState === "판매중" ? (
-                                    <span className='badge bg-primary ms-2'>
-                                        {product.productState}
-                                    </span>
-                                ) : (
-                                    <span className='badge bg-danger ms-2'>
-                                        {product.productState}
-                                    </span>
-                                )}
+                                {product.productState === "판매중" && (
+									<span className='badge bg-primary ms-2'>
+										{product.productState}
+									</span>
+								)}
+								{product.productState === "판매보류" && (
+									<span className='badge bg-danger ms-2'>
+										{product.productState}
+									</span>
+								)}
+								{product.productState === "판매완료" && (
+									<span className='badge bg-success ms-2'>
+										{product.productState}
+									</span>
+								)}
                             </div>
                             <div className="text-end d-flex justify-content-start align-items-center">
                                 <FaRegHeart className="text-danger me-2" />

@@ -41,6 +41,7 @@ const Paysuccess = ()=>{
                     totalPrice : window.sessionStorage.getItem("totalPrice")
                 }   
             );
+            changeHoldOff();
             setPayment(resp.data);
             setResult(true);
         }
@@ -54,7 +55,15 @@ const Paysuccess = ()=>{
         }
     },[login, memberLoading]);
 
-    
+    // 판매상태를 판매완료로 바꾸는 함수
+    const changeHoldOff = useCallback(async()=>{
+            await axios.patch("/product/patch", 
+                {
+                    productNo : window.sessionStorage.getItem("productNo"), 
+                    productState : "판매완료"
+                }
+            );
+    },[]);
 
 
     if(result === null){
