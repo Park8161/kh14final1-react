@@ -102,7 +102,9 @@ const ProductDetail = ()=>{
         checkLikes();
     },[like,likes]);
 
+    // 좋아요 했는지 확인
     const checkLikes = useCallback(async()=>{
+        if(memberId === "") return;
         const response = await axios.get("/product/check/"+productNo);
         if(response.data.checked){
             setLike(true);
@@ -134,8 +136,12 @@ const ProductDetail = ()=>{
                 toast.warning("본인 상품 구매 불가능");
                 return;
             }
-            else if(product.productState === "판매보류"){
+            else if(product.productState === "판매보류") {
                 toast.warning("보류 중 상품 구매 불가능");
+                return;
+            }
+            else if(product.productState === "판매완료") {
+                toast.warning("판매완료 상품 구매 불가능");
                 return;
             }
             const resp = await axios.post("/room/"+productNo);
@@ -210,8 +216,23 @@ const ProductDetail = ()=>{
                         </div>
                     </div>   
                     <div className="row">
-                        <div className="col">
-                            <h2>{formatCurrency(product.productPrice)}원</h2>
+                        <div className="col d-flex align-items-center">
+                            <big>{formatCurrency(product.productPrice)}원</big>
+                            {product.productState === "판매중" && (
+                                <span className='badge bg-primary ms-2'>
+                                    {product.productState}
+                                </span>
+                            )}
+                            {product.productState === "판매보류" && (
+                                <span className='badge bg-danger ms-2'>
+                                    {product.productState}
+                                </span>
+                            )}
+                            {product.productState === "판매완료" && (
+                                <span className='badge bg-success ms-2'>
+                                    {product.productState}
+                                </span>
+                            )}
                         </div>
                     </div> 
                     <div className="row">
@@ -263,7 +284,7 @@ const ProductDetail = ()=>{
                                 ) : (
                                     <FaRegHeart className="text-danger" style={{cursor:"pointer", width:"50px", height:"50px"}}/>
                                 )}
-                                <span className="text-danger text-center">{likes}</span>
+                                {/* <span className="text-danger text-center">{likes}</span> */}
                             </div>
                         </div>
                         <div className="col-5">
