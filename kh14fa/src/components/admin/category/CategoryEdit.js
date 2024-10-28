@@ -53,9 +53,19 @@ const CategoryEdit = () => {
         setGroup3();
     }, [group1, group2, group3]);
 
+    // 카테고리 중복 검사
+    const existenceCategory = useCallback(()=>{
+        return category.some(cat => cat.categoryName === input.categoryName && cat.categoryNo !== categoryNo);
+    }, [category, input.categoryName, categoryNo]);
+
     // 카테고리 수정 처리
     const updateCategory = useCallback(async (e) => {
         // e.preventDefault(); // 기본 제출 이벤트 방지
+        if(existenceCategory()){
+            toast.error("중복 된 카테고리명");
+            return;
+        }
+
         if (checkContains() === true) {
             toast.error("하위카테고리 존재로 인해 수정 불가");
             return;
@@ -68,7 +78,7 @@ const CategoryEdit = () => {
         } catch (error) {
             toast.error('카테고리 정보 재확인 바람');
         }
-    }, [input, categoryNo]);
+    }, [input, categoryNo, existenceCategory]);
 
     // 매우 중요한것임, 카테고리 선택에 따라 값 바꿔서 input에다가 넣어줌 
     const changeInput = useMemo(() => {
