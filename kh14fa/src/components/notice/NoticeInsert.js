@@ -16,20 +16,77 @@ const NoticeInsert = () => {
 
     //callback
     const changeInput = useCallback(e => {
-        setInput({
-            ...input,
-            [e.target.name]: e.target.value
+        if (e.target.type === "file") {
+            const files = Array.from(e.target.files);
+            setInput(prev => ({
+                ...prev,
+                attachList: files
+            }));
+            const imageUrls = files.map(file => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                return new Promise((resolve) => {
+                    reader.onloadend = () => {
+                        resolve(reader.result);
+                    };
+                });
+            });
+            Promise.all(imageUrls).then(urls => {
+                setImages(urls);
+            });
+        } else {
+            setInput(prev => ({
+                ...prev,
+                [e.target.name]: e.target.value
+            }));
+        }
+    }, []);
+
+    const noticeInsert = useCallback(async () => {
+        const formData = new FormData();
+        const fileList = inputFileRef.current.files;
+
+        for (let i = 0; i < fileList.length; i++) {
+            formData.append("attachList", fileList[i]);
+        }
+
+        formData.append("noticeType", input.noticeType);
+        formData.append("noticeTitle", input.noticeTitle);
+        formData.append("noticeContent", input.noticeContent);
+
+        await axios.post("/notice/insert", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
         });
-    }, [input]);
+        inputFileRef.current.value = "";
+        navigate("/notice/list");
+        toast.success("공지사항 등록 완료");
+    });
 
     const saveNotice = useCallback(async () => {
-        //input의 형식 검사 후 차단 또는 허용
+        if (!input.noticeType) {
+            toast.error("분류를 선택해 주세요");
+            return;
+        }
+        if (!input.noticeTitle) {
+            toast.error("제목을 입력해 주세요");
+            return;
+        }
+        if (!input.noticeContent) {
+            toast.error("내용을 입력해 주세요");
+            return;
+        }
+        
+        // "이벤트" 선택 시 파일 첨부 여부 확인
+        if (input.noticeType === "이벤트" && input.attachList.length === 0) {
+            toast.error("파일첨부는 필수입니다");
+            return; // 실행 중단
+        }
 
-        const resp = await axios.post("/notice/insert", input);
-        //알림코드
-        navigate("/notice/list");
-    }, [input]);
-    
+        // 유효성 검사 통과 시 API 호출
+        await noticeInsert();
+    }, [input, noticeInsert]);
 
     //view
     return (<>

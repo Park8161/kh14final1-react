@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import Jumbotron from "../Jumbotron";
 import { toast } from "react-toastify";
@@ -10,6 +10,13 @@ const NoticeEdit = () => {
     const navigate = useNavigate();
 
     const {noticeNo} = useParams();
+
+    //파일선택
+    const inputFileRef = useRef(null);
+
+    const [attachImages, setAttachImages] = useState([]);//보낼 추가첨부사진이미지
+    const [updateFileList, setUpdateFileList] = useState([]);
+    const [loadImages, setLoadImages] = useState([]);
 
     //state
     const [notice, setNotice] = useState({});
@@ -25,6 +32,8 @@ const NoticeEdit = () => {
     }, []);
 
     //callback
+
+    
     const loadNotice = useCallback(async () => {
         const resp = await axios.get("/notice/detail/" + noticeNo);
         setEdit(resp.data);
