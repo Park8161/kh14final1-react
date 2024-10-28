@@ -66,13 +66,27 @@ const NoticeInsert = () => {
         toast.success("공지사항 등록 완료");
     });
 
+
     const saveNotice = useCallback(async () => {
+        if (!input.noticeType) {
+            toast.error("분류를 선택해 주세요");
+            return;
+        }
+        if (!input.noticeTitle) {
+            toast.error("제목을 입력해 주세요");
+            return;
+        }
+        if (!input.noticeContent) {
+            toast.error("내용을 입력해 주세요");
+            return;
+        }
+        
         // "이벤트" 선택 시 파일 첨부 여부 확인
         if (input.noticeType === "이벤트" && input.attachList.length === 0) {
             toast.error("파일첨부는 필수입니다");
             return; // 실행 중단
         }
-
+    
         // 유효성 검사 통과 시 API 호출
         await noticeInsert();
     }, [input, noticeInsert]);
