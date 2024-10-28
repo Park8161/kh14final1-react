@@ -1,15 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import Jumbotron from '../../Jumbotron';
+
 import { FaMagnifyingGlass } from "react-icons/fa6";
+import { Modal } from 'bootstrap';
+import { IoMdClose } from "react-icons/io";
+import { FaAsterisk } from "react-icons/fa";
+import { MdDeleteForever } from "react-icons/md";
 
 const CategoryList = () => {
+    //ref
+    const deleteCategoryModal = useRef();
+
+    //state
     const [categories, setCategories] = useState([]); // 전체 카테고리 리스트
     const [filteredCategories, setFilteredCategories] = useState([]); // 검색 필터된 카테고리 리스트
     const [keyword, setKeyword] = useState(''); // 검색어
     const [page, setPage] = useState(1); // 현재 페이지
     const [pageSize, setPageSize] = useState(10); // 한 페이지 당 항목 수
+    const [categoryToDelete, setCategoryToDelete] = useState([]); // 삭제할 카테고리
 
     const navigate = useNavigate();
 
@@ -73,9 +82,22 @@ const CategoryList = () => {
         setFilteredCategories(categories);
     };
 
+    // 카테고리 삭제 모달
+    const openDcModal = useCallback((category)=>{
+        const modal = Modal.getOrCreateInstance(deleteCategoryModal.current);
+        modal.show();
+        // console.log(category);
+        setCategoryToDelete(category);
+    }, [deleteCategoryModal]);
+
+    const closeDcModal = useCallback(()=>{
+        const modal = Modal.getInstance(deleteCategoryModal.current);
+        modal.hide();
+    },[deleteCategoryModal]);
+
     return (
         <>
-            <Jumbotron title="카테고리 리스트" />
+            
 
             {/* 검색창 */}
             <div className="row mt-2">
@@ -165,7 +187,7 @@ const CategoryList = () => {
                                         </Link>
                                         <button
                                             className="btn btn-danger"
-                                            onClick={() => handleDelete(category.categoryNo)}
+                                            onClick={() => openDcModal(category)}
                                         >
                                             Delete
                                         </button>
@@ -193,6 +215,73 @@ const CategoryList = () => {
                         onClick={() => setPage(page + 1)}>
                         다음
                     </button>
+                </div>
+            </div>
+
+            {/* 카테고리 삭제 모달 */}
+            <div className="modal fade" table="-1" ref={deleteCategoryModal} data-bs-backdrop="static">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+
+                            {/* 모달 헤더 - 제목, x버튼 */}
+                            <div className="modal-header">
+                                <p className="modal-title">카테고리 삭제</p>
+                                <button type="button" className='btn-close btn-manual-close' onClick={closeDcModal}/>
+                            </div>
+
+                            {/* 모달 본문 */}
+                            <div className="modal-body">
+                                
+                                <div className='row'>
+                                    <div className='col d-flex justyfy-content-center align-items-center'>
+                                    <FaAsterisk className="text-danger" />
+                                    선택한 카테고리 [{categoryToDelete.categoryName}]가 삭제됩니다.
+                                    <FaAsterisk className="text-danger" />
+                                    </div>
+                                </div>
+
+                                <div className='row mt-4'>
+                                    <div className='col'>
+                                        <input type='text' className='form-control'
+                                        value={categories.filter(cat => cat.categoryNo === categoryToDelete.categoryGroup)[0]?.categoryName}
+                                        onChange={()=>{}} readOnly/>                                        
+                                    </div>
+                                </div>
+                                {(categoryToDelete.categoryDepth === 2 || categoryToDelete.categoryDepth === 3) && (
+                                <div className='row mt-4'>
+                                    <div className='col'>
+                                        <input type='text' className='form-control'
+                                        value={categories.filter(cat => cat.categoryNo === categoryToDelete.categoryUpper)[0]?.categoryName}
+                                        onChange={()=>{}} readOnly/>                                        
+                                    </div>
+                                </div>
+                                )}
+                                {categoryToDelete.categoryDepth === 3 && (
+                                <div className='row mt-4'>
+                                    <div className='col'>
+                                        <input type='text' className='form-control'
+                                        value={categories.filter(cat => cat.categoryNo === categoryToDelete.categoryNo)[0]?.categoryName}
+                                        onChange={()=>{}} readOnly/>                                        
+                                    </div>
+                                </div>
+                                )}
+                            </div>
+
+                            {/* 모달 푸터 - 종료, 확인, 저장 등 각종 버튼 */}
+                            <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={closeDcModal}>
+                            닫기<IoMdClose className="ms-1 btn-lg-white"/>
+                        </button>
+                        <button type="button" className="btn btn-danger" 
+                                    onClick={()=>{
+                                        handleDelete(categoryToDelete.categoryNo);//삭제 처리
+                                        closeDcModal(); // 모달 닫기
+                                        }}>
+                            삭제<MdDeleteForever className="ms-1"/>
+                        </button>
+                    </div>
+
+                    </div>
                 </div>
             </div>
         </>

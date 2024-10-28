@@ -1,4 +1,4 @@
-import Jumbotron from "../../Jumbotron";
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -72,8 +72,9 @@ const CategoryEdit = () => {
 
     // 매우 중요한것임, 카테고리 선택에 따라 값 바꿔서 input에다가 넣어줌 
     const changeInput = useMemo(() => {
-        const depth = (group1 === (null || 0) ? (1) : (group2 === (null || 0) ? 2 : 3))
+        const depth = ((group1 === undefined || group1 === 0) ? (1) : ((group2 === undefined || group2 === 0) ? 2 : 3))
         setInput({
+            ...input,
             categoryDepth: depth,
             categoryName: input.categoryName,
             categoryUpper: (depth === 1 ? (0) : (depth === 2 ? (group1) : (group2)))
@@ -98,7 +99,7 @@ const CategoryEdit = () => {
                     </button>
                     <input type="text" className="form-control"                             
                             value={input.categoryName} 
-                            onChange={e => setInput({ categoryName: e.target.value })} />
+                            onChange={e => setInput({...input, categoryName: e.target.value })} />
                 </div>
             </div>
         </div>
