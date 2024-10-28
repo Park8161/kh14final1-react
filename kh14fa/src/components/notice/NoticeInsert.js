@@ -36,7 +36,7 @@ const NoticeInsert = () => {
                 });
             });
             Promise.all(imageUrls).then(urls => {
-                setImages(urls);
+                // setImages(urls);
             });
         } else {
             setInput(prev => ({
@@ -48,11 +48,11 @@ const NoticeInsert = () => {
 
     const noticeInsert = useCallback(async () => {
         const formData = new FormData();
-        const fileList = inputFileRef.current.files;
+        // const fileList = inputFileRef.current.files;
 
-        for (let i = 0; i < fileList.length; i++) {
-            formData.append("attachList", fileList[i]);
-        }
+        // for (let i = 0; i < fileList.length; i++) {
+        //     formData.append("attachList", fileList[i]);
+        // }
 
         formData.append("noticeType", input.noticeType);
         formData.append("noticeTitle", input.noticeTitle);
@@ -63,28 +63,28 @@ const NoticeInsert = () => {
                 'Content-Type': 'multipart/form-data',
             },
         });
-        inputFileRef.current.value = "";
+        // inputFileRef.current.value = "";
         navigate("/notice/list");
-        toast.success("공지사항 등록 완료");
+        // toast.success("공지사항 등록 완료");
     });
 
     const saveNotice = useCallback(async () => {
         if (!input.noticeType) {
-            toast.error("분류를 선택해 주세요");
+            // toast.error("분류를 선택해 주세요");
             return;
         }
         if (!input.noticeTitle) {
-            toast.error("제목을 입력해 주세요");
+            // toast.error("제목을 입력해 주세요");
             return;
         }
         if (!input.noticeContent) {
-            toast.error("내용을 입력해 주세요");
+            // toast.error("내용을 입력해 주세요");
             return;
         }
 
         // "이벤트" 선택 시 파일 첨부 여부 확인
         if (input.noticeType === "이벤트" && input.attachList.length === 0) {
-            toast.error("파일첨부는 필수입니다");
+            // toast.error("파일첨부는 필수입니다");
             return; // 실행 중단
         }
 
