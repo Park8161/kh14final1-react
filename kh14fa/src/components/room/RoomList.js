@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { loginState, memberIdState, memberLoadingState } from '../../utils/recoil';
 import axios from 'axios';
 import { useRecoilValue } from 'recoil';
+import moment from "moment";
 
 const RoomList = ()=>{
     const navigate = useNavigate();
@@ -29,36 +30,39 @@ const RoomList = ()=>{
 
     return (
         <>          
-        <div className="container">
-            <h4>채팅 목록</h4>
-            <div>
+        <div className="container row">
+            <div className="col">
+                <h4>채팅 목록</h4>
                 {roomList.length > 0 ? (
                     <div className="row mt-4 d-flex justify-content-center">
                         <div className="col-md-8">
-                            <ul className="list-group">
+                            <ul className="list-group" style={{ maxHeight: '500px', overflowY: 'auto' }}>
                                 {roomList.map((room) => (
                                     <NavLink 
                                         to={`/chat/chatroom/${room.roomNo}`} 
                                         className="list-group-item list-group-item-action d-flex justify-content-between align-items-center mb-2 p-3"
                                         key={room.roomNo}
-                                        style={{ borderRadius: "8px", transition: "all 0.3s ease" }}
-                                    >
+                                        style={{ borderRadius: "8px", transition: "all 0.3s ease",
+                                            border: '1px solid #ccc', // 테두리 추가
+                                            padding: '10px' 
+                                         }}>
                                         <div>
                                             <div className="d-flex justify-content-between align-items-center mb-1 text-dark">
-                                                {/* {memberId !== room.productMember ? (
-                                                    <h6 className="mb-0">{room.productMember}</h6>)
-                                                : (
-                                                    <h6>구매자</h6>
-                                                )
-                                                } */}
-                                                <p className="text-muted small mb-0 ml-auto">{room.productName}</p>
+                                                <h6 className="mb-0">{room.memberId}</h6>
+                                                <p className="text-muted small mb-0 mx-2">|</p> 
+                                                <p className="text-muted small mb-0">{room.productName}</p>
                                             </div>
-                                            <div style={{ minHeight: '1.5em' }}> {/* 최소 높이 설정 */}
+                                            <div style={{ minHeight: '1.5em' }}> 
                                                 {room.roomMessageContent ? (
-                                                    <p className="text-muted small my-2">{room.roomMessageContent}</p>
+                                                    <div>
+                                                        <p className="text-muted small my-2">{room.roomMessageContent}</p>
+                                                        <p className="text-muted small my-2">{moment(room.roomMessageTime).format("a h:mm")}</p>
+                                                            
+                                                    </div>
+                                                    
                                                 ) : (
                                                     <p className="text-muted small my-2" style={{ visibility: 'hidden' }}>
-                                                        {/* 빈 공간을 유지하기 위한 요소 */}
+                                                        {/* 빈 공간 유지 */}
                                                     </p>
                                                 )}
                                             </div>
@@ -69,9 +73,12 @@ const RoomList = ()=>{
                         </div>
                     </div>
                 ) : (
-                    <div className="text-center text-muted mt-5">
-                        <i className="bi bi-chat-slash fs-1 mb-3"></i>
-                        <p>참여중인 채팅방이 없습니다</p>
+                    <div className="text-center text-muted mt-5 d-flex align-items-center justify-content-center" 
+                         style={{ maxHeight: '500px', minHeight: '500px' }}>
+                        <div>
+                            <i className="bi bi-chat-slash fs-1 mb-3"></i>
+                            <p>참여중인 채팅방이 없습니다</p>
+                        </div>
                     </div>
                 )}
             </div>

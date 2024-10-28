@@ -14,6 +14,7 @@ const ChatRoom = ()=>{
     // 방번호
     const {roomNo} = useParams();
     const navigate = useNavigate();
+
     
     // state
     const [input, setInput] = useState("");
@@ -21,7 +22,7 @@ const ChatRoom = ()=>{
     const [client, setClient] = useState(null);
     const [connect, setConnect] = useState(false);
     const [productInfo, setProductInfo] = useState({});
-
+    
     // recoil
     const login = useRecoilValue(loginState);
     const memberId = useRecoilValue(memberIdState);
@@ -65,7 +66,6 @@ const ChatRoom = ()=>{
                     setMessageList(prev=>[...prev, data]);
                 });
                 client.subscribe(`/private/user/${roomNo}`,(message)=>{});
-                client.subscribe(`/private/dm/${roomNo}/${memberId}`,(message)=>{})
                 client.subscribe(`/private/db/${roomNo}/${memberId}`,(message)=>{
                     const data = JSON.parse(message.body);
                     setMessageList(data.messageList);
@@ -76,9 +76,9 @@ const ChatRoom = ()=>{
             onDisconnect:()=>{
                 setConnect(false);
             },
-            debug:(str)=>{
-                console.log(str);
-            }
+            // debug:(str)=>{
+            //     console.log(str);
+            // }
         });
         client.activate();
         return client;
@@ -111,18 +111,15 @@ const ChatRoom = ()=>{
         try {
             const resp = await axios.get("/room/productInfo/" + roomNo); 
             setProductInfo(resp.data);
-            console.log("productInfo: ", resp.data); 
-           
         } catch (error) {
-            console.error("Error fetching product info:", error);
+            console.error("에러발생: ", error);
         }
     },[roomNo]);
 
-    const leaveRoom = useCallback(()=>{
+    const leaveRoom = useCallback(async (roomNo)=>{
         if(window.confirm("채팅방을 나가겠습니까?")){
             const resp = axios.post("/room/leave", {roomNo : roomNo});
             navigate("/chat/roomlist");
-            console.log("resp.data: "+resp.data);
         }
         else{}
     },[]);
@@ -162,7 +159,7 @@ const ChatRoom = ()=>{
 
                     <li className="list-group-item">
                         <button type="button" className="btn"
-                        onClick={leaveRoom}>나가기</button>
+                        onClick={e=>leaveRoom(roomNo)}>나가기</button>
                     </li>
 
                     {messageList.map((message, index)=>(
