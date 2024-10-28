@@ -1,5 +1,6 @@
 // import
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import event1 from '../assets/event1.jpg';
 import event2 from '../assets/event2.gif';
 import event3 from '../assets/event3.gif';
@@ -18,12 +19,14 @@ const Home = () => {
     // 상태 관리: 현재 배너의 인덱스
     const [currentIndex, setCurrentIndex] = useState(0);
 
+    const navigate = useNavigate();
+
     // 배너 데이터 (예시)
     const banners = [
-        [event1, "배너 1"],
+        [event4, "배너 1"],
         [event2, "배너 2"],
         [event3, "배너 3"],
-        [event4, "배너 4"],
+        [event1, "배너 4"],
         [event5, "배너 5"],
         [event6, "배너 6"],
         [event7, "배너 7"],
@@ -48,15 +51,20 @@ const Home = () => {
     const displayedBanners = banners.slice(currentIndex * 3, currentIndex * 3 + 3);
     const totalPages = Math.ceil(banners.length / 3);
 
-        // 자동으로 배너를 변경하는 효과
-        useEffect(() => {
-            const timer = setInterval(() => {
-                nextBanner();
-            }, 4000); // 4초마다 다음 배너로 이동
+    // 자동으로 배너를 변경하는 효과
+    useEffect(() => {
+        const timer = setInterval(() => {
+            nextBanner();
+        }, 4000); // 4초마다 다음 배너로 이동
     
-            // 컴포넌트가 언마운트될 때 타이머를 정리
-            return () => clearInterval(timer);
-        }, [currentIndex]);
+    // 컴포넌트가 언마운트될 때 타이머를 정리
+        return () => clearInterval(timer);
+    }, [currentIndex]);
+
+    // 배너 클릭 시 페이지 이동
+    const LinkNotice = (link)=>{
+        navigate(link);
+    };
 
     // view
     return (
@@ -75,11 +83,31 @@ const Home = () => {
                             </div>
                         </div>
                     </div>
-                    <button className="carousel-control-prev" type="button" onClick={prevBanner}  style={{ left: '-80px', position: 'absolute', zIndex: '1' }}>
+                    {/* 이전 버튼 (<) */}
+                    <button className="carousel-control-prev" type="button" onClick={prevBanner}
+                                data-bs-slide="prev"
+                                style={{
+                                    position: 'absolute'  ,
+                                    left: '-30px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    zIndex: '1',
+                                    border: 'none'
+                                }}>
                         <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span className="visually-hidden">Previous</span>
-                    </button>
-                    <button className="carousel-control-next" type="button" onClick={nextBanner}  style={{ right: '-80px', position: 'absolute', zIndex: '1' }}>
+                    </button>                                    
+                    {/* 다음 버튼 (>) */}
+                    <button className="carousel-control-next" type="button" onClick={nextBanner}
+                                data-bs-slide="next"
+                                style={{
+                                    position: 'absolute'  ,
+                                    right: '-30px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    zIndex: '1',
+                                    border: 'none'                                }}>
+                                
                         <span className="carousel-control-next-icon" aria-hidden="true"></span>
                         <span className="visually-hidden">Next</span>
                     </button>
