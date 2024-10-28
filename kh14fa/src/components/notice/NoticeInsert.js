@@ -1,7 +1,8 @@
 import axios from "axios";
 import Jumbotron from "../Jumbotron";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 const NoticeInsert = () => {
     //navigate
@@ -13,6 +14,9 @@ const NoticeInsert = () => {
         noticeTitle: "",
         noticeContent: "",
     });
+
+    const [images, setImages] = useState([]);
+    const inputFileRef = useRef(null);
 
     //callback
     const changeInput = useCallback(e => {
@@ -77,7 +81,7 @@ const NoticeInsert = () => {
             toast.error("내용을 입력해 주세요");
             return;
         }
-        
+
         // "이벤트" 선택 시 파일 첨부 여부 확인
         if (input.noticeType === "이벤트" && input.attachList.length === 0) {
             toast.error("파일첨부는 필수입니다");
@@ -105,33 +109,43 @@ const NoticeInsert = () => {
         </div>
         <div className="row mt-4">
             <div className="col">
-                <label>제목</label>
-                <input type="text" name="noticeTitle" className="form-control"
-                    value={input.noticeTitle} onChange={changeInput} />
+                <label className="form-label">파일</label>
+                <input type="file" className="form-control" name="attachList" multiple accept="image/*" onChange={changeInput} ref={inputFileRef} />
+                {images.map((image, index) => (
+                    <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
+                ))}
             </div>
-        </div>
-        <div className="row mt-4">
-    <div className="col">
-        <label>내용</label>
-        <textarea 
-            name="noticeContent" 
-            className="form-control" 
-            value={input.noticeContent} 
-            onChange={changeInput} 
-            rows={15} // 초기 높이
-            style={{ resize: 'none' }} // 크기 조절 비활성화 (선택 사항) 
-        />
-        </div>
-    </div>
+            <div className="row mt-4">
+                <div className="col">
+                    <label>제목</label>
+                    <input type="text" name="noticeTitle" className="form-control"
+                        value={input.noticeTitle} onChange={changeInput} />
+                </div>
+            </div>
+            <div className="row mt-4">
+                <div className="col">
+                    <label>내용</label>
+                    <textarea
+                        name="noticeContent"
+                        className="form-control"
+                        value={input.noticeContent}
+                        onChange={changeInput}
+                        rows={15} // 초기 높이
+                        style={{ resize: 'none' }} // 크기 조절 비활성화 (선택 사항) 
+                    />
+                </div>
+            </div>
 
-        <div className="row mt-4">
-            <div className="col mt-4">
-                <button type="button" className="btn btn-success me-3"
-                    onClick={saveNotice}>등록</button>
-                <button type="button" className="btn btn-secondary"
-                    onClick={e => navigate("/notice/list")}>목록</button>
+            <div className="row mt-4">
+                <div className="col mt-4">
+                    <button type="button" className="btn btn-success me-3"
+                        onClick={saveNotice}>등록</button>
+                    <button type="button" className="btn btn-secondary"
+                        onClick={e => navigate("/notice/list")}>목록</button>
+                </div>
             </div>
         </div>
-    </>);
-};
-export default NoticeInsert;
+        </>
+        );
+        };
+        export default NoticeInsert;
