@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import PacmanLoader from "react-spinners/PacmanLoader";
 import { FaRegCheckCircle } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 const Paysuccess = ()=>{
 
@@ -12,23 +13,16 @@ const Paysuccess = ()=>{
 
     const login = useRecoilValue(loginState);
     const memberLoading = useRecoilValue(memberLoadingState);
-    const [product, setProduct] = useState({});
-    const [productNo, setProductNo] = useState(0);
     const [result, setResult] = useState(null);
+    const [payment, setPayment] = useState({});
 
+    // const []
     useEffect(()=>{
         if(login === true && memberLoading === true){
             sendApproveRequest();
         }
     }, [login, memberLoading]);
 
-    useEffect(() => {
-           const no = window.sessionStorage.getItem("productNo");
-           setProductNo(no);
-           if(productNo !== 0){
-               loadProduct();
-           }
-    }, []);
 
     const sendApproveRequest = useCallback(async()=>{
         try{
@@ -47,67 +41,78 @@ const Paysuccess = ()=>{
                     totalPrice : window.sessionStorage.getItem("totalPrice")
                 }   
             );
-    
+            changeHoldOff();
+            setPayment(resp.data);
             setResult(true);
         }
         catch(e){
             setResult(false);
         }
-        finally{
+        finally{             
             window.sessionStorage.removeItem("tid");
             window.sessionStorage.removeItem("productNo");
             window.sessionStorage.removeItem("totalPrice");
         }
     },[login, memberLoading]);
 
-    const loadProduct = useCallback(async ()=>{
-        if(productNo !== 0){
-            const resp = await axios.get("/product/detail/"+productNo);
-            setProduct(resp.data.productDto);
-        }
+    // 판매상태를 판매완료로 바꾸는 함수
+    const changeHoldOff = useCallback(async()=>{
+            await axios.patch("/product/patch", 
+                {
+                    productNo : window.sessionStorage.getItem("productNo"), 
+                    productState : "판매완료"
+                }
+            );
     },[]);
 
-    if(result === null && product === null){
+
+    if(result === null){
         return(<>
-        <div className="row">
-            <h5>결제 진행중</h5>
-            <PacmanLoader />
+         <div className="row d-flex align-items-middle" style={{ minHeight: "100vh" }}>
+            <div className="col text-center">
+                <div className="my-5">
+                    <h5>결제 진행중</h5>
+                    <PacmanLoader />
+                </div>
+            </div>
         </div>
         </>);
     }
-
-    else if(result=== true && product){
+    if(result=== true){
     return(<>
-        <div className="row mt-4 d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+        <div className="row d-flex align-items-middle" style={{ minHeight: "100vh" }}>
             <div className="col text-center">
-                <div>
+                <div className="my-5">
                     <div>
                         <FaRegCheckCircle style={{ fontSize: "4rem", color: "green" }} /> {/* Increase icon size and color */}
                     </div>
                     <p className="fs-5 mt-2">구매가 완료되었습니다!</p>
                 </div>
-                <div className="row mt-4">
+                <div className="row mt-5">
                     <div className="col-3">
                         <div className="row">상품명</div>
-                        <div className="row">상품가격</div>
-                        <div className="row">배송비</div>
+                        <div className="row">구매일시</div>
                         <div className="row">총 결제금액</div>
                     </div>
                     <div className="col-9">
-                        <div className="row">{product.productName}</div>
-                        <div className="row">{product.productPrice}</div>
-                        <div className="row">3000</div> {/* 배송비 부분은 수정하셔야 합니다 */}
-                        <div className="row">{product.productPrice + 3000}</div> {/* 총 결제금액 계산 */}
+                        <div className="row">{payment.paymentName}</div>
+                        <div className="row">{payment.paymentTime}</div>
+                        <div className="row">{payment.paymentTotal}</div> {/* 총 결제금액 계산 */}
                     </div>
                 </div>
             </div>
-</div>
-    </>);
-
-    }
+        </div>
+    </>);}
     else{
         return(<>
-            <h1>결제 승인 실패</h1>
+         <div className="row d-flex align-items-middle" style={{ minHeight: "100vh" }}>
+            <div className="col text-center">
+                <div className="my-5">
+                    <h1>결제 승인이 실패했거나 페이지가 만료 되었습니다.</h1>
+                    <NavLink to="/Pay/list">결제내역 확인하기</NavLink>
+                </div>
+            </div>
+        </div>
         </>);
     }
 };

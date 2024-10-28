@@ -28,10 +28,8 @@ const ProductEdit = () => {
         images: [],
     });
 
-
     //파일 선택 Ref
     const inputFileRef = useRef(null);
-
 
     //const [attachDeleteList, setAttachDeleteList] = useState([]);//구현 안된기능 state 삭제된 추가첨부사진이미지
     //const [attachImageValue, setAttachImageValue] = useState([]);//구현 안된기능 state  선택된파일에 담겨있는 값
@@ -46,7 +44,6 @@ const ProductEdit = () => {
     const [group2, setGroup2] = useState();
     const [group3, setGroup3] = useState();
     const [categoryName, setCategoryName] = useState("");
-    const [message, setMessage] = useState("");
     const [deleteList, setDeleteList] = useState([]);
 
     //effect
@@ -75,7 +72,7 @@ const ProductEdit = () => {
                 });
             });
             Promise.all(imageUrls).then(urls => {
-                console.log("Image URLs:", urls);
+                // console.log("Image URLs:", urls);
                 setAttachImages(urls); // 모든 이미지 URL을 상태에 저장
             });
         }
@@ -93,7 +90,7 @@ const ProductEdit = () => {
     //특정 상품 정보 가져오기-prev 안쓰면 파일 선택시 값들 초괴화됨
     const loadGetProduct = useCallback(async () => {
         const resp = await axios.get(`/product/detail/${productNo}`);
-        console.log("API 응답:", resp.data);
+        // console.log("API 응답:", resp.data);
 
         setInput(prevInput => ({
             ...prevInput,
@@ -120,7 +117,7 @@ const ProductEdit = () => {
     //수정 axios -> 선택된 파일이 가짐
     const saveProduct = useCallback(async () => {
         const formData = new FormData();
-        console.log("전송할 파일 목록:", updateFileList); // 상태 확인
+        // console.log("전송할 파일 목록:", updateFileList); // 상태 확인
         const fileList = inputFileRef.current.files;
         
         for (let i = 0; i < fileList.length; i++) {
@@ -143,17 +140,16 @@ const ProductEdit = () => {
         formData.append("productNo", productNo);
         formData.append("originList", loadImages);
 
-        console.log(input, loadImages);
+        // console.log(input, loadImages);
 
         await axios.post("/product/edit", formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
-        navigate("/product/list");
+        navigate("/member/mypage");
         toast.success("상품 수정완료");
     }, [input, loadImages, updateFileList]);
-
 
     //카테고리 리스트 가져오기
     const loadCategory = useCallback(async () => {
@@ -183,7 +179,6 @@ const ProductEdit = () => {
     const findCategory = useCallback(() => {
         const findCat = category.filter(category => category.categoryName === categoryName)[0] || "";
         if (findCat === "" && categoryName.length > 0) {
-            setMessage("없는 카테고리 번호");
             setInput(prevInput => ({
                 ...prevInput,
                 product: {
@@ -204,8 +199,7 @@ const ProductEdit = () => {
         setGroup3(findCat.categoryNo);
         setGroup2(findCat.categoryUpper);
         setGroup1(findCat.categoryGroup);
-        setMessage("");
-    }, [input, categoryName, message, category]);
+    }, [input,categoryName,category]);
 
     const deleteImage = useCallback((target) => {
         setDeleteList(target);
@@ -213,7 +207,7 @@ const ProductEdit = () => {
     }, [deleteList, loadImages]);
 
     // //attachList이미지 삭제
-     const deleteAttachImage = useCallback((target)=>{
+    const deleteAttachImage = useCallback((target)=>{
         // 이미지 미리보기에서 삭제
         setAttachImages(prevImages => prevImages.filter(image => image !== target));
     
@@ -229,6 +223,73 @@ const ProductEdit = () => {
     //     });
     }, []);
 
+/////////////////////////////////////////////////////////////////////////
+    // 형식 검사
+
+    // state
+    const [productNameValid, setProductNameValid] = useState(true);
+    const [productFileValid, setProductFileValid] = useState(true);
+    const [productCategoryValid, setProductCategoryValid] = useState(true);
+    const [productPriceValid, setProductPriceValid] = useState(true);
+    const [productDetailValid, setProductDetailValid] = useState(true);
+    const [productQtyValid, setProductQtyValid] = useState(true);
+    const [productNameClass, setProductNameClass] = useState("");
+    const [productFileClass, setProductFileClass] = useState("");
+    const [productCategoryClass, setProductCategoryClass] = useState("");
+    const [productPriceClass, setProductPriceClass] = useState("");
+    const [productDetailClass, setProductDetailClass] = useState("");
+    const [productQtyClass, setProductQtyClass] = useState("");
+
+    // callback
+    const checkProductName = useCallback(()=>{
+        const regex = /^.{1,30}$/;
+        const valid = regex.test(input.product.productName);
+        setProductNameValid(valid);
+        if(input.product.productName.length === 0) setProductNameClass("");
+        else setProductNameClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+    const checkProductFile = useCallback(()=>{
+        const valid = input.product.attachList.length > 0 ;
+        setProductFileValid(valid);
+        if(input.product.attachList.length === 0) setProductFileClass("");
+        else setProductFileClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+    const checkProductCategory = useMemo(()=>{
+        // findCategory 참조
+        const findCat = category.filter(category => category.categoryName === categoryName)[0] || "";
+        const valid = findCat !== "";
+        setProductCategoryValid(valid);
+        if(categoryName.length === 0) setProductCategoryClass("");
+        else setProductCategoryClass(valid ? "is-valid" : "is-invalid");
+    },[input,categoryName]);
+    const checkProductPrice = useCallback(()=>{
+        const regex = /^[0-9]{0,10}$/;
+        const valid = regex.test(input.product.productPrice) && input.product.productPrice > 0;
+        setProductPriceValid(valid);
+        if(input.product.productPrice === 0) setProductPriceClass("");
+        else setProductPriceClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+    const checkProductDetail = useCallback(()=>{
+        const regex = /^.{1,1000}$/;
+        const valid = regex.test(input.product.productDetail);
+        setProductDetailValid(valid);
+        if(input.product.productDetail.length === 0) setProductDetailClass("");
+        else setProductDetailClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+    const checkProductQty = useCallback(()=>{
+        const regex = /^[0-9]{0,9}[1-9]$/;
+        const valid = regex.test(input.product.productQty) && input.product.productQty > 0;
+        setProductQtyValid(valid);
+        if(input.product.productQty === 0 ) setProductQtyClass("");
+        else setProductQtyClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+
+    // memo
+    const isAllValid = useMemo(()=>{
+        const passCheck = productNameValid && productFileValid && productCategoryValid
+                        && productPriceValid && productDetailValid && productQtyValid ;
+        return passCheck;
+    },[productNameValid,productFileValid,productCategoryValid,productPriceValid,productDetailValid,productQtyValid]);
 
     return (<>
         {/* <Jumbotron title="상품 등록 테스트"/> */}
@@ -239,7 +300,9 @@ const ProductEdit = () => {
                     <div className="col">
                         <label>상품명</label>
                         <input type="text" name="productName" value={input.product.productName}
-                            className="form-control" onChange={targetChange} />
+                            className={"form-control "+productNameClass} onChange={targetChange} onBlur={checkProductName} onFocus={checkProductName}/>
+                        <div className="valid-feedback">올바른 입력입니다</div>
+                        <div className="invalid-feedback">영문 대소문자, 숫자, 한글(자음 모음 불가) 100자 제한</div>
                     </div>
                 </div>
                 <div className="row mt-4">
@@ -268,39 +331,39 @@ const ProductEdit = () => {
                     <div className="col">
                         <label className="form-label">파일</label>
 
-                        <input type="file" className="form-control" name="attachList" multiple accept="image/*"
-                            onChange={targetChange} ref={inputFileRef} />
+                        <input type="file" className={"form-control "+productFileClass} name="attachList" multiple accept="image/*"
+                            onChange={targetChange} ref={inputFileRef} onBlur={checkProductFile} onFocus={checkProductFile}/>
 
                         {attachImages.map((image, index) => (
-                             <div key={index} style={{ position: "relative", display: "inline-block" }}>
-                                <img src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px', display: "block"  }} />
-                                <MdCancel style={{ position: "absolute", top: "10px", right: "10px", color:"red"}}
-                                                size={20} onClick={() => deleteAttachImage(image)}/>
-                            </div>
+                        <div key={index} style={{ position: "relative", display: "inline-block" }}>
+                            <img src={image} alt={`미리보기 ${index + 1}`} style={{maxWidth:'100px', margin:'5px', display:"block"}} />
+                            <MdCancel style={{ position: "absolute", top: "10px", right: "10px", color:"red"}} size={20} onClick={()=>deleteAttachImage(image)}/>
+                        </div>
                         ))}
                           {/*  multiple accept -> 어떤 형식 받을건가*/}
                           {loadImages.map((image, index) => (
-                            <div key={index} style={{ position: "relative", display: "inline-block" }}>
-                                <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${image}`}
-                                    alt={`미리보기 ${index + 1}`}
-                                    style={{ maxWidth: '100px', margin: '5px', display: "block" }} />
-                                <MdCancel style={{ position: "absolute", top: "10px", right: "10px", color:"red"}}
-                                                size={20} onClick={() => deleteImage(image)}/>
-                            </div>
+                        <div key={index} style={{ position: "relative", display: "inline-block" }}>
+                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${image}`}
+                                alt={`미리보기 ${index + 1}`}
+                                style={{ maxWidth: '100px', margin: '5px', display: "block" }} />
+                            <MdCancel style={{ position: "absolute", top: "10px", right: "10px", color:"red"}} size={20} onClick={() => deleteImage(image)}/>
+                        </div>                        
                         ))}
+                        <div className="valid-feedback">올바른 입력입니다</div>
+                        <div className="invalid-feedback">상품 이미지 업로드 필수</div>
                     </div>
                 </div>
                 <div className="row mt-4">
                     <div className="col">
                         <label>
                             카테고리
-                            <span className="text-danger ms-1">{message}</span>
                         </label>
                         <div className="input-group">
-                            <input type="text" className="form-control" value={categoryName} onChange={e => setCategoryName(e.target.value)} onBlur={findCategory} />
+                            <input type="text" className={"form-control "+productCategoryClass} value={categoryName} onChange={e => setCategoryName(e.target.value)} onBlur={findCategory} onFocus={findCategory}/>
                             {/* 원래 0으로 계산인데 값이 문자라 문자열 계산으로 바꿈 */}
-                            <input type="number" name="productCategory" value={input.product.productCategory || ""} className="form-control" onChange={targetChange}
-                            />
+                            <input type="hidden" name="productCategory" value={input.product.productCategory || ""} className={"form-control "+productCategoryClass} onChange={targetChange} readOnly/>
+                            <div className="valid-feedback">올바른 입력입니다</div>
+                            <div className="invalid-feedback">카테고리 선택 필수 혹은 없는 카테고리 번호</div>
                         </div>
                     </div>
                 </div>
@@ -314,62 +377,68 @@ const ProductEdit = () => {
                 <div className="row mt-2">
                     <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
                         {category.filter(category => category.categoryDepth === 1).map((cat) => (
-                            <ul className="list-group" key={cat.categoryNo}>
-                                <li className={"list-group-item list-group-item-action " + (group1 === cat.categoryNo && "bg-secondary text-light")}
-                                    onClick={e => (setGroup1(parseInt(e.target.value)), setGroup2(0))} value={cat.categoryNo}>
-                                    {cat.categoryName}
-                                </li>
-                            </ul>
+                        <ul className="list-group" key={cat.categoryNo}>
+                            <li className={"list-group-item list-group-item-action " + (group1 === cat.categoryNo && "bg-secondary text-light")}
+                                onClick={e => (setGroup1(parseInt(e.target.value)), setGroup2(0))} value={cat.categoryNo}>
+                                {cat.categoryName}
+                            </li>
+                        </ul>
                         ))}
                     </div>
                     <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
                         {category.filter(category => (category.categoryDepth === 2 && category.categoryGroup === group1)).map((cat) => (
-                            <ul className="list-group" key={cat.categoryNo}>
-                                <li className={"list-group-item list-group-item-action " + (group2 === cat.categoryNo && "bg-secondary text-light")}
-                                    onClick={e => (setGroup2(parseInt(e.target.value)), setGroup3(0))} value={cat.categoryNo}>
-                                    {cat.categoryName}
-                                </li>
-                            </ul>
+                        <ul className="list-group" key={cat.categoryNo}>
+                            <li className={"list-group-item list-group-item-action " + (group2 === cat.categoryNo && "bg-secondary text-light")}
+                                onClick={e => (setGroup2(parseInt(e.target.value)), setGroup3(0))} value={cat.categoryNo}>
+                                {cat.categoryName}
+                            </li>
+                        </ul>
                         ))}
                     </div>
                     <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
                         {category.filter(category => (category.categoryDepth === 3 && category.categoryGroup === group1 && category.categoryUpper === group2)).map((cat) => (
-                            <ul className="list-group" key={cat.categoryNo}>
-                                <li className={"list-group-item list-group-item-action " + (group3 === cat.categoryNo && "bg-secondary text-light")}
-                                    onClick={e => (setGroup3(parseInt(e.target.value)))} value={cat.categoryNo}>
-                                    {cat.categoryName}
-                                </li>
-                            </ul>
+                        <ul className="list-group" key={cat.categoryNo}>
+                            <li className={"list-group-item list-group-item-action " + (group3 === cat.categoryNo && "bg-secondary text-light")}
+                                onClick={e => (setGroup3(parseInt(e.target.value)))} value={cat.categoryNo}>
+                                {cat.categoryName}
+                            </li>
+                        </ul>
                         ))}
                     </div>
                 </div>
                 <div className="row mt-4">
                     <div className="col">
-                        <label>가격</label>
+                        <label>판매가(원)</label>
                         <input type="number" name="productPrice" value={input.product.productPrice}
-                            className="form-control" onChange={targetChange} />
+                            className={"form-control "+productPriceClass} onChange={targetChange} onBlur={checkProductPrice} onFocus={checkProductPrice}/>
+                        <div className="valid-feedback">올바른 입력입니다</div>
+                        <div className="invalid-feedback">숫자 1~9999999999 이내 가능</div>
                     </div>
                 </div>
                 <div className="row mt-4">
                     <div className="col">
-                        <label>상품상세</label>
+                        <label>상품설명</label>
                         <textarea type="text" name="productDetail" value={input.product.productDetail}
-                            className="form-control" onChange={targetChange} />
+                            className={"form-control "+productDetailClass} onChange={targetChange} onBlur={checkProductDetail} onFocus={checkProductDetail}/>
+                        <div className="valid-feedback">올바른 입력입니다</div>
+                        <div className="invalid-feedback">글자수 1~1000자 제한</div>
                     </div>
                 </div>
                 <div className="row mt-4">
                     <div className="col">
                         <label>수량</label>
                         <input type="number" name="productQty" value={input.product.productQty}
-                            className="form-control" onChange={targetChange} />
+                            className={"form-control "+productQtyClass} onChange={targetChange} onBlur={checkProductQty} onFocus={checkProductQty}/>
+                        <div className="valid-feedback">올바른 입력입니다</div>
+                        <div className="invalid-feedback">숫자 1~9999999999 이내 가능</div>
                     </div>
                 </div>
                 <div className="row mt-4">
                     <div className="col text-end">
-                        <button type="button" className="btn btn-danger me-3" onClick={e => (navigate)}>
+                        <button type="button" className="btn btn-danger me-3" onClick={e=>navigate(-1)}>
                             돌아가기
                         </button>
-                        <button className="btn btn-success" onClick={saveProduct}>
+                        <button className="btn btn-success" onClick={saveProduct} disabled={isAllValid === false}>
                             상품수정
                         </button>
                     </div>

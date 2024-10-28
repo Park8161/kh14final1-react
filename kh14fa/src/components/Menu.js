@@ -2,11 +2,12 @@
 import { useState, useMemo, useCallback } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { loginState, memberIdState, memberLevelState } from "../utils/recoil";
+import { loginState, memberIdState, memberLevelState, productColumnState, productKeywordState } from "../utils/recoil";
 import { RiLoginBoxLine, RiLogoutBoxLine } from "react-icons/ri";
 import axios from "axios";
 import { MdContactPage } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
+import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 
 // component
 const Menu = () => {
@@ -35,10 +36,26 @@ const Menu = () => {
 
         navigate("/");
     },[memberId, memberLevel]);
-    
-    // effect
 
-    // memo
+    // 검색창 테스트
+    const [productColumn, setProductColumn] = useRecoilState(productColumnState);
+    const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
+    const [input, setInput] = useState({
+        column : "",
+        keyword : ""
+    });
+    const changeInput = useCallback((e)=>{
+        setInput({
+            ...input,
+            [e.target.name] : e.target.value
+        });
+    },[input]);
+
+    const sendToProduct = useCallback(()=>{
+        setProductColumn(input.column);
+        setProductKeyword(input.keyword);
+        navigate("/product/list");
+    },[input]);
 
     // view
     return (
@@ -70,8 +87,9 @@ const Menu = () => {
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">관리자 전용</a>
                                 <div className="dropdown-menu">
-                                    <NavLink className="dropdown-item" to="/admin/member/memberlist">회원 관리 목록</NavLink>
+                                    <NavLink className="dropdown-item" to="/admin/member/list">회원 관리 목록</NavLink>
                                     <NavLink className="dropdown-item" to="/admin/category/list">카테고리 관리 목록</NavLink>
+                                    <NavLink className="dropdown-item" to="/admin/product/list">상품 관리 목록</NavLink>
                                     
                                 </div>
                             </li>
@@ -85,21 +103,6 @@ const Menu = () => {
                             </li>
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-                                    aria-haspopup="true" aria-expanded="false">데이터</a>
-                                <div className="dropdown-menu">
-                                    <NavLink className="dropdown-item" to="/poketmon">포켓몬</NavLink>
-                                    {login === true && (<>
-                                    <NavLink className="dropdown-item" to="/emp">사원</NavLink>
-                                    <NavLink className="dropdown-item" to="/emp2">사원2</NavLink>
-                                    <NavLink className="dropdown-item" to="/book/spa">도서(SPA)</NavLink>
-                                    <NavLink className="dropdown-item" to="/book/list">도서(Multi)</NavLink>
-                                    </>)}
-                                    {/* <div className="dropdown-divider"></div> */}
-                                    <a className="dropdown-item" href="#">기타</a>
-                                </div>
-                            </li>
-                            <li className="nav-item dropdown">
-                                <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">게시판</a>
                                 <div className="dropdown-menu">
                                     {login === true && (<>
@@ -109,7 +112,27 @@ const Menu = () => {
                                     <NavLink className="dropdown-item" to="/notice/list">공지사항 게시판</NavLink>
                                 </div>
                             </li>
+                            <li>
+                                {/* 검색창 */}
+                                <div className="row mx-4">
+                                    <div className="col input-group w-auto">
+                                        <select type="search" className="form-select bg-white border-0" 
+                                                name="column" value={input.column} onChange={changeInput}>
+                                            <option value="">선택</option>
+                                            <option value="product_name">상품명</option>
+                                            <option value="product_member">판매자</option>
+                                        </select>
+                                        <input type="search" className="form-control w-auto bg-white border-0" 
+                                                name="keyword" value={input.keyword} onChange={changeInput}/>
+                                        <button className="btn btn-dark d-flex justify-content-center align-items-center" onClick={sendToProduct}>
+                                            <FaMagnifyingGlass />
+                                            검색
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
+                        
                         
                         <ul className="navbar-nav">
                             {/* 로그인이 되어있다면 아이디(등급) 형태로 출력 */}

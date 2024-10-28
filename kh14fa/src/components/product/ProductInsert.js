@@ -25,7 +25,7 @@ const ProductInsert = ()=>{
     const [group2, setGroup2] = useState();
     const [group3, setGroup3] = useState();
     const [categoryName, setCategoryName] = useState("");
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState(true);
 
     //effect
     useEffect(()=>{
@@ -65,12 +65,11 @@ const ProductInsert = ()=>{
         }
     },[input]);
 
-    //파일 데이터를 비동기로 보내기
-    // const blob = new Blob([JSON.stringify(input)], {type: "application/json"});
-    // formData.append("data",blob);
-
     ///파일 데이터를 비동기로 보내기
     const productInsert = useCallback(async() =>{
+        // 형식검사
+
+
         //객체 생성, multipart/form-data 형식으로 전송해줌
         const formData = new FormData();
     
@@ -121,8 +120,7 @@ const ProductInsert = ()=>{
     // 카테고리 찾아주기
     const findCategory = useCallback(()=>{
         const findCat = category.filter(category => category.categoryName === categoryName)[0] || "";
-        if(findCat === "" && categoryName.length > 0) {
-            setMessage("없는 카테고리 번호");
+        if(findCat === "" && categoryName.length > 0 ) {
             setInput({
                 ...input,
                 productCategory : ""
@@ -136,8 +134,75 @@ const ProductInsert = ()=>{
         setGroup3(findCat.categoryNo);
         setGroup2(findCat.categoryUpper);
         setGroup1(findCat.categoryGroup);
-        setMessage("");
-    },[input,categoryName,message]);
+    },[input,categoryName]);
+
+////////////////////////////////////////////////////////////////////////////
+    // 형식검사
+
+    // state
+    const [productNameValid, setProductNameValid] = useState(false);
+    const [productFileValid, setProductFileValid] = useState(false);
+    const [productCategoryValid, setProductCategoryValid] = useState(false);
+    const [productPriceValid, setProductPriceValid] = useState(false);
+    const [productDetailValid, setProductDetailValid] = useState(false);
+    const [productQtyValid, setProductQtyValid] = useState(false);
+    const [productNameClass, setProductNameClass] = useState("");
+    const [productFileClass, setProductFileClass] = useState("");
+    const [productCategoryClass, setProductCategoryClass] = useState("");
+    const [productPriceClass, setProductPriceClass] = useState("");
+    const [productDetailClass, setProductDetailClass] = useState("");
+    const [productQtyClass, setProductQtyClass] = useState("");
+
+    // callback
+    const checkProductName = useCallback(()=>{
+        const regex = /^.{1,30}$/;
+        const valid = regex.test(input.productName);
+        setProductNameValid(valid);
+        if(input.productName.length === 0) setProductNameClass("");
+        else setProductNameClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+    const checkProductFile = useCallback(()=>{
+        const valid = input.attachList.length > 0 ;
+        setProductFileValid(valid);
+        if(input.attachList.length === 0) setProductFileClass("");
+        else setProductFileClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+    const checkProductCategory = useMemo(()=>{
+        // findCategory 참조
+        const findCat = category.filter(category => category.categoryName === categoryName)[0] || "";
+        const valid = findCat !== "";
+        setProductCategoryValid(valid);
+        if(categoryName.length === 0) setProductCategoryClass("");
+        else setProductCategoryClass(valid ? "is-valid" : "is-invalid");
+    },[input,categoryName]);
+    const checkProductPrice = useCallback(()=>{
+        const regex = /^[0-9]{0,10}$/;
+        const valid = regex.test(input.productPrice) && input.productPrice > 0;
+        setProductPriceValid(valid);
+        if(input.productPrice === 0) setProductPriceClass("");
+        else setProductPriceClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+    const checkProductDetail = useCallback(()=>{
+        const regex = /^.{1,1000}$/;
+        const valid = regex.test(input.productDetail);
+        setProductDetailValid(valid);
+        if(input.productDetail.length === 0) setProductDetailClass("");
+        else setProductDetailClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+    const checkProductQty = useCallback(()=>{
+        const regex = /^[0-9]{0,9}[1-9]$/;
+        const valid = regex.test(input.productQty) && input.productQty > 0;
+        setProductQtyValid(valid);
+        if(input.productQty === 0 ) setProductQtyClass("");
+        else setProductQtyClass(valid ? "is-valid" : "is-invalid");
+    },[input]);
+
+    // memo
+    const isAllValid = useMemo(()=>{
+        const passCheck = productNameValid && productFileValid && productCategoryValid
+                        && productPriceValid && productDetailValid && productQtyValid ;
+        return passCheck;
+    },[productNameValid,productFileValid,productCategoryValid,productPriceValid,productDetailValid,productQtyValid]);
 
     // view
     return(
@@ -150,28 +215,34 @@ const ProductInsert = ()=>{
                         <div className="col">
                             <label>상품명</label>
                             <input type="text" name="productName" value={input.productName} placeholder="중고나라장난감"
-                                className="form-control" onChange={changeInput}/>
+                                className={"form-control "+productNameClass} onChange={changeInput} onBlur={checkProductName} onFocus={checkProductName}/>
+                            <div className="valid-feedback">올바른 입력입니다</div>
+                            <div className="invalid-feedback">영문 대소문자, 숫자, 한글(자음 모음 불가) 100자 제한</div>
                         </div>
                     </div>
                     <div className="row mt-4">
                         <div className="col">
                             <label className="form-label">파일</label>
                             {/*  multiple accept -> 어떤 형식 받을건가*/}
-                            <input type="file" className="form-control" name="attachList" multiple accept="image/*" onChange={changeInput} ref={inputFileRef}/>
+                            <input type="file" className={"form-control "+productFileClass} name="attachList" multiple accept="image/*" ref={inputFileRef} 
+                                    onChange={changeInput} onBlur={checkProductFile} onFocus={checkProductFile}/>
                             {images.map((image, index) => (
                                 <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
-                            ))}                             
+                            ))}
+                            <div className="valid-feedback">올바른 입력입니다</div>
+                            <div className="invalid-feedback">상품 이미지 업로드 필수</div>
                         </div>
                     </div>
                     <div className="row mt-4">
                         <div className="col">
                             <label>
                                 카테고리
-                                <span className="text-danger ms-1">{message}</span>
                             </label>
                             <div className="input-group">
-                                <input type="text" className="form-control" value={categoryName} onChange={e=>setCategoryName(e.target.value)} onBlur={findCategory} />
-                                <input type="number" name="productCategory" value={categoryName.length > 0 && input.productCategory} className="form-control" onChange={changeInput} />
+                                <input type="text" className={"form-control "+productCategoryClass} value={categoryName} onChange={e=>setCategoryName(e.target.value)} onBlur={findCategory} onFocus={findCategory}/>
+                                <input type="hidden" name="productCategory" value={categoryName.length > 0 ? (input.productCategory):(input.productCategory === "")} className={"form-control "+productCategoryClass} onChange={changeInput} readOnly/>
+                                <div className="valid-feedback">올바른 입력입니다</div>
+                                <div className="invalid-feedback">카테고리 선택 필수 혹은 없는 카테고리 번호</div>
                             </div>
                         </div>
                     </div>
@@ -216,31 +287,37 @@ const ProductInsert = ()=>{
                     </div>
                     <div className="row mt-4">
                         <div className="col">
-                            <label>가격</label>
+                            <label>판매가(원)</label>
                             <input type="number" name="productPrice" value={input.productPrice}
-                                className="form-control" onChange={changeInput}/>
+                                className={"form-control "+productPriceClass} onChange={changeInput} onBlur={checkProductPrice} onFocus={checkProductPrice}/>
+                            <div className="valid-feedback">올바른 입력입니다</div>
+                            <div className="invalid-feedback">숫자 1~9999999999 이내 가능</div>
                         </div>
                     </div>
                     <div className="row mt-4">
                         <div className="col">
-                            <label>상품상세</label>
+                            <label>상품설명</label>
                             <textarea type="text" name="productDetail" value={input.productDetail}
-                                className="form-control" onChange={changeInput}/>
+                                className={"form-control "+productDetailClass} onChange={changeInput} onBlur={checkProductDetail} onFocus={checkProductDetail}/>
+                            <div className="valid-feedback">올바른 입력입니다</div>
+                            <div className="invalid-feedback">글자수 1~1000자 제한</div>
                         </div>
                     </div>
                     <div className="row mt-4">
                         <div className="col">
-                            <label>수량</label>
+                            <label>수량(개)</label>
                             <input type="number" name="productQty" value={input.productQty}
-                                className="form-control" onChange={changeInput} />
+                                className={"form-control "+productQtyClass} onChange={changeInput} onBlur={checkProductQty} onFocus={checkProductQty}/>
+                            <div className="valid-feedback">올바른 입력입니다</div>
+                            <div className="invalid-feedback">숫자 1~9999999999 이내 가능</div>
                         </div>
                     </div>
                     <div className="row mt-4">
                         <div className="col text-end">
-                            <button type="button" className="btn btn-danger me-3" onClick={e=>(navigate)}>
+                            <button type="button" className="btn btn-danger me-3" onClick={e=>navigate(-1)}>
                                 돌아가기
                             </button>
-                            <button className="btn btn-success" onClick={productInsert}>
+                            <button className="btn btn-success" onClick={productInsert} disabled={isAllValid === false}>
                                 상품등록
                             </button>
                         </div>

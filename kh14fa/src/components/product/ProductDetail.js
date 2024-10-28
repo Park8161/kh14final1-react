@@ -11,7 +11,7 @@ import { Modal } from "bootstrap";
 import { IoMdClose } from "react-icons/io";
 import { toast } from "react-toastify";
 import { useRecoilValue } from 'recoil';
-import { memberLoadingState } from "../../utils/recoil";
+import { memberIdState, memberLoadingState } from "../../utils/recoil";
 import GoChat from './../room/GoChat';
 import userImage from './userImage.jpg';
 
@@ -20,6 +20,7 @@ const ProductDetail = ()=>{
     const navigate = useNavigate();
 
     // state
+    const memberId = useRecoilValue(memberIdState);
     const {productNo} = useParams();
     const [product, setProduct] = useState({});
     const [images, setImages] = useState([]);
@@ -42,14 +43,20 @@ const ProductDetail = ()=>{
     
     // callback
     const loadProduct = useCallback(async()=>{
-        const response = await axios.get("/product/detail/"+productNo);
-        setProduct(response.data.productDto);
-        setImages(response.data.images);
-        setCategory(response.data.categoryNameVO);
-        loadRelation();
-        checkLikes();
-        countReview(response.data.productDto.productMember);
-        loadReview(response.data.productDto.productMember);
+        try{
+            const response = await axios.get("/product/detail/"+productNo);
+            setProduct(response.data.productDto);
+            setImages(response.data.images);
+            setCategory(response.data.categoryNameVO);
+            loadRelation();
+            checkLikes();
+            countReview(response.data.productDto.productMember);
+            loadReview(response.data.productDto.productMember);
+        }
+        catch(e){
+            navigate("/notPound");
+            return(<></>);
+        }
     },[product]);
 
     // 연관 상품 목록 불러오기
@@ -95,7 +102,9 @@ const ProductDetail = ()=>{
         checkLikes();
     },[like,likes]);
 
+    // 좋아요 했는지 확인
     const checkLikes = useCallback(async()=>{
+        if(memberId === "") return;
         const response = await axios.get("/product/check/"+productNo);
         if(response.data.checked){
             setLike(true);
@@ -122,6 +131,19 @@ const ProductDetail = ()=>{
     // 채팅방 이동하기
     const goChat = useCallback(async()=>{
         try{
+            // 구매자와 판매자가 같으면 채팅 및 거래 불가능
+            if(memberId === product.productMember) {
+                toast.warning("본인 상품 구매 불가능");
+                return;
+            }
+            else if(product.productState === "판매보류") {
+                toast.warning("보류 중 상품 구매 불가능");
+                return;
+            }
+            else if(product.productState === "판매완료") {
+                toast.warning("판매완료 상품 구매 불가능");
+                return;
+            }
             const resp = await axios.post("/room/"+productNo);
             const roomId = resp.data; 
             // chatroom의 경로변수가 될 숫자를 반환함 
@@ -130,7 +152,7 @@ const ProductDetail = ()=>{
         catch(e){
             console.log("Error creating or retrieving chat room:");
         }
-    },[productNo]);
+    },[productNo,product]);
     
     // GPT 이용해서 만든 숫자에 콤마 찍기 함수
     const formatCurrency = (amount) => {
@@ -194,8 +216,23 @@ const ProductDetail = ()=>{
                         </div>
                     </div>   
                     <div className="row">
-                        <div className="col">
-                            <h2>{formatCurrency(product.productPrice)}원</h2>
+                        <div className="col d-flex align-items-center">
+                            <big>{formatCurrency(product.productPrice)}원</big>
+                            {product.productState === "판매중" && (
+                                <span className='badge bg-primary ms-2'>
+                                    {product.productState}
+                                </span>
+                            )}
+                            {product.productState === "판매보류" && (
+                                <span className='badge bg-danger ms-2'>
+                                    {product.productState}
+                                </span>
+                            )}
+                            {product.productState === "판매완료" && (
+                                <span className='badge bg-success ms-2'>
+                                    {product.productState}
+                                </span>
+                            )}
                         </div>
                     </div> 
                     <div className="row">
@@ -247,7 +284,7 @@ const ProductDetail = ()=>{
                                 ) : (
                                     <FaRegHeart className="text-danger" style={{cursor:"pointer", width:"50px", height:"50px"}}/>
                                 )}
-                                <span className="text-danger text-center">{likes}</span>
+                                {/* <span className="text-danger text-center">{likes}</span> */}
                             </div>
                         </div>
                         <div className="col-5">

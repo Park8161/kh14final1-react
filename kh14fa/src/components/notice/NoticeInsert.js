@@ -1,22 +1,20 @@
 import axios from "axios";
 import Jumbotron from "../Jumbotron";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
 
 const NoticeInsert = () => {
+    //navigate
     const navigate = useNavigate();
 
+    //state
     const [input, setInput] = useState({
         noticeType: "",
         noticeTitle: "",
         noticeContent: "",
-        attachList: []
     });
 
-    const [images, setImages] = useState([]);
-    const inputFileRef = useRef(null);
-
+    //callback
     const changeInput = useCallback(e => {
         if (e.target.type === "file") {
             const files = Array.from(e.target.files);
@@ -66,7 +64,6 @@ const NoticeInsert = () => {
         toast.success("공지사항 등록 완료");
     });
 
-
     const saveNotice = useCallback(async () => {
         if (!input.noticeType) {
             toast.error("분류를 선택해 주세요");
@@ -86,67 +83,55 @@ const NoticeInsert = () => {
             toast.error("파일첨부는 필수입니다");
             return; // 실행 중단
         }
-    
+
         // 유효성 검사 통과 시 API 호출
         await noticeInsert();
     }, [input, noticeInsert]);
 
-    // 뷰
-    return (
-        <>
-            <Jumbotron title="새 글 등록" />
+    //view
+    return (<>
+        <Jumbotron title="새 글 등록" />
 
-            <div className="row mt-4">
-                <div className="col">
-                    <label>분류</label>
-                    <select name="noticeType" className="form-select"
-                        value={input.noticeType} onChange={changeInput}>
-                        <option value="">선택하세요</option>
-                        <option value="공지">공지</option>
-                        <option value="이벤트">이벤트</option>
-                    </select>
-                </div>
+        <div className="row mt-4">
+            <div className="col">
+                <label>분류</label>
+                <select name="noticeType" className="form-select"
+                    value={input.noticeType} onChange={changeInput}>
+                    <option value="">선택하세요</option>
+                    <option value="공지">공지</option>
+                    <option value="이벤트">이벤트</option>
+                </select>
             </div>
-            <div className="row mt-4">
-                <div className="col">
-                    <label className="form-label">파일</label>
-                    <input type="file" className="form-control" name="attachList" multiple accept="image/*" onChange={changeInput} ref={inputFileRef} />
-                    {images.map((image, index) => (
-                        <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
-                    ))}
-                </div>
+        </div>
+        <div className="row mt-4">
+            <div className="col">
+                <label>제목</label>
+                <input type="text" name="noticeTitle" className="form-control"
+                    value={input.noticeTitle} onChange={changeInput} />
             </div>
-            <div className="row mt-4">
-                <div className="col">
-                    <label>제목</label>
-                    <input type="text" name="noticeTitle" className="form-control"
-                        value={input.noticeTitle} onChange={changeInput} />
-                </div>
-            </div>
-            <div className="row mt-4">
-                <div className="col">
-                    <label>내용</label>
-                    <textarea
-                        name="noticeContent"
-                        className="form-control"
-                        value={input.noticeContent}
-                        onChange={changeInput}
-                        rows={15}
-                        style={{ resize: 'none' }}
-                    />
-                </div>
-            </div>
+        </div>
+        <div className="row mt-4">
+    <div className="col">
+        <label>내용</label>
+        <textarea 
+            name="noticeContent" 
+            className="form-control" 
+            value={input.noticeContent} 
+            onChange={changeInput} 
+            rows={15} // 초기 높이
+            style={{ resize: 'none' }} // 크기 조절 비활성화 (선택 사항) 
+        />
+        </div>
+    </div>
 
-            <div className="row mt-4">
-                <div className="col mt-4">
-                    <button type="button" className="btn btn-success me-3"
-                        onClick={saveNotice}>등록</button>
-                    <button type="button" className="btn btn-secondary"
-                        onClick={() => navigate("/notice/list")}>목록</button>
-                </div>
+        <div className="row mt-4">
+            <div className="col mt-4">
+                <button type="button" className="btn btn-success me-3"
+                    onClick={saveNotice}>등록</button>
+                <button type="button" className="btn btn-secondary"
+                    onClick={e => navigate("/notice/list")}>목록</button>
             </div>
-        </>
-    );
+        </div>
+    </>);
 };
-
 export default NoticeInsert;
