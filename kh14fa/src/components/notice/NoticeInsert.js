@@ -5,20 +5,18 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 
 const NoticeInsert = () => {
-    //navigate
     const navigate = useNavigate();
 
-    //state
     const [input, setInput] = useState({
         noticeType: "",
         noticeTitle: "",
         noticeContent: "",
+        attachList: [],
     });
 
     const [images, setImages] = useState([]);
     const inputFileRef = useRef(null);
 
-    //callback
     const changeInput = useCallback(e => {
         if (e.target.type === "file") {
             const files = Array.from(e.target.files);
@@ -36,7 +34,7 @@ const NoticeInsert = () => {
                 });
             });
             Promise.all(imageUrls).then(urls => {
-                // setImages(urls);
+                setImages(urls); // 이미지 URL을 상태로 설정
             });
         } else {
             setInput(prev => ({
@@ -48,11 +46,11 @@ const NoticeInsert = () => {
 
     const noticeInsert = useCallback(async () => {
         const formData = new FormData();
-        // const fileList = inputFileRef.current.files;
 
-        // for (let i = 0; i < fileList.length; i++) {
-        //     formData.append("attachList", fileList[i]);
-        // }
+        // 파일 첨부
+        input.attachList.forEach(file => {
+            formData.append("attachList", file);
+        });
 
         formData.append("noticeType", input.noticeType);
         formData.append("noticeTitle", input.noticeTitle);
@@ -63,28 +61,27 @@ const NoticeInsert = () => {
                 'Content-Type': 'multipart/form-data',
             },
         });
-        // inputFileRef.current.value = "";
+        toast.success("공지사항 등록 완료");
         navigate("/notice/list");
-        // toast.success("공지사항 등록 완료");
-    });
+    }, [input, navigate]);
 
     const saveNotice = useCallback(async () => {
         if (!input.noticeType) {
-            // toast.error("분류를 선택해 주세요");
+            toast.error("분류를 선택해 주세요");
             return;
         }
         if (!input.noticeTitle) {
-            // toast.error("제목을 입력해 주세요");
+            toast.error("제목을 입력해 주세요");
             return;
         }
         if (!input.noticeContent) {
-            // toast.error("내용을 입력해 주세요");
+            toast.error("내용을 입력해 주세요");
             return;
         }
 
         // "이벤트" 선택 시 파일 첨부 여부 확인
         if (input.noticeType === "이벤트" && input.attachList.length === 0) {
-            // toast.error("파일첨부는 필수입니다");
+            toast.error("파일첨부는 필수입니다");
             return; // 실행 중단
         }
 
@@ -92,28 +89,29 @@ const NoticeInsert = () => {
         await noticeInsert();
     }, [input, noticeInsert]);
 
-    //view
-    return (<>
-        <Jumbotron title="새 글 등록" />
+    return (
+        <>
+            <Jumbotron title="새 글 등록" />
 
-        <div className="row mt-4">
-            <div className="col">
-                <label>분류</label>
-                <select name="noticeType" className="form-select"
-                    value={input.noticeType} onChange={changeInput}>
-                    <option value="">선택하세요</option>
-                    <option value="공지">공지</option>
-                    <option value="이벤트">이벤트</option>
-                </select>
+            <div className="row mt-4">
+                <div className="col">
+                    <label>분류</label>
+                    <select name="noticeType" className="form-select"
+                        value={input.noticeType} onChange={changeInput}>
+                        <option value="">선택하세요</option>
+                        <option value="공지">공지</option>
+                        <option value="이벤트">이벤트</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div className="row mt-4">
-            <div className="col">
-                <label className="form-label">파일</label>
-                <input type="file" className="form-control" name="attachList" multiple accept="image/*" onChange={changeInput} ref={inputFileRef} />
-                {images.map((image, index) => (
-                    <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
-                ))}
+            <div className="row mt-4">
+                <div className="col">
+                    <label className="form-label">파일</label>
+                    <input type="file" className="form-control" name="attachList" multiple accept="image/*" onChange={changeInput} ref={inputFileRef} />
+                    {images.map((image, index) => (
+                        <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
+                    ))}
+                </div>
             </div>
             <div className="row mt-4">
                 <div className="col">
@@ -141,11 +139,11 @@ const NoticeInsert = () => {
                     <button type="button" className="btn btn-success me-3"
                         onClick={saveNotice}>등록</button>
                     <button type="button" className="btn btn-secondary"
-                        onClick={e => navigate("/notice/list")}>목록</button>
+                        onClick={() => navigate("/notice/list")}>목록</button>
                 </div>
             </div>
-        </div>
         </>
-        );
-        };
-        export default NoticeInsert;
+    );
+};
+
+export default NoticeInsert;
