@@ -17,31 +17,28 @@ const NoticeEdit = () => {
             noticeContent: "",
             attachList: [],
         },
-        images: [],
     });
 
-    const inputFileRef = useRef(null);
     const [attachImages, setAttachImages] = useState([]);
     const [loadImages, setLoadImages] = useState([]);
+    const [deletedImages, setDeletedImages] = useState([]);
+
+    const inputFileRef = useRef(null);
 
     useEffect(() => {
         loadGetNotice();
     }, [noticeNo]);
 
     const loadGetNotice = useCallback(async () => {
-        // try {
-            const resp = await axios.get(`/notice/detail/${noticeNo}`);
-            setInput(prevInput => ({
-                ...prevInput,
-                notice: {
-                    ...prevInput.notice,
-                    ...resp.data.noticeDto,
-                },
-            }));
-            setLoadImages(resp.data.images);
-        // } catch (error) {
-        //     console.error("Error loading notice:", error);
-        // }
+        const resp = await axios.get(`/notice/detail/${noticeNo}`);
+        setInput(prevInput => ({
+            ...prevInput,
+            notice: {
+                ...prevInput.notice,
+                ...resp.data.noticeDto,
+            },
+        }));
+        setLoadImages(resp.data.images);
     }, [noticeNo]);
 
     const targetChange = useCallback(e => {
@@ -80,8 +77,15 @@ const NoticeEdit = () => {
     }, []);
 
     const deleteImage = useCallback(target => {
+        // 분류가 이벤트일 때 삭제 제한
+        if (input.notice.noticeType === "이벤트" && loadImages.length - deletedImages.length <= 1) {
+            toast.error("사진이 최소 한 장은 있어야 합니다.");
+            return;
+        }
+
         setLoadImages(prevImages => prevImages.filter(image => image !== target));
-    }, []);
+        setDeletedImages(prev => [...prev, target]);
+    }, [input.notice.noticeType, loadImages, deletedImages]);
 
     const deleteAttachImage = useCallback(target => {
         setAttachImages(prevImages => prevImages.filter(image => image !== target));
@@ -102,8 +106,7 @@ const NoticeEdit = () => {
         formData.append("noticeContent", input.notice.noticeContent);
         formData.append("noticeNo", noticeNo);
         formData.append("originList", loadImages);
-
-        //console.log("Input Data:", input); // 추가된 로그
+        formData.append("deletedImages", JSON.stringify(deletedImages));
 
         try {
             await axios.post("/notice/edit", formData, {
@@ -114,10 +117,9 @@ const NoticeEdit = () => {
             toast.success("게시글 수정완료");
             navigate("/notice/list");
         } catch (error) {
-           // console.error("Error editing notice:", error);
             toast.error("게시글 수정 실패");
         }
-    }, [input, navigate]);
+    }, [input, navigate, deletedImages]);
 
     return (
         <>
