@@ -116,7 +116,7 @@ const QnaList = () => {
                                         <td>
                                             <NavLink to={`/qna/detail/${q.qnaNo}`}>
                                                 {q.qnaTitle}
-                                            </NavLink>
+                                            </NavLink>  [{q.qnaReplies}]
                                         </td>
                                         <td>{q.qnaType}</td>
                                         <td>{q.qnaWriter}</td>

@@ -14,7 +14,7 @@ const QnaDetail = () => {
     const [load, setLoad] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-    
+
     // 답글 상태 추가
     const [reply, setReply] = useState("");
     const [replies, setReplies] = useState([]); // 답글 목록
@@ -147,7 +147,11 @@ const QnaDetail = () => {
             </div>
             <div className="row mt-4">
                 <div className="col-sm-3">내용</div>
-                <div className="col-sm-9">{qna.qnaContent} {qna.edited && <span>(수정됨)</span>}</div>
+                <div className="col-sm-9">
+                    <span style={{ wordBreak: 'break-word', display: 'inline-block', maxWidth: '100%' }}>
+                        {qna.qnaContent} {qna.edited && <span>(수정됨)</span>}
+                    </span>
+                </div>
             </div>
             <div className="row mt-4">
                 <div className="col-sm-3">작성시간</div>
@@ -169,7 +173,7 @@ const QnaDetail = () => {
                         onChange={handleReplyChange}
                         placeholder="답글을 입력하세요"
                     />
-                    <button className="btn btn-primary mt-2" type="submit">답글 추가</button>
+                    <button className="btn btn-primary float-end mt-2" type="submit">답글 추가</button>
                 </form>
             </div>
 
@@ -180,32 +184,34 @@ const QnaDetail = () => {
                     <ul className="list-group">
                         {replies.slice().reverse().map((replyItem) => (
                             <li key={replyItem.replyNo} className="list-group-item">
-                                 <div className="text-muted" style={{ fontSize: '0.8rem' }}>
-                                        {replyItem.replyUtime ? (
-                                            <>
-                                                {new Date(replyItem.replyUtime).toLocaleString()} (수정됨)
-                                            </>
-                                        ) : (
-                                            new Date(replyItem.replyWtime).toLocaleString() // 댓글 작성 시간
-                                        )}
-                                <div>
-                                    <strong>{replyItem.replyWriter} </strong> {replyItem.replyContent} {/* 답글 내용 */}
-                                
-                                    </div>
-                                    <button className="btn btn-danger btn-sm float-end" onClick={() => {
-                                        setReplyToDelete(replyItem.replyNo); // 삭제할 댓글 번호 설정
-                                        setShowReplyDeleteModal(true); // 모달 표시
-                                    }}>
-                                        삭제
-                                    </button>
-                                    <button className="btn btn-info btn-sm float-end me-2" onClick={() => {
-                                        setReplyToEdit(replyItem.replyNo); // 수정할 댓글 번호 설정
-                                        setEditContent(replyItem.replyContent); // 수정할 내용 설정
-                                        setShowEditModal(true); // 수정 모달 표시
-                                    }}>
-                                        수정
-                                    </button>
+                                <div className="text-muted" style={{ fontSize: '0.8rem' }}>
+                                    {replyItem.replyUtime ? (
+                                        <>
+                                            {new Date(replyItem.replyUtime).toLocaleString()} (수정됨)
+                                        </>
+                                    ) : (
+                                        new Date(replyItem.replyWtime).toLocaleString() // 댓글 작성 시간
+                                    )}
                                 </div>
+                                <div>
+                                    <strong>{replyItem.replyWriter} </strong>
+                                    <span style={{ wordBreak: 'break-word', display: 'inline-block', maxWidth: '100%' }}>
+                                        {replyItem.replyContent} {/* 답글 내용 */}
+                                    </span>
+                                </div>
+                                <button className="btn btn-danger btn-sm float-end" onClick={() => {
+                                    setReplyToDelete(replyItem.replyNo); // 삭제할 댓글 번호 설정
+                                    setShowReplyDeleteModal(true); // 모달 표시
+                                }}>
+                                    삭제
+                                </button>
+                                <button className="btn btn-info btn-sm float-end me-2" onClick={() => {
+                                    setReplyToEdit(replyItem.replyNo); // 수정할 댓글 번호 설정
+                                    setEditContent(replyItem.replyContent); // 수정할 내용 설정
+                                    setShowEditModal(true); // 수정 모달 표시
+                                }}>
+                                    수정
+                                </button>
                             </li>
                         ))}
 
