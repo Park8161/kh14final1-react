@@ -13,7 +13,11 @@ const NoticeDetail = () => {
     const [notice, setNotice] = useState(null);
     const [load, setLoad] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [images, setImages] = useState();
+
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editContent, setEditContent] = useState("");
 
     useEffect(() => {
         loadNotice();
@@ -34,19 +38,36 @@ const NoticeDetail = () => {
         setShowDeleteModal(true);
     };
 
+    const handleEditChange = (e) =>{
+        setEditContent(e.target.value);
+    };
+
+    const handleEditSubmit = async () => {
+        try {
+            await axios.put(`/notice/reply/edit/`);
+            setShowEditModal(false);
+            toast.success("수정이 완료되었습니다."); // 성공 알림
+        } catch (error) {
+            console.error("Error editing reply", error);
+        }
+    };
+
+
     const deleteNotice = useCallback(async () => {
         try {
-            await axios.delete("http://localhost:8080/notice/delete/" + notice.noticeNo);
-            toast.success("삭제가 완료되었습니다."); // 삭제 완료 toast
+            await axios.delete("/notice/delete/" + notice.noticeNo);
             setShowDeleteModal(false);
-            navigate("/notice/list"); // 삭제 후 목록으로 이동
+            setShowSuccessModal(true);
         } catch (error) {
             console.error("Error deleting notice", error);
-            toast.error("삭제에 실패했습니다."); // 실패 toast
         }
-    }, [notice, navigate]);
+    }, [notice]);
 
     const handleCloseDeleteModal = () => setShowDeleteModal(false);
+    const handleCloseSuccessModal = () =>{
+        setShowSuccessModal(false);
+        navigate("/notice/list");
+    };
 
     if (load === false) {
         return (
@@ -104,7 +125,11 @@ const NoticeDetail = () => {
             </div>
             <div className="row mt-4">
                 <div className="col-sm-3">내용</div>
-                <div className="col-sm-9">{notice.noticeContent}</div>
+                <div className="col-sm-9">
+                    <span style={{ wordBreak: 'break-word', display: 'inline-block', maxWidth: '100%' }}>
+                        {notice.noticeContent} {notice.edited && <span>(수정됨)</span>}
+                    </span>
+                </div>
             </div>
             <div className="row mt-4">
                 <div className="col-sm-3">작성시간</div>
@@ -139,6 +164,44 @@ const NoticeDetail = () => {
                     </button>
                 </Modal.Footer>
             </Modal>
+
+            {/* 삭제 완료 모달 */}
+            <Modal show={showSuccessModal} onHide={handleCloseSuccessModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>삭제 완료</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>삭제가 완료되었습니다.</Modal.Body>
+                <Modal.Footer>
+                    <button className="btn btn-primary" onClick={handleCloseSuccessModal}>
+                        확인
+                    </button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* 수정 모달 */}
+            <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>수정하기</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <textarea
+                        className="form-control"
+                        rows="5"
+                        value={editContent}
+                        onChange={handleEditChange}
+                        placeholder="수정할 내용을 입력하세요"
+                    />
+                </Modal.Body>
+                <Modal.Footer>
+                    <button className="btn btn-primary" onClick={handleEditSubmit}>
+                        수정
+                    </button>
+                    <button className="btn btn-secondary" onClick={() => setShowEditModal(false)}>
+                        취소
+                    </button>
+                </Modal.Footer>
+            </Modal>
+
         </>
     );
 };
