@@ -46,6 +46,7 @@ const CategoryInsert = () => {
         setGroup3();
     }, [group1, group2, group3]);
 
+    // 카테고리 중복 검사
     const existenceCategory = useCallback(()=>{
         return category.some(category => category.categoryName === categoryName);
     },[category, categoryName]);
@@ -75,7 +76,7 @@ const CategoryInsert = () => {
             categoryUpper: (depth === 1 ? (0) : (depth === 2 ? (group1) : (group2)))
         });
     }, [group1, group2, categoryName]);
-
+  
 
 
     return (<>
