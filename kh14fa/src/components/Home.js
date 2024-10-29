@@ -1,5 +1,5 @@
 // import
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import event1 from '../assets/event1.jpg';
 import event2 from '../assets/event2.gif';
@@ -20,6 +20,10 @@ const Home = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const navigate = useNavigate();
+    
+    const BannerClick = useCallback((noticeNo)=>{
+        navigate(`/notice/detail/${noticeNo}`);
+    });
 
     // 배너 데이터 (예시)
     const banners = [
