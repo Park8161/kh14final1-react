@@ -1,59 +1,37 @@
 // import
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import event1 from '../assets/event1.jpg';
-import event2 from '../assets/event2.gif';
-import event3 from '../assets/event3.gif';
-import event4 from '../assets/event4.jpg';
-import event5 from '../assets/event5.jpg';
-import event6 from '../assets/event6.jpg';
-import event7 from '../assets/event7.jpg';
-import event8 from '../assets/event8.jpg';
-import event9 from '../assets/event9.jpg';
-import event10 from '../assets/event10.jpg';
-import event11 from '../assets/event11.jpg';
-import event12 from '../assets/event12.jpg';
+import axios from "axios";
 
 // component
 const Home = () => {
     // 상태 관리: 현재 배너의 인덱스
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [bannerList, setBannerList] = useState([]);
 
     const navigate = useNavigate();
     
     const BannerClick = useCallback((noticeNo)=>{
         navigate(`/notice/detail/${noticeNo}`);
     });
-
-    // 배너 데이터 (예시)
-    const banners = [
-        [event4, "배너 1"],
-        [event2, "배너 2"],
-        [event3, "배너 3"],
-        [event1, "배너 4"],
-        [event5, "배너 5"],
-        [event6, "배너 6"],
-        [event7, "배너 7"],
-        [event8, "배너 8"],
-        [event9, "배너 9"],
-        [event10, "배너 10"],
-        [event11, "배너 11"],
-        [event12, "배너 12"],       
-    ];
-
+    
     // 다음 배너로 이동하는 함수
     const nextBanner = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % Math.ceil(banners.length / 3));
+        if(bannerList.length > 0){
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % Math.ceil(bannerList.length / 3));
+        }
     };
 
     // 이전 배너로 이동하는 함수
     const prevBanner = () => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + Math.ceil(banners.length / 3)) % Math.ceil(banners.length / 3));
+        if(bannerList.length > 0){
+            setCurrentIndex((prevIndex) => (prevIndex - 1 + Math.ceil(bannerList.length / 3)) % Math.ceil(bannerList.length / 3));
+        }
     };
 
     // 현재 배너 그룹 가져오기
-    const displayedBanners = banners.slice(currentIndex * 3, currentIndex * 3 + 3);
-    const totalPages = Math.ceil(banners.length / 3);
+    const displayedBanners = bannerList.slice(currentIndex * 3, currentIndex * 3 + 3);
+    const totalPages = Math.ceil(bannerList.length / 3);
 
     // 자동으로 배너를 변경하는 효과
     useEffect(() => {
@@ -63,25 +41,56 @@ const Home = () => {
     
     // 컴포넌트가 언마운트될 때 타이머를 정리
         return () => clearInterval(timer);
-    }, [currentIndex]);
+    }, [bannerList]);
+   
 
-    // 배너 클릭 시 페이지 이동
-    const LinkNotice = (link)=>{
-        navigate(link);
-    };
+    const loadBannerList = useCallback(async()=>{
+        const resp = await axios.get("/notice/bannerList");
+        setBannerList(resp.data);
+    }, []);
+
+    useEffect(()=>{
+        loadBannerList();
+    }, [loadBannerList]);
 
     // view
     return (
         <>
+          <div className="container mt-4 grid grid-cols-1 gap-4">
+            <div className="flex items-center">
+                <h3 className="text-lg md:text-xl lg:text-2xl 2xl:text-3xl xl:leading-10 font-bold text-heading">
+                    진행중인 이벤트
+                </h3>
+            </div>
+
             {/* 이벤트 배너 */}
             <div className="container mt-4">
                 <div id="carouselExampleAutoplaying" className="carousel slide" data-bs-ride="carousel">
-                    <div className="carousel-inner">
+                    {/* <div className="carousel-inner">
                         <div className="carousel-item active">
                             <div className="row">
                                 {displayedBanners.map((banner, index) => (
                                     <div className="col" key={index}>
                                         <img src={banner[0]} className="d-block w-100" alt={banner[1]} style={{ width: '300px' , height: '300px', objectFit: 'contain', margin:'0 5px'}} />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div> */}
+                    <div className="carousel-inner">
+                        <div className="carousel-item active">
+                            <div className="row">
+                                {displayedBanners.map((banner, index) => (
+                                    <div className="col" key={index}>
+                                        <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${banner.attachment}`} 
+                                                className="d-block w-100" alt={banner.title} onClick={e=>BannerClick(banner.noticeNo)}
+                                                style={{ 
+                                                    width: '250px' ,
+                                                    height: '300px', 
+                                                    objectFit: 'fill', 
+                                                    margin:'0 1px',
+                                                    padding: '1px'
+                                                }} />
                                     </div>
                                 ))}
                             </div>
@@ -92,7 +101,7 @@ const Home = () => {
                                 data-bs-slide="prev"
                                 style={{
                                     position: 'absolute'  ,
-                                    left: '-30px',
+                                    left: '-70px',
                                     top: '50%',
                                     transform: 'translateY(-50%)',
                                     zIndex: '1',
@@ -106,11 +115,12 @@ const Home = () => {
                                 data-bs-slide="next"
                                 style={{
                                     position: 'absolute'  ,
-                                    right: '-30px',
+                                    right: '-70px',
                                     top: '50%',
                                     transform: 'translateY(-50%)',
                                     zIndex: '1',
-                                    border: 'none'                                }}>
+                                    border: 'none'
+                                }}>
                                 
                         <span className="carousel-control-next-icon" aria-hidden="true"></span>
                         <span className="visually-hidden">Next</span>
@@ -119,7 +129,7 @@ const Home = () => {
                     
                     {/* 인디케이터 추가 */}
                     <div className="carousel-indicators">
-                        {[...Array(totalPages)].map((_, index) => (
+                        {[...Array(Math.ceil(bannerList.length / 3))].map((_, index) => (
                             <button
                                 key={index}
                                 type="button"
@@ -138,6 +148,7 @@ const Home = () => {
                         ))}
                     </div>
                 </div>
+            </div>
             </div>
         </>
     );

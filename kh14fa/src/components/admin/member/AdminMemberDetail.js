@@ -2,6 +2,7 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import Jumbotron from "../../Jumbotron";
 import { useNavigate, useParams } from "react-router-dom";  // useNavigate 추가
+import { toast } from "react-toastify";
 
 const AdminMemberDetail = () => {
     //parameter
@@ -36,21 +37,22 @@ const AdminMemberDetail = () => {
             try {
                 console.log(`삭제 요청 경로: /admin/member/detail/${memberId}`);
                 await axios.delete(`/admin/member/${memberId}`);
+                toast.success("회원 삭제 완료");
                 navigate("/admin/member/memberlist");
             } catch (error) {
                 // 서버 오류 처리
                 if (error.response) {
                     // 서버 응답이 있는 경우
                     console.error("삭제 실패: ", error.response.data);
-                    alert(`삭제 실패: ${error.response.data.message || "알 수 없는 오류"}`);
+                    toast.error(`삭제 실패: ${error.response.data.message || "알 수 없는 오류"}`);
                 } else if (error.request) {
                     // 요청이 보내졌으나 응답이 없는 경우
                     console.error("응답 없음: ", error.request);
-                    alert("서버와 연결할 수 없습니다.");
+                    toast.error("서버와 연결할 수 없습니다.");
                 } else {
                     // 요청을 설정하는 중에 오류가 발생한 경우
                     console.error("요청 설정 오류: ", error.message);
-                    alert("삭제 요청을 처리하는 중 오류가 발생했습니다.");
+                    toast.error("삭제 요청을 처리하는 중 오류가 발생했습니다.");
                 }
             }
         } else {
@@ -71,11 +73,11 @@ const blockMember = useCallback(async () => {
             };
 
             await axios.post("/admin/member/bann", banDto); 
-            alert("회원이 차단되었습니다.");
+            toast.success("회원이 차단되었습니다.");
             loadMember();
         } catch (error) {
             console.error("차단 실패", error.response || error.message);
-            alert("차단 실패: 서버에 문제가 발생했습니다.");
+            toast.error("차단 실패: 서버에 문제가 발생했습니다.");
         }
     } else {
         console.log("차단 취소");
@@ -95,11 +97,11 @@ const unblockMember = useCallback(async () => {
             };
 
             await axios.post("/admin/member/free", banDto);
-            alert("회원 차단이 해제되었습니다.");
+            toast.success("회원 차단이 해제되었습니다.");
             loadMember();
         } catch (error) {
             console.error("차단 해제 실패", error.response || error.message);
-            alert("차단 해제 실패: 서버에 문제가 발생했습니다.");
+            toast("차단 해제 실패: 서버에 문제가 발생했습니다.");
         }
     } else {
         console.log("차단 해제 취소");
