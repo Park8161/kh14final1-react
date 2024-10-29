@@ -10,6 +10,7 @@ const RoomList = ()=>{
 
     // state
     const [roomList, setRoomList] = useState([]);
+    const [unread, setUnread] = useState(0);
 
     //recoil
     const memberId = useRecoilValue(memberIdState);
@@ -27,6 +28,11 @@ const RoomList = ()=>{
         setRoomList(resp.data);
         
     },[roomList]);
+
+    // const loadUnread = async (roomNo) => {
+    //     const resp = await axios.get(`/room/cntunread/${roomNo}`);
+    //     return resp.data || 0;
+    // };
 
     return (
         <>          
@@ -52,20 +58,29 @@ const RoomList = ()=>{
                                                 <p className="text-muted small mb-0 mx-2">|</p> 
                                                 <p className="text-muted small mb-0">{room.productName}</p>
                                             </div>
-                                            <div style={{ minHeight: '1.5em' }}> 
-                                                {room.roomMessageContent ? (
-                                                    <div>
-                                                        <p className="text-muted small my-2">{room.roomMessageContent}</p>
-                                                        <p className="text-muted small my-2">{moment(room.roomMessageTime).format("a h:mm")}</p>
-                                                            
-                                                    </div>
-                                                    
-                                                ) : (
-                                                    <p className="text-muted small my-2" style={{ visibility: 'hidden' }}>
-                                                        {/* 빈 공간 유지 */}
-                                                    </p>
-                                                )}
-                                            </div>
+                                            <div className="row d-flex justify-content-between align-items-center" style={{ minHeight: '1.5em' }}> 
+                                                <div className="col-10">
+                                                    {room.roomMessageContent ? (
+                                                        <p className="text-muted small my-2 mb-0">{room.roomMessageContent}</p>
+                                                    ) : (
+                                                        <p className="text-muted small my-2 mb-0" style={{ visibility: 'hidden' }}>
+                                                            {/* Placeholder to maintain spacing */}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <div className="col-2 d-flex justify-content-end">
+                                                    {room.unreadCnt === 0 ? (
+                                                        <></>
+                                                    ) : (
+                                                        <p className="small mb-0 badge bg-primary">{room.unreadCnt}</p>
+                                                    )}
+                                                </div>
+                                            </div>  
+                                            {moment(room.roomMessageTime).isAfter(moment().startOf('day')) ? (
+                                                <p className="text-muted small mt-2 mb-0">{moment(room.roomMessageTime).format("a h:mm")}</p>
+                                            ) : (
+                                                <p className="text-muted small mt-2 mb-0">{moment(room.roomMessageTime).format("YYYY-MM-DD h:mm")}</p>
+                                            )}
                                         </div>
                                     </NavLink>
                                 ))}

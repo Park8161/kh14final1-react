@@ -70,7 +70,9 @@ const ChatRoom = ()=>{
                     const data = JSON.parse(message.body);
                     setMessageList(data.messageList);
                 });
-
+                // 연결 시점? 에서 loadUnread
+                // console.log("setUnread 전: "+roomNo);
+                setUnread(roomNo);
                 setConnect(true);
             },
             onDisconnect:()=>{
@@ -87,6 +89,7 @@ const ChatRoom = ()=>{
     const disconnectFromServer = useCallback((client)=>{
         if(client){
             client.deactivate();
+            setUnread(roomNo);
         }
     },[]);
 
@@ -124,6 +127,9 @@ const ChatRoom = ()=>{
         else{}
     },[]);
 
+    const setUnread = useCallback(async(roomNo)=>{
+        axios.post("/room/setzero/"+roomNo);
+    },[]);
 
     return(
         <>
@@ -183,14 +189,9 @@ const ChatRoom = ()=>{
                                 {/* 시간 */}
                                 <p className="text-muted">
                                     {moment(message.time).format("a h:mm")}
-                                    {/* ({moment(message.time).fromNow()}) */}
                                 </p>
                             </div>
                         </div>
-                        
-                        
-                        {message.type === "system" && (<></>)}
-                         
                     </li>
                     ))}
                
