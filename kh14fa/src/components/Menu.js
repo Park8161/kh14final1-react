@@ -1,5 +1,5 @@
 // import
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { loginState, memberIdState, memberLevelState, productColumnState, productKeywordState } from "../utils/recoil";
@@ -8,6 +8,7 @@ import axios from "axios";
 import { MdContactPage } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
+import '../style/Menu.css';
 
 // component
 const Menu = () => {
@@ -56,6 +57,67 @@ const Menu = () => {
         setProductKeyword(input.keyword);
         navigate("/product/list");
     },[input]);
+
+    //카테고리 관련
+    //state
+    const [category, setCategory] = useState([]);
+    const [categoryInput, categorySetInput] = useState({
+        categoryName: "",
+        categoryGroup: "",
+        categoryUpper: "",
+        categoryDepth: ""
+    });
+
+    //effect
+    useEffect(() => {
+        loadCategory();
+    }, []);
+
+    // 카테고리 리스트 가져오기
+    const loadCategory = useCallback(async () => {
+        const response = await axios.get("/admin/category/listP"); // 주소 listP 맞음
+        setCategory(response.data);        
+    }, [category]);
+
+     // 카테고리 계층 구조화
+     const buildCategoryTree = (categories) => {
+        const categoryMap = {};
+        const tree = [];
+
+        categories.forEach(cat => {
+            categoryMap[cat.categoryNo] = { ...cat, children: [] };
+        });
+
+        categories.forEach(cat => {
+            if (cat.categoryDepth === 1) {
+                tree.push(categoryMap[cat.categoryNo]);
+            } else {
+                const parent = categoryMap[cat.categoryUpper];
+                if (parent) {
+                    parent.children.push(categoryMap[cat.categoryNo]);
+                }
+            }
+        });
+
+        return tree;
+    };
+
+    const categoryTree = buildCategoryTree(category);
+
+
+    const handleMouseEnter = (e) => {
+        const submenu = e.currentTarget.querySelector('.dropdown-menu');
+        if (submenu) {
+            submenu.classList.add('show');
+        }
+    };
+
+    const handleMouseLeave = (e) => {
+        const submenu = e.currentTarget.querySelector('.dropdown-menu');
+        if (submenu) {
+            submenu.classList.remove('show');
+        }
+    };
 
     // view
     return (
@@ -131,7 +193,38 @@ const Menu = () => {
                                     </div>
                                 </div>
                             </li>
+                            
+                            {/* 카테고리 */}
+                            <li className="nav-item dropdown" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                            <a className="nav-link dropdown-toggle" href="#" role="button">카테고리</a>
+                            <div className="dropdown-menu">
+                                {categoryTree.map(cat1 => (
+                                    <div key={cat1.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                        <NavLink className="dropdown-item" to={`/category/${cat1.categoryNo}`}>{cat1.categoryName}</NavLink>
+                                        {cat1.children.length > 0 && (
+                                            <div className="dropdown-menu">
+                                                {cat1.children.map(cat2 => (
+                                                    <div key={cat2.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                                        <NavLink className="dropdown-item" to={`/category/${cat2.categoryNo}`}>{cat2.categoryName}</NavLink>
+                                                        {cat2.children.length > 0 && (
+                                                            <div className="dropdown-menu dropdown-menu-end">
+                                                                {cat2.children.map(cat3 => (
+                                                                    <NavLink key={cat3.categoryNo} className="dropdown-item" to={`/category/${cat3.categoryNo}`}>{cat3.categoryName}</NavLink>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </li>
+
+
                         </ul>
+
                         
                         
                         <ul className="navbar-nav">
