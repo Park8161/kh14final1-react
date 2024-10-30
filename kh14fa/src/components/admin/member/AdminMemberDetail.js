@@ -38,7 +38,7 @@ const AdminMemberDetail = () => {
                 console.log(`삭제 요청 경로: /admin/member/detail/${memberId}`);
                 await axios.delete(`/admin/member/${memberId}`);
                 toast.success("회원 삭제 완료");
-                navigate("/admin/member/memberlist");
+                navigate("/admin/member/list");
             } catch (error) {
                 // 서버 오류 처리
                 if (error.response) {
