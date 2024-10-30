@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import Jumbotron from "../Jumbotron";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { memberLevelState } from "../../utils/recoil";
 
 const QnaList = () => {
     const [qna, setQna] = useState([]); // 전체 공지사항 리스트
@@ -14,25 +16,29 @@ const QnaList = () => {
 
     const navigate = useNavigate();
 
+    // 리코일
+    const memberLevel = useRecoilValue(memberLevelState); // 사용자 권한 상태
+
+
     useEffect(() => {
         loadQnaList();
     }, []);
 
     // 기본적인 리스트 불러오기 (검색X)
-    const loadQnaList = useCallback(async()=>{
+    const loadQnaList = useCallback(async () => {
         const response = await axios.get("/qna/list");
         setQna(response.data);
-    },[qna]);
+    }, []);
 
     // 검색기능 있는 리스트
-    const searchQnaList = useCallback(async()=>{
+    const searchQnaList = useCallback(async () => {
         // column, keyword가 없다면 차단
-        if(column.trim().length === 0) return loadQnaList();
-        if(keyword.trim().length === 0) return loadQnaList();
+        if (column.trim().length === 0) return loadQnaList();
+        if (keyword.trim().length === 0) return loadQnaList();
 
         const response = await axios.get(`/qna/list/column/${encodeURIComponent(column)}/keyword/${encodeURIComponent(keyword)}`);
         setQna(response.data);
-    },[column,keyword]);
+    }, [column, keyword]);
 
     // 공지사항 정렬 (최근 글이 위로)
     const sortedFilteredQna = [...qna].sort((a, b) => new Date(b.qnaWtime) - new Date(a.qnaWtime));
@@ -44,19 +50,6 @@ const QnaList = () => {
         return sortedFilteredQna.slice(startIndex, endIndex);
     };
 
-    // 검색 기능 실행
-    // const searchQnaList = () => {
-        // if (keyword.trim() === "") {
-        //     setFilteredQna(qna); // 검색어가 없으면 전체 공지사항으로 복원
-        // } else {
-        //     const filtered = qna.filter(qn => {
-        //         return qn[column] && qn[column].toString().toLowerCase().includes(keyword.toLowerCase());
-        //     });
-        //     setFilteredQna(filtered); // 필터된 공지사항 리스트 업데이트
-        // }
-        // setPage(1); // 검색 시 첫 페이지로 돌아가도록 설정
-    // };
-
     return (
         <>
             <Jumbotron title="1:1문의 게시글" content="목록" />
@@ -66,7 +59,7 @@ const QnaList = () => {
                     <div className="input-group">
                         <div className="col-3">
                             <select className="form-select" name="column" value={column} onChange={e => setColumn(e.target.value)}>
-                                <option value="">선택</option>  
+                                <option value="">선택</option>
                                 <option value="qna_title">제목</option>
                                 <option value="qna_type">분류</option>
                             </select>
@@ -85,6 +78,7 @@ const QnaList = () => {
             </div>
 
             {/* 등록 버튼 */}
+            {memberLevel !== "관리자" &&(
             <div className="row mt-4">
                 <div className="col">
                     <button className="btn btn-success ms-2" onClick={() => navigate("/qna/insert")}>
@@ -93,6 +87,7 @@ const QnaList = () => {
                     </button>
                 </div>
             </div>
+        )}
 
             {/* 목록 표시 자리 */}
             <div className="row mt-4">
@@ -106,7 +101,6 @@ const QnaList = () => {
                                     <th>분류</th>
                                     <th>작성자</th>
                                     <th>작성일</th>
-                                    <th>수정일</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -120,8 +114,15 @@ const QnaList = () => {
                                         </td>
                                         <td>{q.qnaType}</td>
                                         <td>{q.qnaWriter}</td>
-                                        <td>{q.qnaWtime}</td>
-                                        <td>{q.qnaUtime}</td>
+                                        <td>
+                                            {q.qnaUtime ? (
+                                                <>
+                                                    {q.qnaUtime} (수정됨)
+                                                </>
+                                            ) : (
+                                                q.qnaWtime
+                                            )}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -136,7 +137,7 @@ const QnaList = () => {
                     <button className="btn btn-outline-primary" disabled={page === 1} onClick={() => setPage(page - 1)}>
                         이전
                     </button>
-                    <span className="mx-3">Page {page} of {Math.ceil(sortedFilteredQna.length / pageSize)}</span>
+                    <span className="mx-3">{page} / {Math.ceil(sortedFilteredQna.length / pageSize)}</span>
                     <button className="btn btn-outline-primary" disabled={page === Math.ceil(sortedFilteredQna.length / pageSize)} onClick={() => setPage(page + 1)}>
                         다음
                     </button>

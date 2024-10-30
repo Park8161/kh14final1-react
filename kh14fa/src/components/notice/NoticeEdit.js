@@ -73,11 +73,15 @@ const NoticeEdit = () => {
                     [e.target.name]: e.target.value,
                 },
             }));
+
+            // Check if noticeType is "이벤트" and if no files are attached
+            if (e.target.name === "noticeType" && e.target.value === "이벤트" && input.notice.attachList.length === 0) {
+                toast.error("사진이 최소 한 장은 있어야 합니다.");
+            }
         }
-    }, []);
+    }, [input.notice.attachList]);
 
     const deleteImage = useCallback(target => {
-        // 분류가 이벤트일 때 삭제 제한
         if (input.notice.noticeType === "이벤트" && loadImages.length - deletedImages.length <= 1) {
             toast.error("사진이 최소 한 장은 있어야 합니다.");
             return;
@@ -94,6 +98,13 @@ const NoticeEdit = () => {
     const goNoticeEdit = useCallback(async () => {
         const formData = new FormData();
         const fileList = input.notice.attachList;
+
+        if (input.notice.noticeType === "이벤트") {
+            if (fileList.length === 0) {
+                toast.error("사진이 최소 한 장은 있어야 합니다.");
+                return; // Stop submission
+            }
+        }
 
         if (fileList && fileList.length > 0) {
             for (let i = 0; i < fileList.length; i++) {
@@ -119,7 +130,7 @@ const NoticeEdit = () => {
         } catch (error) {
             toast.error("게시글 수정 실패");
         }
-    }, [input, navigate, deletedImages]);
+    }, [input, navigate, deletedImages, loadImages]);
 
     return (
         <>
