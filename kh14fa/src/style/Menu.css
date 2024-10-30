@@ -10,6 +10,10 @@
     display: none; /* Initially hidden */
 }
 
-.dropdown-submenu:hover .dropdown-menu {
+.dropdown-submenu:hover > .dropdown-menu {
     display: block; /* Show on hover */
+}
+
+.dropdown-item {
+    cursor: pointer;
 }
