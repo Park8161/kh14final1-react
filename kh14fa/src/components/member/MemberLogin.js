@@ -20,6 +20,7 @@ const MemberLogin = () => {
     });
     const [display, setDisplay] = useState(false);
     const [stay, setStay] = useState(false);
+    const [error, setError] = useState(false);
     
     // recoil state
     const [memberId, setMemberId] = useRecoilState(memberIdState);
@@ -43,7 +44,7 @@ const MemberLogin = () => {
 
             if(banCheckResponse.data){
                 //차단된 계정이면 차단 페이지로 리다이렉트
-                console.log("차단된 계정");
+                // console.log("차단된 계정");
                 navigate("/member/ban");
                 return;
             }
@@ -79,11 +80,15 @@ const MemberLogin = () => {
         catch(e){
             // 에러 처리 + 차단된 계정 403 처리 추가
             if(e.response && e.response.status === 403){
-                console.log("차단된 계정");
+                // console.log("차단된 계정");
                 navigate("/member/ban");
             }
             else{
-                console.log("아이디가 없거나 비밀번호 불일치");
+                setError(true);
+                setTimeout(()=>{
+                    setError(false);
+                },5000);
+                // console.log("아이디가 없거나 비밀번호 불일치");
             }
         }
     },[input, stay]);
@@ -92,10 +97,10 @@ const MemberLogin = () => {
     // view
     return (
         <>
-            <div className="row">
-                <div className="col-md-6 offset-md-3">
+            <div className="row mt-4">
+                <div className="col-md-6 offset-md-3 mt-4">
 
-                    <Jumbotron title="회원 로그인" />
+                    <Jumbotron title="회원 로그인" content="로고 이미지 넣을자리" />
 
                     <div className="row mt-4">
                         <div className="col">
@@ -120,7 +125,7 @@ const MemberLogin = () => {
                     </div>
 
                     <div className="row mt-4">
-                        <div className="col-8">
+                        <div className="col-6">
                             <label>
                                 <input type="checkbox" className="form-check-input" 
                                     checked={display} onChange={e=>setDisplay(e.target.checked)}/>
@@ -132,7 +137,12 @@ const MemberLogin = () => {
                                 <span className="form-check-label ms-1 me-3">로그인 유지</span>
                             </label>
                         </div>
-                        <div className="col-4 text-end">
+                        {error === true ? (
+                            <div className="col-3 text-danger mt-0 justify-content-center align-items-center">회원 정보 불일치</div>
+                        ) : (
+                            <div className="col-3"></div>
+                        )}
+                        <div className="col-3 text-end">
                             <label>
                                 <NavLink className="text-decoration-none" to="/member/findpw">
                                     비밀번호 찾기
@@ -146,6 +156,15 @@ const MemberLogin = () => {
                             <button className="btn btn-success w-100" onClick={sendLoginRequest}>
                                 <RiLoginBoxLine />
                                 <span>로그인</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <button className="btn btn-secondary w-100" onClick={e=>navigate("/member/join")}>
+                                <RiLoginBoxLine />
+                                <span>회원가입</span>
                             </button>
                         </div>
                     </div>
