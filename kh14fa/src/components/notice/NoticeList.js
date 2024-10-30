@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import Jumbotron from "../Jumbotron";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { memberLevelState } from "../../utils/recoil";
 
 const NoticeList = () => {
     const [notice, setNotice] = useState([]); // 전체 공지사항 리스트
@@ -13,6 +15,9 @@ const NoticeList = () => {
     const [pageSize, setPageSize] = useState(10); // 한 페이지 당 항목 수
 
     const navigate = useNavigate();
+
+     // 리코일
+     const memberLevel = useRecoilValue(memberLevelState); // 사용자 권한 상태
 
     // 공지사항 목록을 불러오는 API 호출
     useEffect(() => {
@@ -75,7 +80,7 @@ const NoticeList = () => {
                             <select className="form-select" name="column" value={column} onChange={e => setColumn(e.target.value)}>
                                 <option value="">선택</option>  
                                 <option value="notice_title">제목</option>
-                                <option value="notice_type">종류</option>
+                                <option value="notice_type">분류</option>
                             </select>
                         </div>
                         <div className="col-7">
@@ -92,14 +97,16 @@ const NoticeList = () => {
             </div>
 
             {/* 등록 버튼 */}
-            <div className="row mt-4">
-                <div className="col">
-                    <button className="btn btn-success ms-2" onClick={() => navigate("/notice/insert")}>
-                        <FaPlus />
-                        등록
-                    </button>
+            {memberLevel === "관리자" && (
+                <div className="row mt-4">
+                    <div className="col">
+                        <button className="btn btn-success ms-2" onClick={() => navigate("/notice/insert")}>
+                            <FaPlus />
+                            등록
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* 목록 표시 자리 */}
             <div className="row mt-4">
@@ -113,7 +120,6 @@ const NoticeList = () => {
                                     <th>분류</th>
                                     <th>작성자</th>
                                     <th>작성일</th>
-                                    <th>수정일</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -127,8 +133,15 @@ const NoticeList = () => {
                                         </td>
                                         <td>{n.noticeType}</td>
                                         <td>{n.noticeWriter}</td>
-                                        <td>{n.noticeWtime}</td>
-                                        <td>{n.noticeUtime}</td>
+                                        <td>
+                                            {n.noticeUtime ? (
+                                                <>
+                                                    {n.noticeUtime} (수정됨)
+                                                </>
+                                            ) : (
+                                                n.noticeWtime
+                                            )}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -143,7 +156,7 @@ const NoticeList = () => {
                     <button className="btn btn-outline-primary" disabled={page === 1} onClick={() => setPage(page - 1)}>
                         이전
                     </button>
-                    <span className="mx-3">Page {page} of {Math.ceil(sortedFilteredNotice.length / pageSize)}</span>
+                    <span className="mx-3">{page} / {Math.ceil(sortedFilteredNotice.length / pageSize)}</span>
                     <button className="btn btn-outline-primary" disabled={page === Math.ceil(sortedFilteredNotice.length / pageSize)} onClick={() => setPage(page + 1)}>
                         다음
                     </button>
