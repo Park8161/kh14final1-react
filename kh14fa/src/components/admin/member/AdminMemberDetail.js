@@ -173,7 +173,7 @@ const unblockMember = useCallback(async () => {
             <div className="row mt-4">
                 <div className="col text-end">
                     <button type="button" className="btn btn-secondary"
-                        onClick={() => navigate("/admin/member/memberlist")}>
+                        onClick={() => navigate("/admin/member/list")}>
                         목록보기
                     </button>
                     <button type="button" className="btn btn-primary ms-2"
