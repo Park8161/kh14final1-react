@@ -1,6 +1,6 @@
 // import
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { loginState, memberIdState, memberLevelState, productColumnState, productKeywordState } from "../utils/recoil";
 import { RiLoginBoxLine, RiLogoutBoxLine } from "react-icons/ri";
@@ -15,6 +15,9 @@ import '../style/Search.css';
 const Menu = () => {
     // navigate
     const navigate = useNavigate();
+
+    // location
+    const loacation = useLocation();
 
     // state
     const [size, setSize] = useState("");
@@ -108,18 +111,27 @@ const Menu = () => {
     const categoryTree = buildCategoryTree(category);
 
     const handleMouseEnter = (e) => {
-        const submenu = e.currentTarget.querySelector('.dropdown-menu');
+        e.preventDefault();
+        const submenu = e.currentTarget.querySelector(':scope > .dropdown-menu');
         if (submenu) {
             submenu.classList.add('show');
         }
     };
 
     const handleMouseLeave = (e) => {
-        const submenu = e.currentTarget.querySelector('.dropdown-menu');
+        e.preventDefault();
+        const submenu = e.currentTarget.querySelector(':scope > .dropdown-menu');
         if (submenu) {
             submenu.classList.remove('show');
         }
     };
+
+    const goToProduct = useCallback((categoryNo)=>{
+        setProductColumn("product_category");
+        setProductKeyword(categoryNo);
+        navigate("/product/list");
+        window.location.reload();
+    },[input]);
 
     // view
     return (
@@ -174,22 +186,23 @@ const Menu = () => {
                                     <NavLink className="dropdown-item" to="/notice/list">공지사항 게시판</NavLink>
                                 </div>
                             </li>
+                            
                             {/* 카테고리 */}
                             <li className="nav-item dropdown" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                <a className="nav-link dropdown-toggle" href="#" role="button">카테고리</a>
+                                <a className="nav-link dropdown-toggle" role="button">카테고리</a>
                                 <div className="dropdown-menu">
                                     {categoryTree.map(cat1 => (
                                         <div key={cat1.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                            <NavLink className="dropdown-item" to={`/category/${cat1.categoryNo}`}>{cat1.categoryName}</NavLink>
+                                            <a className="dropdown-item" >{cat1.categoryName}</a>
                                             {cat1.children.length > 0 && (
                                                 <div className="dropdown-menu">
                                                     {cat1.children.map(cat2 => (
                                                         <div key={cat2.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                                            <NavLink className="dropdown-item" to={`/category/${cat2.categoryNo}`}>{cat2.categoryName}</NavLink>
+                                                            <a className="dropdown-item">{cat2.categoryName}</a>
                                                             {cat2.children.length > 0 && (
                                                                 <div className="dropdown-menu dropdown-menu-end">
                                                                     {cat2.children.map(cat3 => (
-                                                                        <NavLink key={cat3.categoryNo} className="dropdown-item" to={`/category/${cat3.categoryNo}`}>{cat3.categoryName}</NavLink>
+                                                                        <a key={cat3.categoryNo} className="dropdown-item" onClick={e=>goToProduct(cat3.categoryNo)}>{cat3.categoryName}</a>
                                                                     ))}
                                                                 </div>
                                                             )}
