@@ -26,7 +26,7 @@ const MemberExit = ()=>{
             navigate("/");
         }
         catch(e){
-            console.log("비밀번호 불일치");
+            // console.log("비밀번호 불일치");
             toast.error("비밀번호 불일치");
         }
     },[password]);

@@ -25,7 +25,7 @@ const MemberCert = ()=>{
 
     const checkCertNumber = useCallback(async()=>{
         const resp = await axios.post("/cert/check", {certEmail : memberEmail, certNumber : certNumber});
-        console.log(resp.data);
+        // console.log(resp.data);
         if(resp.data === true){
             toast.success("인증번호 일치");
             if(memberReliability >= 75) setMemberLevel("안전회원");

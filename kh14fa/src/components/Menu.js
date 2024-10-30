@@ -9,6 +9,7 @@ import { MdContactPage } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import '../style/Menu.css';
+import '../style/Search.css';
 
 // component
 const Menu = () => {
@@ -16,6 +17,7 @@ const Menu = () => {
     const navigate = useNavigate();
 
     // state
+    const [size, setSize] = useState("");
 
     // recoil state
     const [memberId, setMemberId] = useRecoilState(memberIdState);
@@ -45,6 +47,7 @@ const Menu = () => {
         column : "",
         keyword : ""
     });
+
     const changeInput = useCallback((e)=>{
         setInput({
             ...input,
@@ -104,7 +107,6 @@ const Menu = () => {
 
     const categoryTree = buildCategoryTree(category);
 
-
     const handleMouseEnter = (e) => {
         const submenu = e.currentTarget.querySelector('.dropdown-menu');
         if (submenu) {
@@ -144,7 +146,7 @@ const Menu = () => {
                         - 폭이 충분하지 않을 경우에는 접이식으로 표시 
                     */}
                     <div className="collapse navbar-collapse" id="top-menu">
-                        <ul className="navbar-nav me-auto"> {/*me-auto : 오른쪽으로 최대한 공간을 많이 부여하라*/}
+                        <ul className="navbar-nav me-0"> {/*me-auto : 오른쪽으로 최대한 공간을 많이 부여하라*/}
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">관리자 전용</a>
@@ -174,10 +176,41 @@ const Menu = () => {
                                     <NavLink className="dropdown-item" to="/notice/list">공지사항 게시판</NavLink>
                                 </div>
                             </li>
+                            {/* 카테고리 */}
+                            <li className="nav-item dropdown" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                <a className="nav-link dropdown-toggle" href="#" role="button">카테고리</a>
+                                <div className="dropdown-menu">
+                                    {categoryTree.map(cat1 => (
+                                        <div key={cat1.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                            <NavLink className="dropdown-item" to={`/category/${cat1.categoryNo}`}>{cat1.categoryName}</NavLink>
+                                            {cat1.children.length > 0 && (
+                                                <div className="dropdown-menu">
+                                                    {cat1.children.map(cat2 => (
+                                                        <div key={cat2.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                                            <NavLink className="dropdown-item" to={`/category/${cat2.categoryNo}`}>{cat2.categoryName}</NavLink>
+                                                            {cat2.children.length > 0 && (
+                                                                <div className="dropdown-menu dropdown-menu-end">
+                                                                    {cat2.children.map(cat3 => (
+                                                                        <NavLink key={cat3.categoryNo} className="dropdown-item" to={`/category/${cat3.categoryNo}`}>{cat3.categoryName}</NavLink>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </li>
+
+                        </ul>
+
+                        <ul className="navbar-nav me-auto">
                             <li>
                                 {/* 검색창 */}
-                                <div className="row mx-4">
-                                    <div className="col input-group w-auto">
+                                <div className="row mx-4 w-100 d-flex jusityfy-content-center search-window">
+                                    <div className="col input-group w-auto mx-4 px-4">
                                         <select type="search" className="form-select bg-white border-0" 
                                                 name="column" value={input.column} onChange={changeInput}>
                                             <option value="">선택</option>
@@ -192,40 +225,8 @@ const Menu = () => {
                                         </button>
                                     </div>
                                 </div>
-                            </li>
-                            
-                            {/* 카테고리 */}
-                            <li className="nav-item dropdown" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                            <a className="nav-link dropdown-toggle" href="#" role="button">카테고리</a>
-                            <div className="dropdown-menu">
-                                {categoryTree.map(cat1 => (
-                                    <div key={cat1.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                        <NavLink className="dropdown-item" to={`/category/${cat1.categoryNo}`}>{cat1.categoryName}</NavLink>
-                                        {cat1.children.length > 0 && (
-                                            <div className="dropdown-menu">
-                                                {cat1.children.map(cat2 => (
-                                                    <div key={cat2.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                                        <NavLink className="dropdown-item" to={`/category/${cat2.categoryNo}`}>{cat2.categoryName}</NavLink>
-                                                        {cat2.children.length > 0 && (
-                                                            <div className="dropdown-menu dropdown-menu-end">
-                                                                {cat2.children.map(cat3 => (
-                                                                    <NavLink key={cat3.categoryNo} className="dropdown-item" to={`/category/${cat3.categoryNo}`}>{cat3.categoryName}</NavLink>
-                                                                ))}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </li>
-
-
+                            </li>                     
                         </ul>
-
-                        
                         
                         <ul className="navbar-nav">
                             {/* 로그인이 되어있다면 아이디(등급) 형태로 출력 */}
