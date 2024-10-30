@@ -23,7 +23,7 @@ const QnaDetail = () => {
 
     // 답글 상태
     const [reply, setReply] = useState("");
-    const [replies, setReplies] = useState([]); // 답글 목록
+    const [replies, setReplies] = useState([]);
     const [showReplyDeleteModal, setShowReplyDeleteModal] = useState(false);
     const [replyToDelete, setReplyToDelete] = useState(null);
 
@@ -34,14 +34,14 @@ const QnaDetail = () => {
 
     useEffect(() => {
         loadQna();
-        loadReplies(); // 답글 로드
+        loadReplies();
     }, [qnaNo]);
 
     const loadQna = useCallback(async () => {
         try {
             const resp = await axios.get("/qna/detail/" + qnaNo);
             setQna(resp.data);
-            setEditContent(resp.data.qnaContent); // 초기 수정 내용 설정
+            setEditContent(resp.data.qnaContent);
         } catch (e) {
             setQna(null);
         }
@@ -50,10 +50,10 @@ const QnaDetail = () => {
 
     const loadReplies = useCallback(async () => {
         try {
-            const resp = await axios.get(`/qna/reply/list?replyQna=${qnaNo}`); // 답글 API
+            const resp = await axios.get(`/qna/reply/list?replyQna=${qnaNo}`);
             setReplies(resp.data);
         } catch (e) {
-            // console.error("답글 로드 중 오류 발생", e);
+            // 오류 처리
         }
     }, [qnaNo]);
 
@@ -67,7 +67,7 @@ const QnaDetail = () => {
             setShowDeleteModal(false);
             setShowSuccessModal(true);
         } catch (error) {
-            // console.error("QnA 삭제 중 오류 발생", error);
+            // 오류 처리
         }
     }, [qna]);
 
@@ -83,26 +83,26 @@ const QnaDetail = () => {
 
     const handleReplySubmit = async (e) => {
         e.preventDefault();
-        if (!reply) return; // 답글이 비어있으면 무시
+        if (!reply) return;
         try {
-            await axios.post(`/qna/reply/insert?replyQna=${qnaNo}`, { replyContent: reply }); // 답글 추가 API
-            setReply(""); // 입력란 비우기
-            loadReplies(); // 답글 목록 새로고침
-            toast.success("답글이 추가되었습니다!"); // 성공 알림
+            await axios.post(`/qna/reply/insert?replyQna=${qnaNo}`, { replyContent: reply });
+            setReply("");
+            loadReplies();
+            toast.success("답글이 추가되었습니다!");
         } catch (e) {
-            // console.error("답글 추가 중 오류 발생", e);
+            // 오류 처리
         }
     };
 
     const deleteReply = useCallback(async () => {
         if (!replyToDelete) return;
         try {
-            await axios.delete(`/qna/reply/delete/${replyToDelete}`); // 답글 삭제 API
+            await axios.delete(`/qna/reply/delete/${replyToDelete}`);
             setShowReplyDeleteModal(false);
-            loadReplies(); // 답글 목록 새로고침
-            toast.success("답글이 삭제되었습니다."); // 성공 알림
+            loadReplies();
+            toast.success("답글이 삭제되었습니다.");
         } catch (error) {
-            // console.error("답글 삭제 중 오류 발생", error);
+            // 오류 처리
         }
     }, [replyToDelete]);
 
@@ -111,13 +111,18 @@ const QnaDetail = () => {
     };
 
     const handleEditSubmit = async () => {
+        if (!editContent.trim()) {
+            toast.error("수정할 내용을 입력하세요"); // 내용이 비어있으면 알림 표시
+            return; // 함수 종료
+        }
+
         try {
             await axios.put(`/qna/reply/edit/${replyToEdit}`, { replyNo: replyToEdit, replyContent: editContent });
             setShowEditModal(false);
-            toast.success("수정이 완료되었습니다."); // 성공 알림
-            loadReplies(); // 답글 목록 새로고침
+            toast.success("수정이 완료되었습니다.");
+            loadReplies();
         } catch (error) {
-            // console.error("답글 수정 중 오류 발생", error);
+            // 오류 처리
         }
     };
 
@@ -169,7 +174,7 @@ const QnaDetail = () => {
             </div>
 
             {/* 답글 입력 */}
-            {memberLevel === "관리자" &&(
+            {memberLevel === "관리자" && (
             <div className="mt-4">
                 <h5>답글 작성</h5>
                 <form onSubmit={handleReplySubmit}>
@@ -198,28 +203,27 @@ const QnaDetail = () => {
                                             {new Date(replyItem.replyUtime).toLocaleString()} (수정됨)
                                         </>
                                     ) : (
-                                        new Date(replyItem.replyWtime).toLocaleString() // 답글 생성 시간
+                                        new Date(replyItem.replyWtime).toLocaleString()
                                     )}
                                 </div>
                                 <div>
                                     <strong>관리자     :      </strong>
                                     <span style={{ wordBreak: 'break-word', display: 'inline-block', maxWidth: '100%' }}>
-                                        {replyItem.replyContent} {/* 답글 내용 */}
+                                        {replyItem.replyContent}
                                     </span>
                                 </div>
-                                {/* 답글 작성자에 따라 수정/삭제 버튼 조건부 렌더링 */}
                                 {replyItem.replyWriter === memberId && (
                                     <>
                                         <button className="btn btn-danger btn-sm float-end" onClick={() => {
-                                            setReplyToDelete(replyItem.replyNo); // 삭제할 답글 설정
-                                            setShowReplyDeleteModal(true); // 모달 표시
+                                            setReplyToDelete(replyItem.replyNo);
+                                            setShowReplyDeleteModal(true);
                                         }}>
                                             삭제
                                         </button>
                                         <button className="btn btn-info btn-sm float-end me-2" onClick={() => {
-                                            setReplyToEdit(replyItem.replyNo); // 수정할 답글 설정
-                                            setEditContent(replyItem.replyContent); // 수정할 내용 설정
-                                            setShowEditModal(true); // 수정 모달 표시
+                                            setReplyToEdit(replyItem.replyNo);
+                                            setEditContent(replyItem.replyContent);
+                                            setShowEditModal(true);
                                         }}>
                                             수정
                                         </button>
@@ -227,7 +231,6 @@ const QnaDetail = () => {
                                 )}
                             </li>
                         ))}
-
                     </ul>
                 ) : (
                     <p>답글이 없습니다.</p>
@@ -238,7 +241,6 @@ const QnaDetail = () => {
             <div className="row mt-4">
                 <div className="col text-end">
                     <button className="btn btn-secondary ms-2" onClick={() => navigate("/qna/list")}>목록</button>
-                    {/* QnA 작성자에 따라 수정/삭제 버튼 조건부 렌더링 */}
                     {qna.qnaWriter === memberId && (
                         <>
                             <button className="btn btn-info ms-2" onClick={() => {
