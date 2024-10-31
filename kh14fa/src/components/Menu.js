@@ -135,7 +135,7 @@ const Menu = () => {
     const loadHotList = useCallback(async()=>{
         const response = await axios.get("/product/hotList");
         setHotList(response.data);
-        console.log(response.data);
+        // console.log(response.data);
     },[hotList]);
 
     // view

@@ -92,9 +92,15 @@ const MyPage = ()=>{
         // console.log(response.data);
     }, [payList]);
 
-    //
+    // 구매확정 진행
     const confirmBuy = useCallback(async(paymentNo)=>{
         const resp = await axios.post("/pay/confirmBuy/"+paymentNo);
+        loadPayList();
+    },[payList]);
+
+    // 구매취소 진행
+    const cancelBuy = useCallback(async(paymentNo)=>{
+        const resp = await axios.delete("/kakaopay/cancelAll/"+paymentNo);
         loadPayList();
     },[payList]);
 
@@ -259,7 +265,7 @@ const MyPage = ()=>{
                         </div>
                         <div className="row">
                             <div className="col">
-                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas2" >
+                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas2">
                                     결제 내역
                                 </button>
                             </div>
@@ -604,12 +610,12 @@ const MyPage = ()=>{
             </div>
             <div className="offcanvas-body">
                 {payList.map((payment)=>(
-                <div className="row mt-2" key={payment.paymentNo} /*onClick={e=>navigate("/product/detail/"+product.productNo)}*/ data-bs-dismiss="offcanvas">
+                <div className="row mt-2" key={payment.paymentNo} onClick={e=>navigate("/product/detail/"+payment.productNo)} data-bs-dismiss="offcanvas">
                     <div className="col-5">
                         <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${payment.attachment}`} className="card-img-top" />
                     </div>
                     <div className="col-7">
-                        <div className="row mt-1">
+                        <div className="row">
                             <div className="col">
                                 {payment.paymentName}
                             </div>
@@ -639,16 +645,16 @@ const MyPage = ()=>{
                             </div>
                             <div className="row mt-1">
                                 <div className="col btn-group text-end">
-                                    <button className="btn btn-primary w-100 btn-sm me-1" /*onClick={e=>confirmBuy(payment.paymentNo)}*/>
+                                    <button className="btn btn-primary w-100 btn-sm me-1" onClick={e=>confirmBuy(payment.paymentNo)}>
                                         <small>
                                             구매확정
                                         </small>
                                     </button>
-                                    <NavLink to={``} className="btn btn-secondary w-100 btn-sm ms-1">
+                                    <button className="btn btn-secondary w-100 btn-sm ms-1" onClick={e=>cancelBuy(payment.paymentNo)}>
                                         <small>
                                             구매취소
                                         </small>
-                                    </NavLink>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -670,6 +676,23 @@ const MyPage = ()=>{
                                 </div>
                             </div> 
                         </div>                              
+                        )}
+                        {payment.paymentStatus === "취소" && (
+                        <div>
+                            <div className="row">
+                                <div className="col">
+                                    <small className="text-muted ms-1">
+                                    </small>
+                                </div>
+                            </div>
+                            <div className="row mt-1">
+                                <div className="col btn-group text-end">
+                                    <button className="btn btn-primary w-100 btn-sm ms-1" disabled>
+                                        결제 취소 완료
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         )}
                     </div>
                 </div>
