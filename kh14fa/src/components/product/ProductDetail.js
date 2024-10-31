@@ -12,7 +12,6 @@ import { IoMdClose } from "react-icons/io";
 import { toast } from "react-toastify";
 import { useRecoilValue } from 'recoil';
 import { memberIdState, memberLoadingState } from "../../utils/recoil";
-import GoChat from './../room/GoChat';
 import userImage from './userImage.jpg';
 
 const ProductDetail = ()=>{
