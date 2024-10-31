@@ -73,7 +73,10 @@ const Menu = () => {
 
     const sendToProduct = useCallback(()=>{
         setProductColumn(input.column);
-        setProductKeyword(input.keyword);
+        if(input.column === 'product_category'){
+            setProductKeyword(category.filter(cat => (cat.categoryName.includes(input.keyword) && cat.categoryDepth === 3))[0]?.categoryNo);
+        }
+        else setProductKeyword(input.keyword);
         navigate("/product/list");
     },[input]);
 
@@ -232,9 +235,11 @@ const Menu = () => {
                                             <option value="">선택</option>
                                             <option value="product_name">상품명</option>
                                             <option value="product_member">판매자</option>
+                                            <option value="product_category">카테고리</option>
                                         </select>
                                         <input type="search" className="form-control w-auto bg-white border-0" 
-                                                name="keyword" value={input.keyword} onChange={changeInput}/>
+                                                name="keyword" value={input.keyword} onChange={changeInput}
+                                                onKeyUp={e=>e.key === 'Enter' && sendToProduct()}/>
                                         <button className="btn btn-dark d-flex justify-content-center align-items-center" onClick={sendToProduct}>
                                             <FaMagnifyingGlass />
                                             검색
