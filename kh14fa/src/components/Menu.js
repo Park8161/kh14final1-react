@@ -2,7 +2,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { useLocation, useParams } from "react-router";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { loginState, memberIdState, memberLevelState, memberLoadingState, productColumnState, productKeywordState } from "../utils/recoil";
@@ -90,15 +89,6 @@ const Menu = () => {
 
 
 
-    // 검색창 테스트
-    const [productColumn, setProductColumn] = useRecoilState(productColumnState);
-    const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
-
-    const [input, setInput] = useState({
-        column : "",
-        keyword : ""
-    });
-
     const changeInput = useCallback((e)=>{
         setInput({
             ...input,
@@ -118,13 +108,7 @@ const Menu = () => {
 
     //카테고리 관련
     //state
-    const [category, setCategory] = useState([]);
-    const [categoryInput, categorySetInput] = useState({
-        categoryName: "",
-        categoryGroup: "",
-        categoryUpper: "",
-        categoryDepth: ""
-    });
+  
 
     //effect
     useEffect(() => {
