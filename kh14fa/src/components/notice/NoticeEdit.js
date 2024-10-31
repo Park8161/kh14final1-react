@@ -74,7 +74,7 @@ const NoticeEdit = () => {
                 },
             }));
 
-            // Check if noticeType is "이벤트" and if no files are attached
+            // 공지 유형이 "이벤트"이고 파일이 첨부되지 않은 경우 경고
             if (e.target.name === "noticeType" && e.target.value === "이벤트" && input.notice.attachList.length === 0) {
                 toast.error("사진이 최소 한 장은 있어야 합니다.");
             }
@@ -82,7 +82,8 @@ const NoticeEdit = () => {
     }, [input.notice.attachList]);
 
     const deleteImage = useCallback(target => {
-        if (input.notice.noticeType === "이벤트" && loadImages.length - deletedImages.length <= 1) {
+        const remainingImagesCount = loadImages.length - deletedImages.length;
+        if (input.notice.noticeType === "이벤트" && remainingImagesCount <= 1) {
             toast.error("사진이 최소 한 장은 있어야 합니다.");
             return;
         }
@@ -99,11 +100,10 @@ const NoticeEdit = () => {
         const formData = new FormData();
         const fileList = input.notice.attachList;
 
-        if (input.notice.noticeType === "이벤트") {
-            if (fileList.length === 0) {
-                toast.error("사진이 최소 한 장은 있어야 합니다.");
-                return; // Stop submission
-            }
+        // 공지 유형이 "이벤트"일 때 최소 한 장의 이미지가 필요
+        if (input.notice.noticeType === "이벤트" && (fileList.length === 0 && loadImages.length - deletedImages.length === 0)) {
+            toast.error("사진이 최소 한 장은 있어야 합니다.");
+            return; // 제출 중지
         }
 
         if (fileList && fileList.length > 0) {

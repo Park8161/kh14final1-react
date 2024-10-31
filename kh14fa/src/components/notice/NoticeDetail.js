@@ -117,10 +117,6 @@ const NoticeDetail = () => {
 
             {/* 게시글 정보 */}
             <div className="row mt-4">
-                <div className="col-sm-3">작성자</div>
-                <div className="col-sm-9">관리자</div>
-            </div>
-            <div className="row mt-4">
                 <div className="col-sm-3">분류</div>
                 <div className="col-sm-9">{notice.noticeType}</div>
             </div>
