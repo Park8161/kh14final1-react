@@ -118,7 +118,6 @@ const NoticeList = () => {
                                     <th>글 번호</th>
                                     <th>제목</th>
                                     <th>분류</th>
-                                    <th>작성자</th>
                                     <th>작성일</th>
                                 </tr>
                             </thead>
@@ -132,7 +131,6 @@ const NoticeList = () => {
                                             </NavLink>
                                         </td>
                                         <td>{n.noticeType}</td>
-                                        <td>{n.noticeWriter}</td>
                                         <td>
                                             {n.noticeUtime ? (
                                                 <>
