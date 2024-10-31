@@ -178,7 +178,7 @@ const ProductInsert = ()=>{
         else setProductCategoryClass(valid ? "is-valid" : "is-invalid");
     },[input,categoryName]);
     const checkProductPrice = useCallback(()=>{
-        const regex = /^[0-9]{0,8}$/;
+        const regex = /^[0-9]{0,9}$/;
         const valid = regex.test(input.productPrice) && input.productPrice > 0;
         setProductPriceValid(valid);
         if(input.productPrice === 0) setProductPriceClass("");
@@ -192,7 +192,7 @@ const ProductInsert = ()=>{
         else setProductDetailClass(valid ? "is-valid" : "is-invalid");
     },[input]);
     const checkProductQty = useCallback(()=>{
-        const regex = /^[0-9]{0,9}[1-5]$/;
+        const regex = /^[0-9]{0,8}[1-9]$/;
         const valid = regex.test(input.productQty) && input.productQty > 0;
         setProductQtyValid(valid);
         if(input.productQty === 0 ) setProductQtyClass("");
