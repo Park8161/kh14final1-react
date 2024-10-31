@@ -610,12 +610,12 @@ const MyPage = ()=>{
             </div>
             <div className="offcanvas-body">
                 {payList.map((payment)=>(
-                <div className="row mt-2" key={payment.paymentNo} /*onClick={e=>navigate("/product/detail/"+product.productNo)}*/ data-bs-dismiss="offcanvas">
+                <div className="row mt-2" key={payment.paymentNo} onClick={e=>navigate("/product/detail/"+payment.productNo)} data-bs-dismiss="offcanvas">
                     <div className="col-5">
                         <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${payment.attachment}`} className="card-img-top" />
                     </div>
                     <div className="col-7">
-                        <div className="row mt-1">
+                        <div className="row">
                             <div className="col">
                                 {payment.paymentName}
                             </div>
@@ -676,6 +676,23 @@ const MyPage = ()=>{
                                 </div>
                             </div> 
                         </div>                              
+                        )}
+                        {payment.paymentStatus === "취소" && (
+                        <div>
+                            <div className="row">
+                                <div className="col">
+                                    <small className="text-muted ms-1">
+                                    </small>
+                                </div>
+                            </div>
+                            <div className="row mt-1">
+                                <div className="col btn-group text-end">
+                                    <button className="btn btn-primary w-100 btn-sm ms-1" disabled>
+                                        결제 취소 완료
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         )}
                     </div>
                 </div>
