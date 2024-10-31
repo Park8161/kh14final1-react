@@ -2,19 +2,40 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { loginState, memberIdState, memberLevelState, productColumnState, productKeywordState } from "../utils/recoil";
+import { useLocation, useParams } from "react-router";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
+import { loginState, memberIdState, memberLevelState, memberLoadingState, productColumnState, productKeywordState } from "../utils/recoil";
 import { RiLoginBoxLine, RiLogoutBoxLine } from "react-icons/ri";
 import axios from "axios";
 import { MdContactPage } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
-import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
+import { FaLocationDot, FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import '../style/Menu.css';
+
+import { toast } from "react-toastify";
+import { FaBell } from "react-icons/fa";
+
 import '../style/Search.css';
+
 
 // component
 const Menu = () => {
     // navigate
     const navigate = useNavigate();
+
+    // state
+    const [noticeCnt, setNoticeCnt] = useState(0);
+    const [roomList, setRoomList] = useState([]);
+    const [connect, setConnect] = useState(false);
+    const [currentUrl, setCurrentUrl] = useState("");
+    const location = useLocation();
+    const [chatUrl, setChatUrl] = useState();
+
+    // token
+    const accessToken = axios.defaults.headers.common["Authorization"];
+    const refreshToken = window.localStorage.getItem("refreshToken")
+                                    || window.sessionStorage.getItem("refreshToken");
 
     // location
     const loacation = useLocation();
@@ -34,10 +55,13 @@ const Menu = () => {
     });
     const [hotList, setHotList] = useState([]);
     
+
     // recoil state
     const [memberId, setMemberId] = useRecoilState(memberIdState);
     const [memberLevel, setMemberLevel] = useRecoilState(memberLevelState);
     const login = useRecoilValue(loginState); // 읽기전용 항목은 이렇게 읽음
+   const memberLoading = useRecoilValue(memberLoadingState);
+
     const [productColumn, setProductColumn] = useRecoilState(productColumnState);
     const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
     
@@ -46,6 +70,7 @@ const Menu = () => {
         loadCategory();
         loadHotList();
     }, []);
+
     
     // callback
     const logout = useCallback(()=>{
@@ -64,6 +89,16 @@ const Menu = () => {
     },[memberId, memberLevel]);
 
 
+
+    // 검색창 테스트
+    const [productColumn, setProductColumn] = useRecoilState(productColumnState);
+    const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
+
+    const [input, setInput] = useState({
+        column : "",
+        keyword : ""
+    });
+
     const changeInput = useCallback((e)=>{
         setInput({
             ...input,
@@ -79,6 +114,28 @@ const Menu = () => {
         else setProductKeyword(input.keyword);
         navigate("/product/list");
     },[input]);
+
+
+    //카테고리 관련
+    //state
+    const [category, setCategory] = useState([]);
+    const [categoryInput, categorySetInput] = useState({
+        categoryName: "",
+        categoryGroup: "",
+        categoryUpper: "",
+        categoryDepth: ""
+    });
+
+    //effect
+    useEffect(() => {
+        loadCategory();
+    }, []);
+
+    useEffect(()=>{
+        if(login === false) return;
+        loadNoticeCnt(memberId);
+    },[login, memberId, location.pathname]);
+
 
     // 카테고리 리스트 가져오기
     const loadCategory = useCallback(async () => {
@@ -127,6 +184,106 @@ const Menu = () => {
         }
     };
 
+
+     // 새로운 알림 수 
+     const loadNoticeCnt = useCallback(async (memberId)=>{
+        const resp = await axios.get("/room/unread/cntall");
+        setNoticeCnt(resp.data);
+        loadRoomList(memberId);
+    },[]);
+
+    // 통신 시 알림 수 재 갱신
+    const reloadNoticeCnt = useCallback(async ()=>{
+        const resp = await axios.get("/room/unread/cntall");
+        setNoticeCnt(resp.data);
+    },[]);
+
+    // 채팅방 구독을 위한 채팅방 목록 세팅
+    const loadRoomList = useCallback(async (memberId)=>{
+        const resp = await axios.get("/room/");
+        setRoomList(resp.data);
+        connectToServer(resp.data, memberId);
+    },[]);
+
+    // const postNoticeCnt = useCallback(async()=>{
+    //     await axios.post("/room/unread/cntall");
+    //      console.log("noticeCnt실행");
+    //  },[]);
+
+    // 메시지 알림
+    const showNotice = useCallback((newMsg)=>{
+        if(connect === true) return;
+        toast.info(newMsg.senderMemberId+"님으로 부터 새로운 메시지 도착 "+newMsg.content);
+    },[connect]);
+
+    // 현재 주소
+    const getCurrentUrl = useCallback(()=>{
+        const result = window.location.origin 
+                    + window.location.pathname 
+                    + (window.location.hash || '');
+        return result;
+    }, [location.pathname]);
+
+    // 채팅방 주소
+    const getChatRoomUrl = useCallback((roomNo)=>{
+        return `${window.location.origin}/#/chat/chatroom/${roomNo}`;
+    }, []);
+
+    //알림 개수 실시간 갱신을 위한 웹소켓 연결 설정
+    const connectToServer = useCallback((updatedRoomList, memberId)=>{
+        // 소켓 연결 생성
+        const socket = new SockJS(process.env.REACT_APP_BASE_URL+"/ws");
+        // STOMP로 업그레이드
+        const client = new Client({
+            webSocketFactory: ()=>socket,
+            connectHeaders:{
+                accessToken : accessToken,
+                refreshToken : refreshToken
+            },
+            // 연결 되었을때 할일 
+            onConnect:()=>{
+                updatedRoomList.forEach(room => {
+                    client.subscribe(`/private/chat/${room.roomNo}`, (message) => {
+                        const data = JSON.parse(message.body); 
+                        const currentUrl = getCurrentUrl(); // 현재 URL을 가져옴
+                        const chatRoomUrl = getChatRoomUrl(room.roomNo);
+                        console.log(currentUrl);
+                        if(data.senderMemberId !== memberId && chatRoomUrl !== currentUrl){
+                            // setNoticeCnt(prevCnt => prevCnt + 1); 
+                            reloadNoticeCnt();
+                            // showNotice(data);
+                        }
+                    });
+                    client.subscribe(`/private/user/${room.roomNo}`,(message)=>{
+                        reloadNoticeCnt();  
+                    });
+                    client.subscribe(`/private/db/${room.roomNo}/${memberId}`,(message)=>{
+                        reloadNoticeCnt();        
+                    });
+                });
+                // setConnect(true);
+                // console.log("연결됨?"+connect);
+                },
+            // 연결이 사라졌을 때 할일 
+            onDisconnect:()=>{
+                setConnect(false);
+                reloadNoticeCnt();
+            },
+            debug:(str)=>{
+                console.log(str);
+            }
+        });
+        client.activate();
+        return client;
+    },[memberLoading, noticeCnt, chatUrl]);
+
+    const disconnectFromServer = useCallback((client)=>{
+        if(client){
+            client.deactivate();
+        }
+    },[]);
+  
+  
     const goToProduct = useCallback((categoryNo)=>{
         setProductColumn("product_category");
         setProductKeyword(categoryNo);
@@ -140,6 +297,7 @@ const Menu = () => {
         setHotList(response.data);
         // console.log(response.data);
     },[hotList]);
+
 
     // view
     return (
@@ -155,11 +313,21 @@ const Menu = () => {
                 <div className="container-fluid">
                     {/* 메인 로고 또는 텍스트가 존재하는 위치 */}
                     <NavLink className="navbar-brand" to="/">KH정보교육원</NavLink>
-                    {/* 폭이 좁은 경우 메뉴를 숨겼다 펼쳤다 하는 버튼(三햄버거 버튼) */}
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#top-menu"
-                        aria-controls="top-menu" aria-expanded="false" aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
+
+                    <div className="d-flex align-items-center">
+                    {/* 알림 아이콘 */}
+                        <NavLink to="/Chat/roomlist">
+                            <div className="d-flex align-items-center">
+                                <FaBell className="text-white" /> {/* 아이콘을 흰색으로 설정 */}
+                                <p className="fs-6 ms-1 mb-0 text-white">{noticeCnt}</p> {/* 같은 행에 표시하고, 아이콘 오른쪽에 띄워줌 */}
+                            </div>
+                        </NavLink>
+                        {/* 폭이 좁은 경우 메뉴를 숨겼다 펼쳤다 하는 버튼(三햄버거 버튼) */}
+                        <button className="navbar-toggler ms-3" type="button" data-bs-toggle="collapse" data-bs-target="#top-menu"
+                            aria-controls="top-menu" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
                     {/* 
                         실제 메뉴 영역
                         - 폭이 충분할 경우에는 상단 메뉴바에 표시
