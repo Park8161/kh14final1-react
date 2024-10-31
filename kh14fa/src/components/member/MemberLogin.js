@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import { useRecoilState } from "recoil";
 import { memberIdState, memberLevelState } from "../../utils/recoil";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const MemberLogin = () => {
     // navigate
@@ -75,6 +76,7 @@ const MemberLogin = () => {
             // - 로그인에 성공하면? 메인페이지로 이동
             // return <Navigate to="/" /> // 컴포넌트(view)에서 사용해야할 경우
             // useNavigate를 쓰면 무조건 뒤에 화면(return(<></>);)이 나와야 함 >> 함수 내부라서 화면 안해도 된다?
+            toast("환영해요 "+input.memberId+"님!");
             navigate("/"); // 함수에서 사용해야할 경우
         }
         catch(e){

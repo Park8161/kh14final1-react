@@ -57,6 +57,10 @@ const CategoryInsert = () => {
                 toast.error("이미 존재하는 카테고리");
                 return;
             }
+            if(categoryName.length > 100){
+                toast.error("카테고리 이름은 100자 이내 가능");
+                return;
+            }
             const response = await axios.post("/admin/category/insert", input);
             toast.success("카테고리 등록 완료");
             navigate("/admin/category/list")
