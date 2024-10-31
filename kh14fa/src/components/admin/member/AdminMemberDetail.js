@@ -38,7 +38,7 @@ const AdminMemberDetail = () => {
                 console.log(`삭제 요청 경로: /admin/member/detail/${memberId}`);
                 await axios.delete(`/admin/member/${memberId}`);
                 toast.success("회원 삭제 완료");
-                navigate("/admin/member/memberlist");
+                navigate("/admin/member/list");
             } catch (error) {
                 // 서버 오류 처리
                 if (error.response) {
@@ -173,7 +173,7 @@ const unblockMember = useCallback(async () => {
             <div className="row mt-4">
                 <div className="col text-end">
                     <button type="button" className="btn btn-secondary"
-                        onClick={() => navigate("/admin/member/memberlist")}>
+                        onClick={() => navigate("/admin/member/list")}>
                         목록보기
                     </button>
                     <button type="button" className="btn btn-primary ms-2"

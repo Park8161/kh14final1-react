@@ -2,40 +2,46 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 import Jumbotron from "../Jumbotron";
-import Modal from "react-bootstrap/Modal"; // Bootstrap 모달 사용
-import { ToastContainer, toast } from "react-toastify"; // Toast 추가
-import "react-toastify/dist/ReactToastify.css"; // CSS 추가
+import Modal from "react-bootstrap/Modal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRecoilValue } from "recoil";
+import { memberIdState, memberLevelState } from "../../utils/recoil";
 
 const QnaDetail = () => {
     const { qnaNo } = useParams();
     const navigate = useNavigate();
+
+    // 리코일 state
+    const memberId = useRecoilValue(memberIdState);
+    const memberLevel = useRecoilValue(memberLevelState);
 
     const [qna, setQna] = useState(null);
     const [load, setLoad] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-    // 답글 상태 추가
+    // 답글 상태
     const [reply, setReply] = useState("");
-    const [replies, setReplies] = useState([]); // 답글 목록
+    const [replies, setReplies] = useState([]);
     const [showReplyDeleteModal, setShowReplyDeleteModal] = useState(false);
     const [replyToDelete, setReplyToDelete] = useState(null);
 
-    // 수정 상태 추가
+    // 수정 상태
     const [showEditModal, setShowEditModal] = useState(false);
     const [editContent, setEditContent] = useState("");
     const [replyToEdit, setReplyToEdit] = useState(null);
 
     useEffect(() => {
         loadQna();
-        loadReplies(); // 답글 로드
+        loadReplies();
     }, [qnaNo]);
 
     const loadQna = useCallback(async () => {
         try {
             const resp = await axios.get("/qna/detail/" + qnaNo);
             setQna(resp.data);
-            setEditContent(resp.data.qnaContent); // 초기 수정 내용 설정
+            setEditContent(resp.data.qnaContent);
         } catch (e) {
             setQna(null);
         }
@@ -44,10 +50,10 @@ const QnaDetail = () => {
 
     const loadReplies = useCallback(async () => {
         try {
-            const resp = await axios.get(`/qna/reply/list?replyQna=${qnaNo}`); // 답글 API
+            const resp = await axios.get(`/qna/reply/list?replyQna=${qnaNo}`);
             setReplies(resp.data);
         } catch (e) {
-            console.error("Error loading replies", e);
+            // 오류 처리
         }
     }, [qnaNo]);
 
@@ -61,7 +67,7 @@ const QnaDetail = () => {
             setShowDeleteModal(false);
             setShowSuccessModal(true);
         } catch (error) {
-            console.error("Error deleting qna", error);
+            // 오류 처리
         }
     }, [qna]);
 
@@ -77,26 +83,26 @@ const QnaDetail = () => {
 
     const handleReplySubmit = async (e) => {
         e.preventDefault();
-        if (!reply) return; // 답글이 비어 있으면 무시
+        if (!reply) return;
         try {
-            await axios.post(`/qna/reply/insert?replyQna=${qnaNo}`, { replyContent: reply }); // 답글 추가 API
-            setReply(""); // 입력창 비우기
-            loadReplies(); // 답글 목록 새로 고침
-            toast.success("답글이 작성되었습니다!"); // 성공 알림
+            await axios.post(`/qna/reply/insert?replyQna=${qnaNo}`, { replyContent: reply });
+            setReply("");
+            loadReplies();
+            toast.success("답글이 추가되었습니다!");
         } catch (e) {
-            console.error("Error adding reply", e);
+            // 오류 처리
         }
     };
 
     const deleteReply = useCallback(async () => {
         if (!replyToDelete) return;
         try {
-            await axios.delete(`/qna/reply/delete/${replyToDelete}`); // 댓글 삭제 API
+            await axios.delete(`/qna/reply/delete/${replyToDelete}`);
             setShowReplyDeleteModal(false);
-            loadReplies(); // 댓글 목록 새로 고침
-            toast.success("댓글이 삭제되었습니다."); // 성공 알림
+            loadReplies();
+            toast.success("답글이 삭제되었습니다.");
         } catch (error) {
-            console.error("Error deleting reply", error);
+            // 오류 처리
         }
     }, [replyToDelete]);
 
@@ -105,13 +111,18 @@ const QnaDetail = () => {
     };
 
     const handleEditSubmit = async () => {
+        if (!editContent.trim()) {
+            toast.error("수정할 내용을 입력하세요"); // 내용이 비어있으면 알림 표시
+            return; // 함수 종료
+        }
+
         try {
             await axios.put(`/qna/reply/edit/${replyToEdit}`, { replyNo: replyToEdit, replyContent: editContent });
             setShowEditModal(false);
-            toast.success("수정이 완료되었습니다."); // 성공 알림
-            loadReplies(); // 답글 목록 새로 고침
+            toast.success("수정이 완료되었습니다.");
+            loadReplies();
         } catch (error) {
-            console.error("Error editing reply", error);
+            // 오류 처리
         }
     };
 
@@ -162,7 +173,8 @@ const QnaDetail = () => {
                 <div className="col-sm-9">{qna.qnaUtime}</div>
             </div>
 
-            {/* 답글 입력창 */}
+            {/* 답글 입력 */}
+            {memberLevel === "관리자" && (
             <div className="mt-4">
                 <h5>답글 작성</h5>
                 <form onSubmit={handleReplySubmit}>
@@ -176,6 +188,7 @@ const QnaDetail = () => {
                     <button className="btn btn-primary float-end mt-2" type="submit">답글 추가</button>
                 </form>
             </div>
+            )}
 
             {/* 답글 목록 */}
             <div className="mt-4">
@@ -190,45 +203,52 @@ const QnaDetail = () => {
                                             {new Date(replyItem.replyUtime).toLocaleString()} (수정됨)
                                         </>
                                     ) : (
-                                        new Date(replyItem.replyWtime).toLocaleString() // 댓글 작성 시간
+                                        new Date(replyItem.replyWtime).toLocaleString()
                                     )}
                                 </div>
                                 <div>
-                                    <strong>{replyItem.replyWriter} </strong>
+                                    <strong>관리자     :      </strong>
                                     <span style={{ wordBreak: 'break-word', display: 'inline-block', maxWidth: '100%' }}>
-                                        {replyItem.replyContent} {/* 답글 내용 */}
+                                        {replyItem.replyContent}
                                     </span>
                                 </div>
-                                <button className="btn btn-danger btn-sm float-end" onClick={() => {
-                                    setReplyToDelete(replyItem.replyNo); // 삭제할 댓글 번호 설정
-                                    setShowReplyDeleteModal(true); // 모달 표시
-                                }}>
-                                    삭제
-                                </button>
-                                <button className="btn btn-info btn-sm float-end me-2" onClick={() => {
-                                    setReplyToEdit(replyItem.replyNo); // 수정할 댓글 번호 설정
-                                    setEditContent(replyItem.replyContent); // 수정할 내용 설정
-                                    setShowEditModal(true); // 수정 모달 표시
-                                }}>
-                                    수정
-                                </button>
+                                {replyItem.replyWriter === memberId && (
+                                    <>
+                                        <button className="btn btn-danger btn-sm float-end" onClick={() => {
+                                            setReplyToDelete(replyItem.replyNo);
+                                            setShowReplyDeleteModal(true);
+                                        }}>
+                                            삭제
+                                        </button>
+                                        <button className="btn btn-info btn-sm float-end me-2" onClick={() => {
+                                            setReplyToEdit(replyItem.replyNo);
+                                            setEditContent(replyItem.replyContent);
+                                            setShowEditModal(true);
+                                        }}>
+                                            수정
+                                        </button>
+                                    </>
+                                )}
                             </li>
                         ))}
-
                     </ul>
                 ) : (
                     <p>답글이 없습니다.</p>
                 )}
             </div>
 
-            {/* 버튼 */}
+            {/* 버튼들 */}
             <div className="row mt-4">
                 <div className="col text-end">
                     <button className="btn btn-secondary ms-2" onClick={() => navigate("/qna/list")}>목록</button>
-                    <button className="btn btn-info ms-2" onClick={() => {
-                        navigate("/qna/edit/" + qnaNo)
-                    }}>수정</button>
-                    <button className="btn btn-danger ms-2" onClick={handleDeleteClick}>삭제</button>
+                    {qna.qnaWriter === memberId && (
+                        <>
+                            <button className="btn btn-info ms-2" onClick={() => {
+                                navigate("/qna/edit/" + qnaNo)
+                            }}>수정</button>
+                            <button className="btn btn-danger ms-2" onClick={handleDeleteClick}>삭제</button>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -261,7 +281,7 @@ const QnaDetail = () => {
                 </Modal.Footer>
             </Modal>
 
-            {/* 댓글 삭제 확인 모달 */}
+            {/* 답글 삭제 확인 모달 */}
             <Modal show={showReplyDeleteModal} onHide={() => setShowReplyDeleteModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>삭제 확인</Modal.Title>
@@ -301,7 +321,7 @@ const QnaDetail = () => {
                 </Modal.Footer>
             </Modal>
 
-            {/* ToastContainer 추가 */}
+            {/* 토스트 컨테이너 */}
             <ToastContainer />
         </>
     );

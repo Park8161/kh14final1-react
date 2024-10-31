@@ -67,33 +67,35 @@ const ProductInsert = ()=>{
 
     ///파일 데이터를 비동기로 보내기
     const productInsert = useCallback(async() =>{
-        // 형식검사
-
-
-        //객체 생성, multipart/form-data 형식으로 전송해줌
-        const formData = new FormData();
-    
-        const fileList = inputFileRef.current.files;
-
-        for(let i =0; i < fileList.length; i++) {
-            formData.append("attachList", fileList[i]);
-        }
+        try{
+            //객체 생성, multipart/form-data 형식으로 전송해줌
+            const formData = new FormData();
         
-        //formData에 추가
-        formData.append("productName", input.productName);
-        formData.append("productCategory", input.productCategory);
-        formData.append("productPrice", input.productPrice);
-        formData.append("productDetail", input.productDetail);
-        formData.append("productQty", input.productQty);
+            const fileList = inputFileRef.current.files;
 
-        await axios.post("/product/insert", formData,{
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-          inputFileRef.current.value = ""
-          navigate("/product/list");
-          toast.success("상품 등록 완료");
+            for(let i =0; i < fileList.length; i++) {
+                formData.append("attachList", fileList[i]);
+            }
+            
+            //formData에 추가
+            formData.append("productName", input.productName);
+            formData.append("productCategory", input.productCategory);
+            formData.append("productPrice", input.productPrice);
+            formData.append("productDetail", input.productDetail);
+            formData.append("productQty", input.productQty);
+
+            await axios.post("/product/insert", formData,{
+                headers: {
+                'Content-Type': 'multipart/form-data',
+                },
+            });
+            inputFileRef.current.value = ""
+            navigate("/product/list");
+            toast.success("상품 등록 완료");
+        }
+        catch(e){
+            toast.error("상품 등록 실패");
+        }
     });  
 
     // 카테고리 리스트 가져오기
@@ -176,7 +178,7 @@ const ProductInsert = ()=>{
         else setProductCategoryClass(valid ? "is-valid" : "is-invalid");
     },[input,categoryName]);
     const checkProductPrice = useCallback(()=>{
-        const regex = /^[0-9]{0,10}$/;
+        const regex = /^[0-9]{0,9}$/;
         const valid = regex.test(input.productPrice) && input.productPrice > 0;
         setProductPriceValid(valid);
         if(input.productPrice === 0) setProductPriceClass("");
@@ -190,7 +192,7 @@ const ProductInsert = ()=>{
         else setProductDetailClass(valid ? "is-valid" : "is-invalid");
     },[input]);
     const checkProductQty = useCallback(()=>{
-        const regex = /^[0-9]{0,9}[1-9]$/;
+        const regex = /^[0-9]{0,8}[1-9]$/;
         const valid = regex.test(input.productQty) && input.productQty > 0;
         setProductQtyValid(valid);
         if(input.productQty === 0 ) setProductQtyClass("");

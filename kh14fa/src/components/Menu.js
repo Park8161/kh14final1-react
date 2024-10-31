@@ -1,6 +1,6 @@
 // import
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useLocation, useParams } from "react-router";
 import SockJS from "sockjs-client";
@@ -12,8 +12,11 @@ import { MdContactPage } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
 import { FaLocationDot, FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import '../style/Menu.css';
+
 import { toast } from "react-toastify";
 import { FaBell } from "react-icons/fa";
+
+import '../style/Search.css';
 
 
 // component
@@ -33,12 +36,41 @@ const Menu = () => {
     const accessToken = axios.defaults.headers.common["Authorization"];
     const refreshToken = window.localStorage.getItem("refreshToken")
                                     || window.sessionStorage.getItem("refreshToken");
- 
+
+    // location
+    const loacation = useLocation();
+
+    // state
+    const [size, setSize] = useState("");
+    const [input, setInput] = useState({ // 검색창
+        column : "",
+        keyword : ""
+    });
+    const [category, setCategory] = useState([]);
+    const [categoryInput, categorySetInput] = useState({
+        categoryName: "",
+        categoryGroup: "",
+        categoryUpper: "",
+        categoryDepth: ""
+    });
+    const [hotList, setHotList] = useState([]);
+    
+
     // recoil state
     const [memberId, setMemberId] = useRecoilState(memberIdState);
     const [memberLevel, setMemberLevel] = useRecoilState(memberLevelState);
     const login = useRecoilValue(loginState); // 읽기전용 항목은 이렇게 읽음
-    const memberLoading = useRecoilValue(memberLoadingState);
+   const memberLoading = useRecoilValue(memberLoadingState);
+
+    const [productColumn, setProductColumn] = useRecoilState(productColumnState);
+    const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
+    
+    //effect
+    useEffect(() => {
+        loadCategory();
+        loadHotList();
+    }, []);
+
     
     // callback
     const logout = useCallback(()=>{
@@ -57,6 +89,7 @@ const Menu = () => {
     },[memberId, memberLevel]);
 
 
+
     // 검색창 테스트
     const [productColumn, setProductColumn] = useRecoilState(productColumnState);
     const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
@@ -65,6 +98,7 @@ const Menu = () => {
         column : "",
         keyword : ""
     });
+
     const changeInput = useCallback((e)=>{
         setInput({
             ...input,
@@ -74,9 +108,13 @@ const Menu = () => {
 
     const sendToProduct = useCallback(()=>{
         setProductColumn(input.column);
-        setProductKeyword(input.keyword);
+        if(input.column === 'product_category'){
+            setProductKeyword(category.filter(cat => (cat.categoryName.includes(input.keyword) && cat.categoryDepth === 3))[0]?.categoryNo);
+        }
+        else setProductKeyword(input.keyword);
         navigate("/product/list");
     },[input]);
+
 
     //카테고리 관련
     //state
@@ -97,6 +135,7 @@ const Menu = () => {
         if(login === false) return;
         loadNoticeCnt(memberId);
     },[login, memberId, location.pathname]);
+
 
     // 카테고리 리스트 가져오기
     const loadCategory = useCallback(async () => {
@@ -129,20 +168,22 @@ const Menu = () => {
 
     const categoryTree = buildCategoryTree(category);
 
-
     const handleMouseEnter = (e) => {
-        const submenu = e.currentTarget.querySelector('.dropdown-menu');
+        e.preventDefault();
+        const submenu = e.currentTarget.querySelector(':scope > .dropdown-menu');
         if (submenu) {
             submenu.classList.add('show');
         }
     };
 
     const handleMouseLeave = (e) => {
-        const submenu = e.currentTarget.querySelector('.dropdown-menu');
+        e.preventDefault();
+        const submenu = e.currentTarget.querySelector(':scope > .dropdown-menu');
         if (submenu) {
             submenu.classList.remove('show');
         }
     };
+
 
      // 새로운 알림 수 
      const loadNoticeCnt = useCallback(async (memberId)=>{
@@ -241,6 +282,21 @@ const Menu = () => {
             client.deactivate();
         }
     },[]);
+  
+  
+    const goToProduct = useCallback((categoryNo)=>{
+        setProductColumn("product_category");
+        setProductKeyword(categoryNo);
+        navigate("/product/list");
+        window.location.reload();
+    },[input]);
+
+    // 인기 카테고리(소분류) 20위까지
+    const loadHotList = useCallback(async()=>{
+        const response = await axios.get("/product/hotList");
+        setHotList(response.data);
+        // console.log(response.data);
+    },[hotList]);
 
 
     // view
@@ -278,7 +334,7 @@ const Menu = () => {
                         - 폭이 충분하지 않을 경우에는 접이식으로 표시 
                     */}
                     <div className="collapse navbar-collapse" id="top-menu">
-                        <ul className="navbar-nav me-auto"> {/*me-auto : 오른쪽으로 최대한 공간을 많이 부여하라*/}
+                        <ul className="navbar-nav me-0"> {/*me-auto : 오른쪽으로 최대한 공간을 많이 부여하라*/}
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">관리자 전용</a>
@@ -301,65 +357,80 @@ const Menu = () => {
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">게시판</a>
                                 <div className="dropdown-menu">
-                                    {login === true && (<>
                                     <NavLink className="dropdown-item" to="/qna/list">1:1 문의 게시판</NavLink>
-                                    </>)}
                                     {/* <div className="dropdown-divider"></div> */}
                                     <NavLink className="dropdown-item" to="/notice/list">공지사항 게시판</NavLink>
                                 </div>
                             </li>
+                            
+                            {/* 카테고리 */}
+                            <li className="nav-item dropdown" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                <a className="nav-link dropdown-toggle" role="button">카테고리</a>
+                                <div className="dropdown-menu">
+                                    {categoryTree.map(cat1 => (
+                                        <div key={cat1.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                            <a className="dropdown-item" >{cat1.categoryName}</a>
+                                            {cat1.children.length > 0 && (
+                                                <div className="dropdown-menu">
+                                                    {cat1.children.map(cat2 => (
+                                                        <div key={cat2.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                                            <a className="dropdown-item">{cat2.categoryName}</a>
+                                                            {cat2.children.length > 0 && (
+                                                                <div className="dropdown-menu dropdown-menu-end">
+                                                                    {cat2.children.map(cat3 => (
+                                                                        <a key={cat3.categoryNo} className="dropdown-item" onClick={e=>goToProduct(cat3.categoryNo)}>{cat3.categoryName}</a>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </li>
+
+                        </ul>
+
+                        <ul className="navbar-nav">
                             <li>
                                 {/* 검색창 */}
-                                <div className="row mx-4">
-                                    <div className="col input-group w-auto">
+                                <div className="row mx-4 w-100 d-flex jusityfy-content-center search-window">
+                                    <div className="col input-group w-auto mx-4 px-4">
                                         <select type="search" className="form-select bg-white border-0" 
                                                 name="column" value={input.column} onChange={changeInput}>
                                             <option value="">선택</option>
                                             <option value="product_name">상품명</option>
                                             <option value="product_member">판매자</option>
+                                            <option value="product_category">카테고리</option>
                                         </select>
                                         <input type="search" className="form-control w-auto bg-white border-0" 
-                                                name="keyword" value={input.keyword} onChange={changeInput}/>
+                                                name="keyword" value={input.keyword} onChange={changeInput}
+                                                onKeyUp={e=>e.key === 'Enter' && sendToProduct()}/>
                                         <button className="btn btn-dark d-flex justify-content-center align-items-center" onClick={sendToProduct}>
                                             <FaMagnifyingGlass />
                                             검색
                                         </button>
                                     </div>
                                 </div>
-                            </li>
-                            
-                            {/* 카테고리 */}
-                            <li className="nav-item dropdown" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                            <a className="nav-link dropdown-toggle" href="#" role="button">카테고리</a>
-                            <div className="dropdown-menu">
-                                {categoryTree.map(cat1 => (
-                                    <div key={cat1.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                        <NavLink className="dropdown-item" to={`/category/${cat1.categoryNo}`}>{cat1.categoryName}</NavLink>
-                                        {cat1.children.length > 0 && (
-                                            <div className="dropdown-menu">
-                                                {cat1.children.map(cat2 => (
-                                                    <div key={cat2.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                                        <NavLink className="dropdown-item" to={`/category/${cat2.categoryNo}`}>{cat2.categoryName}</NavLink>
-                                                        {cat2.children.length > 0 && (
-                                                            <div className="dropdown-menu dropdown-menu-end">
-                                                                {cat2.children.map(cat3 => (
-                                                                    <NavLink key={cat3.categoryNo} className="dropdown-item" to={`/category/${cat3.categoryNo}`}>{cat3.categoryName}</NavLink>
-                                                                ))}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </li>
-
-
+                            </li>                     
                         </ul>
-
                         
+                        {/* 인기 순위 목록 : 현재 카테고리 */}
+                        <ul className="navbar-nav me-auto">
+                            <li>
+                                <div id="carouselExampleAutoplaying" className="carousel slide" data-bs-ride="carousel">
+                                    <div className="carousel-inner text-light">
+                                        {hotList.map((hot,index)=>(
+                                        <div className={"carousel-item "+(index===0 && ("active"))} key={index}>
+                                            {hot.categoryName}
+                                        </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                         
                         <ul className="navbar-nav">
                             {/* 로그인이 되어있다면 아이디(등급) 형태로 출력 */}

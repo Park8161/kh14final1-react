@@ -2,13 +2,18 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 import Jumbotron from "../Jumbotron";
-import { toast } from 'react-toastify'; // toast 추가
-import 'react-toastify/dist/ReactToastify.css'; // toast 스타일 추가
-import Modal from "react-bootstrap/Modal"; // Bootstrap 모달 사용
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Modal from "react-bootstrap/Modal";
+import { useRecoilValue } from "recoil";
+import { memberIdState } from "../../utils/recoil";
 
 const NoticeDetail = () => {
     const { noticeNo } = useParams();
     const navigate = useNavigate();
+
+     // 리코일 state
+     const memberId = useRecoilValue(memberIdState);
 
     const [notice, setNotice] = useState(null);
     const [load, setLoad] = useState(false);
@@ -48,7 +53,7 @@ const NoticeDetail = () => {
             setShowEditModal(false);
             toast.success("수정이 완료되었습니다."); // 성공 알림
         } catch (error) {
-            console.error("Error editing reply", error);
+            // console.error("Error editing reply", error);
         }
     };
 
@@ -59,7 +64,7 @@ const NoticeDetail = () => {
             setShowDeleteModal(false);
             setShowSuccessModal(true);
         } catch (error) {
-            console.error("Error deleting notice", error);
+            // console.error("Error deleting notice", error);
         }
     }, [notice]);
 
@@ -113,7 +118,7 @@ const NoticeDetail = () => {
             {/* 게시글 정보 */}
             <div className="row mt-4">
                 <div className="col-sm-3">작성자</div>
-                <div className="col-sm-9">{notice.noticeWriter}</div>
+                <div className="col-sm-9">관리자</div>
             </div>
             <div className="row mt-4">
                 <div className="col-sm-3">분류</div>
@@ -143,9 +148,16 @@ const NoticeDetail = () => {
             {/* 버튼들 */}
             <div className="row mt-4">
                 <div className="col text-end">
-                    <button className="btn btn-secondary ms-2" onClick={() => navigate("/notice/list")}>목록</button>
-                    <button className="btn btn-info ms-2" onClick={() => navigate("/notice/edit/" + noticeNo)}>수정</button>
-                    <button className="btn btn-danger ms-2" onClick={handleDeleteClick}>삭제</button>
+                <button className="btn btn-secondary ms-2" onClick={() => navigate("/notice/list")}>목록</button>
+                    {/* 게시판 작성자에 따라 수정/삭제 버튼 조건부 렌더링 */}
+                    {notice.noticeWriter === memberId && (
+                        <>
+                            <button className="btn btn-info ms-2" onClick={() => {
+                                navigate("/notice/edit/" + noticeNo)
+                            }}>수정</button>
+                            <button className="btn btn-danger ms-2" onClick={handleDeleteClick}>삭제</button>
+                        </>
+                    )}
                 </div>
             </div>
 
