@@ -143,9 +143,11 @@ const ProductList = () => {
 	const checkColumnKeyword = useMemo(() => {
 		if (productColumn !== null && productKeyword !== null) {
 			setInput({
+				...input,
 				column: productColumn,
 				keyword: productKeyword
 			});
+			setFirstPage();
 		}
 	}, [productColumn, productKeyword]);
 
@@ -212,7 +214,7 @@ const ProductList = () => {
     </div> */}
 
 		{/* 검색창 */}
-		<div className="row mt-4">
+		{/* <div className="row mt-4">
 			<div className="col-6 offset-3">
 				<div className="input-group w-auto">
 					<select type="search" className="form-select bg-white" 
@@ -229,7 +231,7 @@ const ProductList = () => {
 					</button>
 				</div>
 			</div>
-		</div>
+		</div> */}
 
 
 		{/* 상품 목록 */}
