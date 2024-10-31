@@ -21,11 +21,31 @@ const Menu = () => {
 
     // state
     const [size, setSize] = useState("");
-
+    const [input, setInput] = useState({ // 검색창
+        column : "",
+        keyword : ""
+    });
+    const [category, setCategory] = useState([]);
+    const [categoryInput, categorySetInput] = useState({
+        categoryName: "",
+        categoryGroup: "",
+        categoryUpper: "",
+        categoryDepth: ""
+    });
+    const [hotList, setHotList] = useState([]);
+    
     // recoil state
     const [memberId, setMemberId] = useRecoilState(memberIdState);
     const [memberLevel, setMemberLevel] = useRecoilState(memberLevelState);
     const login = useRecoilValue(loginState); // 읽기전용 항목은 이렇게 읽음
+    const [productColumn, setProductColumn] = useRecoilState(productColumnState);
+    const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
+    
+    //effect
+    useEffect(() => {
+        loadCategory();
+        loadHotList();
+    }, []);
     
     // callback
     const logout = useCallback(()=>{
@@ -43,13 +63,6 @@ const Menu = () => {
         navigate("/");
     },[memberId, memberLevel]);
 
-    // 검색창 테스트
-    const [productColumn, setProductColumn] = useRecoilState(productColumnState);
-    const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
-    const [input, setInput] = useState({
-        column : "",
-        keyword : ""
-    });
 
     const changeInput = useCallback((e)=>{
         setInput({
@@ -63,21 +76,6 @@ const Menu = () => {
         setProductKeyword(input.keyword);
         navigate("/product/list");
     },[input]);
-
-    //카테고리 관련
-    //state
-    const [category, setCategory] = useState([]);
-    const [categoryInput, categorySetInput] = useState({
-        categoryName: "",
-        categoryGroup: "",
-        categoryUpper: "",
-        categoryDepth: ""
-    });
-
-    //effect
-    useEffect(() => {
-        loadCategory();
-    }, []);
 
     // 카테고리 리스트 가져오기
     const loadCategory = useCallback(async () => {
@@ -132,6 +130,13 @@ const Menu = () => {
         navigate("/product/list");
         window.location.reload();
     },[input]);
+
+    // 인기 카테고리(소분류) 20위까지
+    const loadHotList = useCallback(async()=>{
+        const response = await axios.get("/product/hotList");
+        setHotList(response.data);
+        console.log(response.data);
+    },[hotList]);
 
     // view
     return (
@@ -217,7 +222,7 @@ const Menu = () => {
 
                         </ul>
 
-                        <ul className="navbar-nav me-auto">
+                        <ul className="navbar-nav">
                             <li>
                                 {/* 검색창 */}
                                 <div className="row mx-4 w-100 d-flex jusityfy-content-center search-window">
@@ -237,6 +242,21 @@ const Menu = () => {
                                     </div>
                                 </div>
                             </li>                     
+                        </ul>
+                        
+                        {/* 인기 순위 목록 : 현재 카테고리 */}
+                        <ul className="navbar-nav me-auto">
+                            <li>
+                                <div id="carouselExampleAutoplaying" className="carousel slide" data-bs-ride="carousel">
+                                    <div className="carousel-inner text-light">
+                                        {hotList.map((hot,index)=>(
+                                        <div className={"carousel-item "+(index===0 && ("active"))} key={index}>
+                                            {hot.categoryName}
+                                        </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
                         
                         <ul className="navbar-nav">
