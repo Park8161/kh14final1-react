@@ -11,10 +11,8 @@ import { MdContactPage } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
 import { FaLocationDot, FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import '../style/Menu.css';
-
 import { toast } from "react-toastify";
 import { FaBell } from "react-icons/fa";
-
 import '../style/Search.css';
 
 
@@ -33,8 +31,7 @@ const Menu = () => {
 
     // token
     const accessToken = axios.defaults.headers.common["Authorization"];
-    const refreshToken = window.localStorage.getItem("refreshToken")
-                                    || window.sessionStorage.getItem("refreshToken");
+    const refreshToken = window.localStorage.getItem("refreshToken") || window.sessionStorage.getItem("refreshToken");
 
     // location
     const loacation = useLocation();
@@ -87,8 +84,6 @@ const Menu = () => {
         navigate("/");
     },[memberId, memberLevel]);
 
-
-
     const changeInput = useCallback((e)=>{
         setInput({
             ...input,
@@ -105,11 +100,7 @@ const Menu = () => {
         navigate("/product/list");
     },[input]);
 
-
     //카테고리 관련
-    //state
-  
-
     //effect
     useEffect(() => {
         loadCategory();
@@ -119,7 +110,6 @@ const Menu = () => {
         if(login === false) return;
         loadNoticeCnt(memberId);
     },[login, memberId, location.pathname]);
-
 
     // 카테고리 리스트 가져오기
     const loadCategory = useCallback(async () => {
@@ -168,9 +158,8 @@ const Menu = () => {
         }
     };
 
-
-     // 새로운 알림 수 
-     const loadNoticeCnt = useCallback(async (memberId)=>{
+    // 새로운 알림 수 
+    const loadNoticeCnt = useCallback(async (memberId)=>{
         const resp = await axios.get("/room/unread/cntall");
         setNoticeCnt(resp.data);
         loadRoomList(memberId);
@@ -267,7 +256,6 @@ const Menu = () => {
         }
     },[]);
   
-  
     const goToProduct = useCallback((categoryNo)=>{
         setProductColumn("product_category");
         setProductKeyword(categoryNo);
@@ -281,7 +269,6 @@ const Menu = () => {
         setHotList(response.data);
         // console.log(response.data);
     },[hotList]);
-
 
     // view
     return (
