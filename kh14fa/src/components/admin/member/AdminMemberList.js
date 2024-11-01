@@ -76,8 +76,7 @@ const AdminMemberList = ()=> {
                     </select>
                     <input type="search" className="form-control w-auto" placeholder="검색어 입력"
                             value={keyword} onChange={e=>setKeyword(e.target.value)}/>
-                    <button type="button" className="btn btn-secondary"
-                                onClick={searchMemberList}>
+                    <button type="button" className="btn btn-secondary" onClick={searchMemberList}>
                         <FaMagnifyingGlass /> 검색       
                     </button>
                 </div>
@@ -90,12 +89,12 @@ const AdminMemberList = ()=> {
         <div className="row mt-4">
             <div className="col-8 offset-2">
                 <table className="table border table-hover table-no-borders text-center">
-                    <thead>
-                        <th>회원 아이디</th>
-                        <th>회원 이름</th>
-                        <th>등급</th>
-                        <th>포인트</th>
-                        <th>최근 로그인</th>
+                    <thead className="border-bottom">
+                        <th className="py-2">회원 아이디</th>
+                        <th className="py-2">회원 이름</th>
+                        <th className="py-2">등급</th>
+                        <th className="py-2">포인트</th>
+                        <th className="py-2">최근 로그인</th>
                     </thead>
                     <tbody>
                         {getPagedMembers().map(member =>(
