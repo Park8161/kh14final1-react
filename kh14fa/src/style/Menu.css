@@ -43,10 +43,14 @@
     border-bottom: none; /* 밑줄 제거 */
 }
 
-.text-truncate {
-    width: 100% !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
-    display: block;
+.font-16px {
+    font-size: 16px !important;
+}
+
+.table-truncate {
+    cursor: pointer; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    max-width: 100px;
 }
