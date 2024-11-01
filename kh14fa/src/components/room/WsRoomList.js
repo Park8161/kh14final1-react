@@ -120,7 +120,11 @@ const WsRoomList = ()=>{
                                                 <div className="d-flex justify-content-between align-items-center mb-1 text-dark">
                                                     <h6 className="mb-0">{room.memberId}</h6>
                                                     <p className="text-muted small mb-0 mx-2">|</p> 
-                                                    <p className="text-muted small mb-0">{room.productName}</p>
+                                                    {room.productName ? (<>
+                                                        <p className="text-muted small mb-0">{room.productName}</p>
+                                                    </>):(<>
+                                                        <p className="text-muted small mb-0">상품정보가 없습니다.</p>
+                                                    </>)}
                                                 </div>
                                                 <div className="row d-flex justify-content-between align-items-center" style={{ minHeight: '1.5em' }}> 
                                                     <div className="col-10">
