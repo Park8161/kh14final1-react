@@ -12,6 +12,7 @@ import { MdDeleteForever } from "react-icons/md";
 import userImage from '../product/userImage.jpg';
 import { CiEdit } from "react-icons/ci";
 import { FaRegThumbsUp,FaRegThumbsDown,FaRegHandshake } from "react-icons/fa";
+import { TbShoppingBagPlus,TbShoppingBagSearch,TbShoppingBagX } from "react-icons/tb";
 import PacmanLoader from "react-spinners/PacmanLoader";
 import moment from "moment";
 
@@ -32,10 +33,10 @@ const MyPage = ()=>{
         sell : false,
         reserve : false,
         soldout : false,
-        productButton : "btn w-100",
-        sellButton : "btn w-100",
-        reserveButton : "btn w-100",
-        soldoutButton : "btn w-100",
+        productButton : "btn w-100 font-16px",
+        sellButton : "btn w-100 font-16px",
+        reserveButton : "btn w-100 font-16px",
+        soldoutButton : "btn w-100 font-16px",
     });
     const [likeList, setLikeList] = useState([]);
     const [myList, setMyList] = useState([]);
@@ -44,8 +45,10 @@ const MyPage = ()=>{
     const [soldoutList, setSoldoutList] = useState([]);
     const [product, setProduct] = useState([]);
     const [images, setImages] = useState([]);
-    const [reviewList, setReviewList] = useState([]);
+    const [reviewList, setReviewList] = useState([]); // 내가 쓴 리뷰 목록
+    const [review2List, setReview2List] = useState([]); // 내가 받은 리뷰 목록
     const [review, setReview] = useState([]);
+    const [reviewCount, setReviewCount] = useState();
     const [edit, setEdit] = useState({
         reviewNo : "",
         reviewContent : "",
@@ -59,6 +62,17 @@ const MyPage = ()=>{
         loadMember();
         loadLikeList();
         loadPayList();
+        setCollpase({
+            ...collapse,
+            product : true,
+            sell : false,
+            reserve : false,
+            soldout : false,
+            productButton : "btn w-100 font-16px border-dark",
+            sellButton : "btn w-100 font-16px",
+            reserveButton : "btn w-100 font-16px",
+            soldoutButton : "btn w-100 font-16px",
+        });
     }, []);
     
     //callback
@@ -67,6 +81,8 @@ const MyPage = ()=>{
         setMember(response.data);
         // console.log(response.data);
         loadReview();
+        countReview();
+        loadReview2();
     }, [member]);
     
     // 내가 찜한 상품 불러오기
@@ -109,7 +125,9 @@ const MyPage = ()=>{
         try{
             const response = await axios.delete("/product/"+productNo);
             toast.error("상품 삭제 완료");
-            window.location.reload();
+            // window.location.reload();
+            loadLikeList();
+            closeDPModal();
         }
         catch(e){
             toast.warning("상품 삭제 실패");
@@ -128,6 +146,18 @@ const MyPage = ()=>{
         // console.log(response.data);
         setReviewList(response.data);
     },[reviewList]);
+    
+    // 내가 받은 리뷰 목록 불러오기
+    const loadReview2 = useCallback(async()=>{
+        const response = await axios.get("/review/list/"+member.memberId);
+        setReview2List(response.data);
+    },[review2List,member]);
+
+    // 내가 받은 리뷰 개수 카운트 불러오기
+    const countReview = useCallback(async()=>{
+        const response = await axios.get("/review/count/"+member.memberId);
+        setReviewCount(response.data);
+    },[review,member]);
 
     // 리뷰 삭제
     const deleteReview = useCallback(async(reviewNo)=>{
@@ -158,10 +188,10 @@ const MyPage = ()=>{
             sell : false,
             reserve : false,
             soldout : false,
-            productButton : "btn w-100",
-            sellButton : "btn w-100",
-            reserveButton : "btn w-100",
-            soldoutButton : "btn w-100",
+            productButton : "btn w-100 font-16px",
+            sellButton : "btn w-100 font-16px",
+            reserveButton : "btn w-100 font-16px",
+            soldoutButton : "btn w-100 font-16px",
         });
     },[collapse]);
 
@@ -170,7 +200,7 @@ const MyPage = ()=>{
         setCollpase({
             ...collapse,
             [e.target.name] : true,
-            [e.target.name+"Button"] : "btn w-100 border-dark"            
+            [e.target.name+"Button"] : "btn w-100 font-16px border-dark"            
         });
     },[]); // 왜 연관항목이 없어야 되는거..?
 
@@ -277,31 +307,31 @@ const MyPage = ()=>{
 	};
 
     return (<>
-        <Jumbotron title={`${member.memberId} 님의 정보`}/>
+        {/* <Jumbotron title={`${member.memberId} 님의 정보`}/> */}
 
         <div className="row mt-4">
 
             <div className="col-2 border-end">  
-                <div className="row">
-                    <h3>거래 정보</h3>
+                <div className="row mt-4">
+                    <h3 className="mt-4">거래 정보</h3>
                     <div className="col ps-3">
                         <div className="row">
                             <div className="col">
-                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas1">
+                                <button className="btn me-3 font-16px" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas1">
                                     판매 내역
                                 </button>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas2">
+                                <button className="btn me-3 font-16px" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas2">
                                     결제 내역
                                 </button>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <button className="btn me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas3" onClick={loadLikeList}>
+                                <button className="btn me-3 font-16px" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas3" onClick={loadLikeList}>
                                     찜한 상품
                                 </button>
                             </div>
@@ -314,51 +344,51 @@ const MyPage = ()=>{
                         <h3>내 정보</h3>
                         <div className="row">
                             <div className="col">
-                                <button className="btn me-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas4" >
+                                <button className="btn me-3 font-16px" data-bs-toggle="offcanvas" data-bs-target="#offcanvas4" >
                                     거래 후기 
                                 </button>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <button className="btn me-3" onClick={member.memberLevel === "일반회원" ? (e=>navigate("/member/cert/"+member.memberEmail+"/"+member.memberReliability)) : (alreadyCert)} >
+                                <button className="btn me-3 font-16px" onClick={member.memberLevel === "일반회원" ? (e=>navigate("/member/cert/"+member.memberEmail+"/"+member.memberReliability)) : (alreadyCert)} >
                                     이메일 인증하기
                                 </button>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <NavLink className="btn me-3" to="/member/changepw">
+                                <NavLink className="btn me-3 font-16px" to="/member/changepw">
                                     비밀번호 변경
                                 </NavLink>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <NavLink className="btn me-3" to="/member/edit">
-                                개인정보 수정
-                            </NavLink>
+                                <NavLink className="btn me-3 font-16px" to="/member/edit">
+                                    개인정보 수정
+                                </NavLink>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <NavLink className="btn me-3" to="/member/block/list">
-                                차단 목록
-                            </NavLink>
+                                <NavLink className="btn me-3 font-16px" to="/member/block/list">
+                                    차단 목록
+                                </NavLink>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <NavLink className="btn" to="/member/exit">
-                                탈퇴하기
-                            </NavLink>
+                                <NavLink className="btn font-16px" to="/member/exit">
+                                    탈퇴하기
+                                </NavLink>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="col-9">
+            <div className="col-9 ms-4">
 
                 <div className="row">
                     <div className="col-6 col-sm-5">
@@ -368,6 +398,50 @@ const MyPage = ()=>{
                             </div>
                             <div className="col-3 text-center pe-4">
                                 <h4 onClick={openModal}><CiShare1 /></h4>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                <ul className="list-group list-group-horizontal" style={{maxHeight:"75px"}}>
+                                    <li className="list-group-item text-center">
+                                        <div className="row">
+                                            <div className="col">
+                                                <small className="text-muted mx-2">거래횟수</small>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col mt-1">
+                                                <h5>0</h5>
+                                            </div>
+                                        </div>                                            
+                                    </li>
+                                    <li className="list-group-item text-center">
+                                        <div className="row">
+                                            <div className="col">
+                                                <small className="text-muted mx-2">거래후기</small>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col">
+                                                <button className="btn btn-link btn-sm text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas5">
+                                                    <h5>{reviewCount}</h5>
+                                                </button> 
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li className="list-group-item text-center">
+                                        <div className="row">
+                                            <div className="col">
+                                                <small className="text-muted mx-4">단골</small>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col mt-1">
+                                                <h5>0</h5>
+                                            </div>
+                                        </div>                                          
+                                    </li>                                        
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -386,7 +460,7 @@ const MyPage = ()=>{
                     </div>
                 </div>
 
-                <div className="row">
+                <div className="row mt-4">
                     <div className="col">
                         <button className="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#myInfo">
                             내 정보 확인
@@ -479,22 +553,25 @@ const MyPage = ()=>{
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="co d-flex align-items-center">
+                                        <div className="col d-flex align-items-center">
                                             {timeCalculate(product.productDate)}
      
-                                            <FaRegHeart className="text-danger me-1"/>
+                                            <FaRegHeart className="text-danger mx-1"/>
                                             {product.productLikes}
                                         </div>
                                     </div>
-                                    <div className="row">
+                                    <div className="row mt-2">
                                         <div className="col text-end">
                                             <button className="btn btn-light btn-sm text-success " onClick={e=>navigate("/product/detail/"+product.productNo)}>
+                                                <TbShoppingBagSearch />
                                                 상세
                                             </button>
                                             <button className="btn btn-light btn-sm text-info ms-2" onClick={e=>navigate("/product/edit/"+product.productNo)}>
+                                                <TbShoppingBagPlus />
                                                 수정
                                             </button>
                                             <button className="btn btn-light btn-sm text-danger ms-2" onClick={e=>openDPModal(product.productNo)}>
+                                                <TbShoppingBagX />
                                                 삭제
                                             </button>
                                         </div>
@@ -523,11 +600,13 @@ const MyPage = ()=>{
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="co d-flex align-items-center">
-                                            <FaRegHeart className="text-danger me-1"/>
+                                        <div className="col d-flex align-items-center">
+                                            {timeCalculate(product.productDate)}
+     
+                                            <FaRegHeart className="text-danger mx-1"/>
                                             {product.productLikes}
                                         </div>
-                                    </div>                                    
+                                    </div>                                   
                                 </div>
                             </div>
                         </div>
@@ -548,13 +627,19 @@ const MyPage = ()=>{
                                 <div className="card-text">
                                     {/* {product.productDetail} */}
                                     <div className="text-start">
-                                        {formatCurrency(product.productPrice)}원
                                         <div className="row">
-                                            <div className="d-flex align-items-center col-3">
-                                                <FaRegHeart className="text-danger me-1"/>
-                                                {product.productLikes}
+                                            <div className="col">
+                                                {formatCurrency(product.productPrice)}원
                                             </div>
                                         </div>
+                                        <div className="row">
+                                            <div className="col d-flex align-items-center">
+                                                {timeCalculate(product.productDate)}
+        
+                                                <FaRegHeart className="text-danger mx-1"/>
+                                                {product.productLikes}
+                                            </div>
+                                        </div> 
                                     </div>
                                 </div>
                             </div>
@@ -578,11 +663,18 @@ const MyPage = ()=>{
                                     <div className="text-start">
                                         {formatCurrency(product.productPrice)}원
                                         <div className="row">
-                                            <div className="d-flex align-items-center col-3">
-                                                <FaRegHeart className="text-danger me-1"/>
-                                                {product.productLikes}
+                                            <div className="col">
+                                                {formatCurrency(product.productPrice)}원
                                             </div>
                                         </div>
+                                        <div className="row">
+                                            <div className="col d-flex align-items-center">
+                                                {timeCalculate(product.productDate)}
+        
+                                                <FaRegHeart className="text-danger mx-1"/>
+                                                {product.productLikes}
+                                            </div>
+                                        </div> 
                                     </div>
                                 </div>
                             </div>
@@ -908,6 +1000,56 @@ const MyPage = ()=>{
                                 <input className="form-control bg-light border-0" value={review.reviewContent} disabled/>
                                 <button className="btn btn-info text-light btn-sm" onClick={e=>openERModal(review)}>수정</button>
                                 <button className="btn btn-danger btn-sm" onClick={e=>openDRModal(review)}>삭제</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ))}
+            </div>
+        </div>
+
+        {/* 내가 받은 거래 후기 목록 */}
+        <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas5" aria-labelledby="offcanvas5Label">
+            <div className="offcanvas-header">
+                <h5 className="offcanvas-title" id="offcanvas5Label">거래 후기</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div className="offcanvas-body">
+                <p>{member.memberId}님이 받은 거래 후기</p>
+                {reviewList.map((review)=>(
+                <div className="row mt-4" key={review.reviewNo}>
+                    <div className="col">
+                        <div className="row">
+                            <div className="col-2 mt-2">
+                                <img src={userImage} className="rounded-circle" style={{width:"60px",height:"60px"}}/>
+                            </div>
+                            <div className="col-10">
+                                <div className="row">
+                                    <div className="col-8">
+                                        {review.reviewWriter}
+                                    </div>
+                                    <div className="col-4">
+                                        <span>평가 : </span>
+                                        {review.reviewScore === 1 && (<FaRegThumbsUp className=" w-auto"/>)}
+                                        {review.reviewScore === 0 && (<FaRegHandshake className=" w-auto"/>)}
+                                        {review.reviewScore === -1 && (<FaRegThumbsDown className=" w-auto"/>)}
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col">
+                                        <small className="text-muted">{"구매일시 | "+review.reviewWtime}</small>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col">
+                                        <small className="text-muted">{"구매상품 | "+review.productName}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row mt-2">
+                            <div className="col input-group">
+                                <input className="form-control bg-light border-0" value={review.reviewContent} disabled/>
                             </div>
                         </div>
                     </div>
