@@ -84,60 +84,67 @@ const CategoryInsert = () => {
 
 
     return (<>
+        <div className="row">
+            <div className="col-8 offset-2">
 
-        <div className="row mt-4">
-            <div className="col-9">
-                <label>
-                    카테고리
-                </label>
-                <div className="input-group">
-                    <button className='btn btn-secondary text-light' onClick={resetCategory}>
-                        <GrRefresh />
-                    </button>
-                    <input type="text" className="form-control" value={categoryName} onChange={e => setCategoryName(e.target.value)} />
+                <div className="row mt-4">
+                    <div className="col">
+                        <label>
+                            카테고리
+                        </label>
+                        <div className="input-group">
+                            <button className='btn btn-secondary text-light' onClick={resetCategory}>
+                                <GrRefresh />
+                            </button>
+                            <input type="text" className="form-control" value={categoryName} onChange={e => setCategoryName(e.target.value)} />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div className="row mt-2">
-            <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
-                {category.filter(category => category.categoryDepth === 1).map((cat) => (
-                    <ul className="list-group" key={cat.categoryNo}>
-                        <li className={"list-group-item list-group-item-action " + (group1 === cat.categoryNo && "bg-secondary text-light")}
-                            onClick={e => (setGroup1(parseInt(e.target.value)), setGroup2(0))} value={cat.categoryNo}>
-                            {cat.categoryName}
-                        </li>
-                    </ul>
-                ))}
-            </div>
-            <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
-                {category.filter(category => (category.categoryDepth === 2 && category.categoryGroup === group1)).map((cat) => (
-                    <ul className="list-group" key={cat.categoryNo}>
-                        <li className={"list-group-item list-group-item-action " + (group2 === cat.categoryNo && "bg-secondary text-light")}
-                            onClick={e => (setGroup2(parseInt(e.target.value)), setGroup3(0))} value={cat.categoryNo}>
-                            {cat.categoryName}
-                        </li>
-                    </ul>
-                ))}
-            </div>
-            <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
-                {category.filter(category => (category.categoryDepth === 3 && category.categoryGroup === group1 && category.categoryUpper === group2)).map((cat) => (
-                    <ul className="list-group" key={cat.categoryNo}>
-                        <li className={"list-group-item list-group-item-action " + (group3 === cat.categoryNo && "bg-secondary text-light")} value={cat.categoryNo}>
-                            {cat.categoryName}
-                        </li>
-                    </ul>
-                ))}
-            </div>
-        </div>
+                <div className="row mt-2">
+                    <div className="col-4" style={{ overflowY: "auto", maxHeight: "300px" }}>
+                        {category.filter(category => category.categoryDepth === 1).map((cat) => (
+                            <ul className="list-group" key={cat.categoryNo}>
+                                <li className={"list-group-item list-group-item-action " + (group1 === cat.categoryNo && "bg-secondary text-light")}
+                                    onClick={e => (setGroup1(parseInt(e.target.value)), setGroup2(0))} value={cat.categoryNo}>
+                                    {cat.categoryName}
+                                </li>
+                            </ul>
+                        ))}
+                    </div>
+                    <div className="col-4" style={{ overflowY: "auto", maxHeight: "300px" }}>
+                        {category.filter(category => (category.categoryDepth === 2 && category.categoryGroup === group1)).map((cat) => (
+                            <ul className="list-group" key={cat.categoryNo}>
+                                <li className={"list-group-item list-group-item-action " + (group2 === cat.categoryNo && "bg-secondary text-light")}
+                                    onClick={e => (setGroup2(parseInt(e.target.value)), setGroup3(0))} value={cat.categoryNo}>
+                                    {cat.categoryName}
+                                </li>
+                            </ul>
+                        ))}
+                    </div>
+                    <div className="col-4" style={{ overflowY: "auto", maxHeight: "300px" }}>
+                        {category.filter(category => (category.categoryDepth === 3 && category.categoryGroup === group1 && category.categoryUpper === group2)).map((cat) => (
+                            <ul className="list-group" key={cat.categoryNo}>
+                                <li className={"list-group-item list-group-item-action " + (group3 === cat.categoryNo && "bg-secondary text-light")} value={cat.categoryNo}>
+                                    {cat.categoryName}
+                                </li>
+                            </ul>
+                        ))}
+                    </div>
+                </div>
 
-        {/* 취소 버튼 추가 */}
-        <div className="d-flex justify-content-end mt-3">
-                <button className="btn btn-success mt-3" onClick={e => insertCategory(input)}>
-                    완료
-                </button>
-                <button className="btn btn-secondary mt-3" onClick={() => navigate('/admin/category/list')}>
-                    취소
-                </button>            
+                {/* 취소 버튼 추가 */}
+                <div className="row mt-4">
+                    <div className="col text-end">
+                        <button className="btn btn-secondary me-3" onClick={e=>navigate('/admin/category/list')}>
+                            돌아가기
+                        </button>   
+                        <button className="btn btn-success" onClick={e=>insertCategory(input)}>
+                            등록하기
+                        </button>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     </>);

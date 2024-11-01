@@ -260,7 +260,7 @@ const ProductInsert = ()=>{
                             {category.filter(category => category.categoryDepth === 1).map((cat)=>(
                             <ul className="list-group" key={cat.categoryNo}>
                                 <li className={"list-group-item list-group-item-action "+(group1 === cat.categoryNo && "bg-secondary text-light")}
-                                    onClick={e=>(setGroup1(parseInt(e.target.value)),setGroup2(0))} value={cat.categoryNo}>
+                                    onClick={e=>(setGroup1(parseInt(e.target.value)),setGroup2(0),setGroup3(0))} value={cat.categoryNo}>
                                     {cat.categoryName}
                                 </li>
                             </ul>
