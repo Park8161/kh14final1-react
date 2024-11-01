@@ -367,14 +367,14 @@ const Menu = () => {
                         <ul className="navbar-nav">
                             <li>
                                 {/* 검색창 */}
-                                <div className="row mx-4 w-100 d-flex jusityfy-content-center search-window">
+                                <div className="row mx-1 w-100 d-flex jusityfy-content-center search-window">
                                     <div className="col input-group w-auto mx-4 px-4">
                                         <select type="search" className="form-select bg-white border-0" 
                                                 name="column" value={input.column} onChange={changeInput}>
                                             <option value="">선택</option>
                                             <option value="product_name">상품명</option>
                                             <option value="product_member">판매자</option>
-                                            <option value="product_category">카테고리</option>
+                                            <option value="category_name">카테고리</option>
                                         </select>
                                         <input type="search" className="form-control w-auto bg-white border-0" 
                                                 name="keyword" value={input.keyword} onChange={changeInput}
