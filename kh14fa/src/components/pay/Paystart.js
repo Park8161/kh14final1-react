@@ -2,6 +2,7 @@ import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 const Paystart = ()=>{
@@ -77,25 +78,27 @@ const Paystart = ()=>{
 
     const sendBuyRequest = useCallback(async()=>{
         if(isCheckAll !== true) return;
-        
-        const resp = await axios.post(
-            "/pay/buy",
-            {
-                productNo : productNo,
-                totalPrice : total,
-                approvalUrl : getCurrentUrl() + "/success",
-                cancelUrl: getCurrentUrl() + "/cancel",
-                failUrl : getCurrentUrl() + "/fail"
-            }
-        );
+        try{
+          const resp = await axios.post(
+              "/pay/buy",
+              {
+                  productNo : productNo,
+                  totalPrice : total,
+                  approvalUrl : getCurrentUrl() + "/success",
+                  cancelUrl: getCurrentUrl() + "/cancel",
+                  failUrl : getCurrentUrl() + "/fail"
+              }
+          );
 
-        console.log(resp.data);
+          window.sessionStorage.setItem("tid", resp.data.tid);
+          window.sessionStorage.setItem("productNo", productNo);
+          window.sessionStorage.setItem("totalPrice", total);
 
-        window.sessionStorage.setItem("tid", resp.data.tid);
-        window.sessionStorage.setItem("productNo", productNo);
-        window.sessionStorage.setItem("totalPrice", total);
-
-        window.location.href = resp.data.next_redirect_pc_url;
+          window.location.href = resp.data.next_redirect_pc_url;
+        }
+        catch(e){
+          toast.error("구매 진행중인 상품입니다");
+        }
     },[isCheckAll, total]);
 
     const openModal3 = useCallback(()=>{},[]);
