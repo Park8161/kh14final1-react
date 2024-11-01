@@ -10,7 +10,10 @@ import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { useRecoilValue } from "recoil";
 import { memberIdState, productColumnState, productKeywordState } from "../../utils/recoil";
 import moment from 'moment-timezone';
+
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
+
+
 
 const ProductList = () => {
 
@@ -46,9 +49,11 @@ const ProductList = () => {
 	const [currentProduct, setCurrentProduct] = useState(""); //좋아요 누를때 현재 상품 비교용
 
 
+
 	// 광고 상태 관리: 현재 배너의 인덱스
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [bannerList, setBannerList] = useState([]);
+
 
 	//effect
 	useEffect(() => {
@@ -177,10 +182,17 @@ const ProductList = () => {
 	//시간 계산 함수 (매개변수)
 	const timeCalculate = (productTime) => {
 		const date = moment.utc(productTime).tz('Asia/Seoul'); // 한국 시간으로 변환
+
 		const nowDate = moment().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 설정
 		const milliSeconds = nowDate.diff(date); //상품 등록 시간을 밀리초로 변경
 
 		const seconds = milliSeconds / 1000;
+
+    	const nowDate = moment().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 설정
+		const milliSeconds = nowDate.diff(date); //상품 등록 시간을 밀리초로 변경
+
+		const seconds = milliSeconds / 1000; 
+
 		const minutes = seconds / 60;
 		const hours = minutes / 60;
 		const days = hours / 24;
@@ -235,6 +247,7 @@ const ProductList = () => {
 		setLike(!like);
 	}
 
+
 	// 광고
 	const BannerClick = useCallback((noticeNo) => {
 		navigate(`/notice/detail/${noticeNo}`);
@@ -283,6 +296,7 @@ const ProductList = () => {
 	const ChatLink = useCallback(() => {
 		navigate(`/Chat/roomlist`);
 	});
+
 
 	return (<>
 		<div className="mt-4 grid grid-cols-1 gap-4">
@@ -468,7 +482,11 @@ const ProductList = () => {
 									onClick={e => { e.stopPropagation(); pushLike(product.productNo); }}>
 									{/* 상품 상태 */}
 									{product.productState === "판매중" && (
+
 										<span className='badge bg-danger me-2' >
+
+										<span className='badge bg-primary me-2' >
+
 											{product.productState}
 										</span>
 									)}

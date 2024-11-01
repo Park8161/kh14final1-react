@@ -2,6 +2,7 @@ import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 const Paystart = ()=>{
@@ -77,26 +78,30 @@ const Paystart = ()=>{
 
     const sendBuyRequest = useCallback(async()=>{
         if(isCheckAll !== true) return;
-        
-        const resp = await axios.post(
-            "/pay/buy",
-            {
-                productNo : productNo,
-                totalPrice : total,
-                approvalUrl : getCurrentUrl() + "/success",
-                cancelUrl: getCurrentUrl() + "/cancel",
-                failUrl : getCurrentUrl() + "/fail"
-            }
-        );
+        try{
+          const resp = await axios.post(
+              "/pay/buy",
+              {
+                  productNo : productNo,
+                  totalPrice : total,
+                  approvalUrl : getCurrentUrl() + "/success",
+                  cancelUrl: getCurrentUrl() + "/cancel",
+                  failUrl : getCurrentUrl() + "/fail"
+              }
+          );
 
-        console.log(resp.data);
+          window.sessionStorage.setItem("tid", resp.data.tid);
+          window.sessionStorage.setItem("productNo", productNo);
+          window.sessionStorage.setItem("totalPrice", total);
 
-        window.sessionStorage.setItem("tid", resp.data.tid);
-        window.sessionStorage.setItem("productNo", productNo);
-        window.sessionStorage.setItem("totalPrice", total);
-
-        window.location.href = resp.data.next_redirect_pc_url;
+          window.location.href = resp.data.next_redirect_pc_url;
+        }
+        catch(e){
+          toast.error("구매 진행중인 상품입니다");
+        }
     },[isCheckAll, total]);
+
+    const openModal3 = useCallback(()=>{},[]);
 
     return (
         <>
@@ -162,29 +167,35 @@ const Paystart = ()=>{
                   <input type="checkbox" className="form-check-input"
                     checked={checkItem.checkItem1} name="checkItem1" onChange={changeCheckItem}/>
                   <label className="form-check-label">서비스 이용약관 동의 (필수)</label>
-                  <NavLink>자세히</NavLink>
+                  <NavLink className="mx-2">자세히</NavLink>
                 </div>
     
                 <div className="form-check">
                   <input type="checkbox" className="form-check-input"
                     checked={checkItem.checkItem2} name="checkItem2" onChange={changeCheckItem} />
                   <label className="form-check-label">개인정보 수집 및 이용동의 (필수)</label>
-                  <NavLink>자세히</NavLink>
+                  <NavLink className="mx-2">자세히</NavLink>
                 </div>
     
                 <div className="form-check">
                   <input type="checkbox" className="form-check-input" 
                     checked={checkItem.checkItem3} name="checkItem3" onChange={changeCheckItem}/>
                   <label className="form-check-label">개인정보 제3자 제공 동의 (필수)</label>
-                  <NavLink>자세히</NavLink>
+                  <div className="mx-2" onClick={openModal3}>자세히</div>
                 </div>
               </div>
             </div>               
     
             <div className="d-grid gap-2">
+              {isCheckAll === false ? (<>
+              <button className="btn btn-outline-primary" disabled={true}>
+                결제 약관에 동의 바랍니다.
+              </button>
+              </>):(<>
               <button className="btn btn-primary" onClick={sendBuyRequest}>
                 결제하기
               </button>
+              </>)}
             </div>
           </div>
         </>

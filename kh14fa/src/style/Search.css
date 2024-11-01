@@ -2,6 +2,7 @@
     min-width: 800px;
 }
 
+
 @media (max-width: 1800px) {
     .search-window {
         min-width: 700px;
@@ -48,4 +49,11 @@
     .search-window {
         min-width: auto;
     }
+}
+
+
+
+.form-select {
+    max-width: 150px !important; /* 최소 너비를 0으로 설정 */
+
 }

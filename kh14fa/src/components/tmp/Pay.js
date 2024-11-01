@@ -3,6 +3,7 @@ import Paystart from "../pay/Paystart";
 import Paysuccess from "../pay/Paysuccess";
 import PayFail2 from "../pay/PayFail2";
 import PayList from "../pay/PayList";
+import PrivateRoute from "../router/PrivateRoute";
 // import PayListImage from "../pay/PayListImage";
 // import Payfail from "../pay/Payfail";
 
@@ -12,11 +13,10 @@ const Pay = ()=>{
         <>
         <Routes>
             {/* 중첩 라우팅 : path="/pay/*" */}
-            <Route path="/paystart/:productNo" element={<Paystart/>} /> 
+            <Route path="/paystart/:productNo" element={<PrivateRoute element={<Paystart/>}/>} /> 
             <Route path="/paystart/:productNo/success/:partnerOrderId" element={<Paysuccess/>} /> 
             <Route path="/paystart/:productNo/fail" element={<PayFail2/>} /> 
-            <Route path="/list" element={<PayList/>} /> 
-            
+            <Route path="/list" element={<PrivateRoute element={<PayList/>}/>} /> 
         </Routes>
         </>
     );

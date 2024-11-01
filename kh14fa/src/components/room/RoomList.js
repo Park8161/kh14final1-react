@@ -10,7 +10,6 @@ const RoomList = ()=>{
 
     // state
     const [roomList, setRoomList] = useState([]);
-    const [unread, setUnread] = useState(0);
 
     //recoil
     const memberId = useRecoilValue(memberIdState);
@@ -28,11 +27,6 @@ const RoomList = ()=>{
         setRoomList(resp.data);
         
     },[roomList]);
-
-    // const loadUnread = async (roomNo) => {
-    //     const resp = await axios.get(`/room/cntunread/${roomNo}`);
-    //     return resp.data || 0;
-    // };
 
     return (
         <>          

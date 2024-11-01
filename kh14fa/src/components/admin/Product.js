@@ -77,85 +77,88 @@ const Product = ()=>{
     // view
     return (
         <>
-
-            {/* 검색창 */}
-            <div className="row mt-4">
-                <div className="col-6 offset-3">
-                    <div className="input-group w-auto">
-                        <select type="search" className="form-select bg-white" 
-                                name="column" value={input.column} onChange={changeInput}>
-                            <option value="">선택</option>
-                            <option value="product_name">상품명</option>
-                            <option value="product_member">판매자</option>
-                        </select>
-                        <input type="search" className="form-control w-auto bg-white" 
-                                name="keyword" value={input.keyword} onChange={changeInput}/>
-                        <button type="button" className="btn btn-dark d-flex justify-content-center align-items-center" onClick={loadSearchList}>
-                            <FaMagnifyingGlass />
-                            검색
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* 목록 */}
-            <div className="row mt-4">
+            <div className="row">
                 <div className="col">
-                    <div className="table-responsive">
-                        <table className="table text-nowrap text-center">
-                            <thead>
-                                <tr>
-                                    <th>상품번호</th>
-                                    <th>상품명</th>
-                                    <th>판매자</th>
-                                    <th>판매가</th>
-                                    <th>수량</th>
-                                    <th>등록일</th>
-                                    <th>판매상태</th>
-                                    <th>상태관리</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {getPagedNotice().map((product)=>(
-                                <tr key={product.productNo}>
-                                    <td>{product.productNo}</td>
-                                    <td onClick={e=>navigate("/product/detail/"+product.productNo)} style={{cursor:"pointer"}}>
-                                        {product.productName}
-                                    </td>
-                                    <td>{product.productMember}</td>
-                                    <td>{product.productPrice}</td>
-                                    <td>{product.productQty}</td>
-                                    <td>-{/* {product.productDate} */}</td>
-                                    <td>{product.productState}</td>
-                                    <td>
-                                        <button className="btn btn-secondary btn-sm" onClick={e=>changeHoldOff(product,"판매중")} disabled={product.productState === "판매중"}>
-                                            판매중
-                                        </button>
-                                        <button className="btn btn-secondary btn-sm ms-2" onClick={e=>changeHoldOff(product,"판매완료")} disabled={product.productState === "판매완료"}>
-                                            판매완료
-                                        </button>
-                                        <button className="btn btn-secondary btn-sm ms-2" onClick={e=>changeHoldOff(product,"판매보류")} disabled={product.productState === "판매보류"}>
-                                            판매보류
-                                        </button>
-                                    </td>
-                                </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    {/* 검색창 */}
+                    <div className="row mt-4">
+                        <div className="col-6 offset-3">
+                            <div className="input-group w-auto">
+                                <select type="search" className="form-select bg-white" 
+                                        name="column" value={input.column} onChange={changeInput}>
+                                    <option value="">선택</option>
+                                    <option value="product_name">상품명</option>
+                                    <option value="product_member">판매자</option>
+                                </select>
+                                <input type="search" className="form-control w-auto bg-white" 
+                                        name="keyword" value={input.keyword} onChange={changeInput}/>
+                                <button type="button" className="btn btn-secondary d-flex justify-content-center align-items-center" onClick={loadSearchList}>
+                                    <FaMagnifyingGlass />
+                                    검색
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-            {/* 페이징 */}
-            <div className="row mt-4">
-                <div className="col text-center">
-                    <button className="btn btn-outline-primary" disabled={page===1} onClick={e=>setPage(page-1)}>
-                        이전
-                    </button>
-                    <span className="mx-3">Page {page} of {Math.ceil(sortedFilteredNotice.length/pageSize)}</span>
-                    <button className="btn btn-outline-primary" disabled={page===Math.ceil(sortedFilteredNotice.length/pageSize)} onClick={e=>setPage(page+1)}>
-                        다음
-                    </button>
+
+                    {/* 목록 */}
+                    <div className="row mt-4">
+                        <div className="col-8 offset-2">
+                            {/* <div className="table-responsive"> */}
+                                <table className="table text-truncate text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>상품번호</th>
+                                            <th>상품명</th>
+                                            <th>판매자</th>
+                                            <th>판매가</th>
+                                            <th>수량</th>
+                                            <th>등록일</th>
+                                            <th>판매상태</th>
+                                            <th>상태관리</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {getPagedNotice().map((product)=>(
+                                        <tr key={product.productNo}>
+                                            <td>{product.productNo}</td>
+                                            <td className="text-truncate" onClick={e=>navigate("/product/detail/"+product.productNo)} style={{cursor:"pointer"}}>
+                                                {product.productName}
+                                            </td>
+                                            <td>{product.productMember}</td>
+                                            <td>{product.productPrice}</td>
+                                            <td>{product.productQty}</td>
+                                            <td>{product.productDate}</td>
+                                            <td>{product.productState}</td>
+                                            <td>
+                                                <button className="btn btn-secondary btn-sm" onClick={e=>changeHoldOff(product,"판매중")} disabled={product.productState === "판매중"}>
+                                                    판매중
+                                                </button>
+                                                <button className="btn btn-secondary btn-sm ms-2" onClick={e=>changeHoldOff(product,"판매완료")} disabled={product.productState === "판매완료"}>
+                                                    판매완료
+                                                </button>
+                                                <button className="btn btn-secondary btn-sm ms-2" onClick={e=>changeHoldOff(product,"판매보류")} disabled={product.productState === "판매보류"}>
+                                                    판매보류
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            {/* </div> */}
+                        </div>
+                    </div>
+                    
+                    {/* 페이징 */}
+                    <div className="row mt-4">
+                        <div className="col text-center">
+                            <button className="btn btn-outline-primary" disabled={page===1} onClick={e=>setPage(page-1)}>
+                                이전
+                            </button>
+                            <span className="mx-3">Page {page} of {Math.ceil(sortedFilteredNotice.length/pageSize)}</span>
+                            <button className="btn btn-outline-primary" disabled={page===Math.ceil(sortedFilteredNotice.length/pageSize)} onClick={e=>setPage(page+1)}>
+                                다음
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

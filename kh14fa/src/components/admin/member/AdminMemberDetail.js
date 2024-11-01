@@ -121,77 +121,79 @@ const unblockMember = useCallback(async () => {
     //view
     return (
         <>
-            <Jumbotron title={memberId + "님의 상세정보"} />
-
-            <div className="card mt-3">
-            <div className="card-body">
-        
+            {/* <Jumbotron title={memberId + "님의 상세정보"} /> */}
             <div className="row mt-4">
-                <div className="col-sm-3">회원 아이디</div>
-                <div className="col-sm-9">{member.memberId}</div>
-            </div>
+                <div className="col-6 offset-3">
+                    <div className="row mt-4">
+                        <div className="col border">
+                            <div className="row mt-3">
+                                <div className="col-sm-3">회원 아이디</div>
+                                <div className="col-sm-9">{member.memberId}</div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col-sm-3">회원 이름</div>
+                                <div className="col-sm-9">{member.memberName}</div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col-sm-3">등급</div>
+                                <div className="col-sm-9">{member.memberLevel}</div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col-sm-3">연락처</div>
+                                <div className="col-sm-9">{member.memberContact}</div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col-sm-3">회원 이메일</div>
+                                <div className="col-sm-9">{member.memberEmail}</div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col-sm-3">회원 생년월일</div>
+                                <div className="col-sm-9">{member.memberBirth}</div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col-sm-3">회원 주소</div>
+                                <div className="col-sm-9">
+                                    {"["+member.memberPost+"] "}
+                                    {member.memberAddress1+" "}
+                                    {member.memberAddress2}
+                                </div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col-sm-3">회원 가입일</div>
+                                <div className="col-sm-9">{member.memberJoin}</div>
+                            </div>
+                            <div className="row mt-4 mb-3">
+                                <div className="col-sm-3">회원 포인트</div>
+                                <div className="col-sm-9">{member.memberPoint}</div>
+                            </div>
+                        </div>
+                    </div>
 
-            <div className="row mt-4">
-                <div className="col-sm-3">회원 이름</div>
-                <div className="col-sm-9">{member.memberName}</div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col-sm-3">등급</div>
-                <div className="col-sm-9">{member.memberLevel}</div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col-sm-3">연락처</div>
-                <div className="col-sm-9">{member.memberContact}</div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col-sm-3">회원 이메일</div>
-                <div className="col-sm-9">{member.memberEmail}</div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col-sm-3">회원 생년월일</div>
-                <div className="col-sm-9">{member.memberBirth}</div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col-sm-3">회원 가입일</div>
-                <div className="col-sm-9">{member.memberJoin}</div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col-sm-3">회원 포인트</div>
-                <div className="col-sm-9">{member.memberPoint}</div>
-            </div>
-</div>
-</div>
-        
-
-            {/* 이동 버튼 */}
-            <div className="row mt-4">
-                <div className="col text-end">
-                    <button type="button" className="btn btn-secondary"
-                        onClick={() => navigate("/admin/member/list")}>
-                        목록보기
-                    </button>
-                    <button type="button" className="btn btn-primary ms-2"
-                        onClick={() => navigate("/admin/member/edit/" + memberId)}>
-                        수정하기
-                    </button>
-                    <button type="button" className="btn btn-danger ms-2"
-                        onClick={deleteMember}>
-                        삭제하기
-                    </button>
-                    <button type="button" className="btn btn-danger ms-2"
-                        onClick={blockMember}>
-                        차단하기
-                    </button>
-                    <button type="button" className="btn btn-success ms-2"
-                        onClick={unblockMember}>
-                        차단 해제
-                    </button>
+                    {/* 이동 버튼 */}
+                    <div className="row mt-4">
+                        <div className="col text-end">
+                            <button type="button" className="btn btn-secondary"
+                                onClick={() => navigate("/admin/member/list")}>
+                                목록보기
+                            </button>
+                            <button type="button" className="btn btn-primary ms-2"
+                                onClick={() => navigate("/admin/member/edit/" + memberId)}>
+                                수정하기
+                            </button>
+                            <button type="button" className="btn btn-danger ms-2"
+                                onClick={deleteMember}>
+                                삭제하기
+                            </button>
+                            <button type="button" className="btn btn-danger ms-2"
+                                onClick={blockMember}>
+                                차단하기
+                            </button>
+                            <button type="button" className="btn btn-success ms-2"
+                                onClick={unblockMember}>
+                                차단 해제
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

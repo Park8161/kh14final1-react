@@ -68,7 +68,7 @@ const CategoryList = () => {
         }
 
         setPage(1); // 검색 시 첫 페이지로 돌아가도록 설정
-        setKeyword(''); // 검색 후 입력값 초기화
+        // setKeyword(''); // 검색 후 입력값 초기화
     };
 
     // 대분류, 중분류, 소분류 필터
@@ -100,7 +100,7 @@ const CategoryList = () => {
             
 
             {/* 검색창 */}
-            <div className="row mt-2">
+            <div className="row mt-4">
                 <div className="col-md-6 offset-md-3">
                     <div className="input-group">
                         <input
@@ -120,9 +120,9 @@ const CategoryList = () => {
                 </div>
             </div>
 
-            {/* 카테고리 필터 버튼 */}
+            {/*  카테고리 필터 버튼 / 카테고리 추가 버튼 */}
             <div className="row mt-4">
-                <div className="col text-center">
+                <div className="col-4 offset-2 text-start">
                     <button
                         className="btn btn-outline-secondary me-2"
                         onClick={showAllCategories}>
@@ -144,11 +144,7 @@ const CategoryList = () => {
                         소분류
                     </button>
                 </div>
-            </div>
-
-            {/* 카테고리 추가 버튼 (가장 오른쪽 배치) */}
-            <div className="row mt-4">
-                <div className="col text-end">
+                <div className="col-4 text-end">
                     <Link to="/admin/category/insert">
                         <button className="btn btn-success">카테고리 추가</button>
                     </Link>
@@ -157,16 +153,16 @@ const CategoryList = () => {
 
             {/* 카테고리 목록 테이블 */}
             <div className="row mt-4">
-                <div className="col">
-                    <table className="table table-striped text-center">
-                        <thead>
+                <div className="col-8 offset-2">
+                    <table className="table border table-hover table-no-borders text-center">
+                        <thead className="border-bottom">
                             <tr>
-                                <th>카테고리 이름</th>
-                                <th>타입</th>
-                                <th>대분류</th>
-                                <th>중분류</th>
-                                <th>소분류</th>
-                                <th>Actions</th>
+                                <th className="py-2">카테고리 이름</th>
+                                <th className="py-2">타입</th>
+                                <th className="py-2">대분류</th>
+                                <th className="py-2">중분류</th>
+                                <th className="py-2">소분류</th>
+                                <th className="py-2">관리</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -178,18 +174,27 @@ const CategoryList = () => {
                                         {category.categoryDepth === 2 && '중분류'}
                                         {category.categoryDepth === 3 && '소분류'}
                                     </td>
-                                    <td>{category.categoryDepth === 1 && category.categoryNo}</td>
-                                    <td>{category.categoryDepth === 2 && category.categoryGroup}</td>
-                                    <td>{category.categoryDepth === 3 && category.categoryUpper}</td>
+                                    <td>
+                                        {category.categoryDepth === 1 && category.categoryName}
+                                        {category.categoryDepth === 2 && categories.filter(cat => cat.categoryNo === category.categoryGroup)[0]?.categoryName}
+                                        {category.categoryDepth === 3 && categories.filter(cat => cat.categoryNo === category.categoryGroup)[0]?.categoryName}
+                                    </td>
+                                    <td>
+                                        {category.categoryDepth === 1 && "-"}
+                                        {category.categoryDepth === 2 && category.categoryName}
+                                        {category.categoryDepth === 3 && categories.filter(cat => cat.categoryNo === category.categoryUpper)[0]?.categoryName}
+                                    </td>
+                                    <td className="px-0">
+                                        {category.categoryDepth === 1 && "-"}
+                                        {category.categoryDepth === 2 && "-"}
+                                        {category.categoryDepth === 3 && category.categoryName}
+                                    </td>
                                     <td>
                                         <Link to={`/admin/category/edit/${category.categoryNo}`}>
-                                            <button className="btn btn-primary me-2">Edit</button>
+                                            <button className="btn btn-primary me-2 btn-sm">수정</button>
                                         </Link>
-                                        <button
-                                            className="btn btn-danger"
-                                            onClick={() => openDcModal(category)}
-                                        >
-                                            Delete
+                                        <button className="btn btn-danger btn-sm" onClick={() => openDcModal(category)}>
+                                            삭제
                                         </button>
                                     </td>
                                 </tr>
