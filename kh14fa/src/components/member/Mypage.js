@@ -13,6 +13,7 @@ import userImage from '../product/userImage.jpg';
 import { CiEdit } from "react-icons/ci";
 import { FaRegThumbsUp,FaRegThumbsDown,FaRegHandshake } from "react-icons/fa";
 import PacmanLoader from "react-spinners/PacmanLoader";
+import moment from "moment";
 
 const MyPage = ()=>{
     // navigate
@@ -247,6 +248,34 @@ const MyPage = ()=>{
         toast.info("미인증회원만 이용가능");
     },[]);
 
+    //시간 계산 함수
+	const timeCalculate = (productTime) => {
+		const nowDate = moment(); //현재 시간
+		const date = new Date(productTime); //상품 등록 시간
+		const milliSeconds = nowDate - date; //상품 등록 시간을 밀리초로 변경
+
+		const seconds = milliSeconds / 1000;
+		const minutes = seconds / 60;
+		const hours = minutes / 60;
+		const days = hours / 24;
+		const months = days / 30;
+		const years = months / 12;
+
+		if (seconds < 60) {
+			return "방금 전";
+		} else if (minutes < 60) {
+			return `${Math.floor(minutes)}분 전`;
+		} else if (hours < 24) {
+			return `${Math.floor(hours)}시간 전`;
+		} else if (days < 30) {
+			return `${Math.floor(days)}일 전`;
+		} else if (months <12) {
+			return `${Math.floor(months)}달 전`;
+		} else {
+			return `${Math.floor(years)}년 전`;
+		}
+	};
+
     return (<>
         <Jumbotron title={`${member.memberId} 님의 정보`}/>
 
@@ -451,6 +480,8 @@ const MyPage = ()=>{
                                     </div>
                                     <div className="row">
                                         <div className="co d-flex align-items-center">
+                                            {timeCalculate(product.productDate)}
+     
                                             <FaRegHeart className="text-danger me-1"/>
                                             {product.productLikes}
                                         </div>

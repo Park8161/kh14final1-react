@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import { useRecoilValue } from 'recoil';
 import { memberIdState, memberLoadingState } from "../../utils/recoil";
 import userImage from './userImage.jpg';
+import moment from "moment";
 
 const ProductDetail = ()=>{
     // navigate
@@ -157,6 +158,34 @@ const ProductDetail = ()=>{
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('ko-KR').format(amount);
     };
+
+    //시간 계산 함수
+	const timeCalculate = (productTime) => {
+		const nowDate = moment(); //현재 시간
+		const date = new Date(productTime); //상품 등록 시간
+		const milliSeconds = nowDate - date; //상품 등록 시간을 밀리초로 변경
+
+		const seconds = milliSeconds / 1000;
+		const minutes = seconds / 60;
+		const hours = minutes / 60;
+		const days = hours / 24;
+		const months = days / 30;
+		const years = months / 12;
+
+		if (seconds < 60) {
+			return "방금 전";
+		} else if (minutes < 60) {
+			return `${Math.floor(minutes)}분 전`;
+		} else if (hours < 24) {
+			return `${Math.floor(hours)}시간 전`;
+		} else if (days < 30) {
+			return `${Math.floor(days)}일 전`;
+		} else if (months <12) {
+			return `${Math.floor(months)}달 전`;
+		} else {
+			return `${Math.floor(years)}년 전`;
+		}
+	};
     
     // view
     return(
@@ -236,6 +265,7 @@ const ProductDetail = ()=>{
                     </div> 
                     <div className="row">
                         <div className="col text-muted">
+                            <small>{timeCalculate(product.productDate)} </small>
                             <small>조회수 0 {/*{(product.productLikes)}*/}<LuDot/></small>
                             <small>찜 {(product.productLikes)} </small>
                         </div>
@@ -397,7 +427,7 @@ const ProductDetail = ()=>{
                                                 <div className="text-end">
                                                     {product.productPrice}원
                                                     <div className="btn btn-link">
-                                                        <FaRegHeart />
+                                                        <FaRegHeart className="text-danger"/>
                                                     </div>
                                                 </div>
                                             </div>

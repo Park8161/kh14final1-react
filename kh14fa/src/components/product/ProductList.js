@@ -2,13 +2,14 @@ import axios from 'axios';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import { FaRegHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 import Carousel from 'react-bootstrap/Carousel';
 import { useNavigate } from "react-router";
 import { throttle } from "lodash";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { useRecoilValue } from "recoil";
-import { productColumnState, productKeywordState } from "../../utils/recoil";
+import { memberIdState, productColumnState, productKeywordState } from "../../utils/recoil";
+import moment from 'moment-timezone';
 
 const ProductList = () => {
 	// navigate
@@ -17,8 +18,9 @@ const ProductList = () => {
 	// recoil
 	const productColumn = useRecoilValue(productColumnState);
 	const productKeyword = useRecoilValue(productKeywordState);
+	const memberId = useRecoilValue(memberIdState);
 
-	//state
+	// state
 	const [productList, setProductList] = useState([]);
 	const [input, setInput] = useState({
 		column: "",
@@ -35,6 +37,11 @@ const ProductList = () => {
 	});
 	//임시 state 
 	const [temp, setTemp] = useState({});
+	//좋아요 관련 state 
+	const [productNo, setProductNo] = useState({});//누를때 쓸 productNo
+	const [like, setLike] = useState({}); // 좋아요 여부
+	const [likes, setLikes] = useState({}); // 좋아요 개수
+	const [currentProduct, setCurrentProduct] = useState(""); //좋아요 누를때 현재 상품 비교용
 
 	//effect
 	useEffect(() => {
@@ -88,8 +95,12 @@ const ProductList = () => {
 		const response = await axios.post("/product/list", input);
 		// setProductList(response.data.productList);
 		// console.log(response.data.productList);
+		// Log productDate for each product
+		
 		setResult(response.data);
 		loading.current = false;
+
+		//const productListVO = response.data.productList;
 	}, [input, productColumn, productKeyword]);
 
 	const loadMoreProductList = useCallback(async () => {
@@ -155,6 +166,67 @@ const ProductList = () => {
 	const formatCurrency = (amount) => {
 		return new Intl.NumberFormat('ko-KR').format(amount);
 	};
+
+	//시간 계산 함수 (매개변수)
+	const timeCalculate = (productTime) => {
+		const date = moment.utc(productTime).tz('Asia/Seoul'); // 한국 시간으로 변환
+    	const nowDate = moment().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 설정
+		const milliSeconds = nowDate.diff(date); //상품 등록 시간을 밀리초로 변경
+
+		const seconds = milliSeconds / 1000; 
+		const minutes = seconds / 60;
+		const hours = minutes / 60;
+		const days = hours / 24;
+		const months = days / 30;
+		const years = months / 12;
+
+
+		if (seconds < 60) {
+			return "방금 전";
+		} else if (minutes < 60) {
+			return `${Math.floor(minutes)}분 전`;
+		} else if (hours < 24) {
+			return `${Math.floor(hours)}시간 전`;
+		} else if (days < 30) {
+			return `${Math.floor(days)}일 전`;
+		} else if (months < 12) {
+			return `${Math.floor(months)}달 전`;
+		} else {
+			return `${Math.floor(years)}년 전`;
+		}
+	};
+
+	// 좋아요 기능
+	const pushLike = useCallback(async (productNo) => {
+		const response = await axios.get("/product/like/" + productNo);
+
+		//좋아요가 상세에서는 한번에 관리되므로 목록에서는 따로 관리 해줌
+		setLike(prev => ({
+			...prev,
+			[productNo]: response.data.checked
+		}));
+
+		setLikes(response.data.count);
+		checkLikes(productNo);
+	}, [setLike, setLikes])
+
+	// 좋아요 했는지 확인
+	const checkLikes = useCallback(async (productNo) => {
+		if (memberId === "") return;
+		const response = await axios.get("/product/check/" + productNo);
+		if (response.data.checked) {
+			setLike(true);
+		}
+		else {
+			setLike(false);
+		}
+		setLikes(response.data.count);
+	}, [like, likes]);
+
+	//좋아아요 아이콘 변경
+	const handleHeart = () => {
+		setLike(!like);
+	}
 
 	return (<>
 
@@ -237,41 +309,65 @@ const ProductList = () => {
 		{/* 상품 목록 */}
 		<div className="row mt-4">
 			{result.productList.map((product) => (
-            <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
-                <div className="card">
+				<div className="col-sm-5 col-md-5 col-lg-2 mt-3" key={product.productNo}
+					onClick={e => { navigate("/product/detail/" + product.productNo); }}>
+					<div className="card">
+						<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
+							className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
 
-                    <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+						<div className="card-body">
+							<h5 className="card-title justify-content-start align-items-center"
+								style={{
+									width: "100%",
+									overflow: "hidden",
+									whiteSpace: "nowrap",
+									textOverflow: "ellipsis",
+									display: "block"
+								}}>
+								{/* 상품 이름 */}
+								{product.productName}
+							</h5>
+							<div className="card-text mt-3">
+								{/* {product.productDetail} */}
+								<h5>
+									<div className="text-start" style={{ fontWeight: "600" }}>
+										{formatCurrency(product.productPrice)}원
+									</div>
+								</h5>
+								<div className="text-muted mt-1">
+									{timeCalculate(product.productDate)}
+								</div>
+								<div className="text-end mt-1"
+									style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
+									onClick={e => { e.stopPropagation(); pushLike(product.productNo); }}>
+									{/* 상품 상태 */}
+									{product.productState === "판매중" && (
+										<span className='badge bg-primary me-2' >
+											{product.productState}
+										</span>
+									)}
+									{product.productState === "판매보류" && (
+										<span className='badge bg-danger me-2'>
+											{product.productState}
+										</span>
+									)}
+									{product.productState === "판매완료" && (
+										<span className='badge bg-success me-2'>
+											{product.productState}
+										</span>
+									)}
+									{like[product.productNo] ? (
+										<FaHeart className="text-danger" size="30" />
+									) : (
+										<FaRegHeart className="text-danger" size="30" />
+									)}
+									{/* {product.productLikes} 좋아요 수는 안보여줘도 될듯*/}
 
-                    <div className="card-body">
-                        <h5 className="card-title">{product.productName}</h5>
-                        <div className="card-text">
-                            {product.productDetail}
-                            <div className="text-start">
-                                {formatCurrency(product.productPrice)}원
-                                {product.productState === "판매중" && (
-									<span className='badge bg-primary ms-2'>
-										{product.productState}
-									</span>
-								)}
-								{product.productState === "판매보류" && (
-									<span className='badge bg-danger ms-2'>
-										{product.productState}
-									</span>
-								)}
-								{product.productState === "판매완료" && (
-									<span className='badge bg-success ms-2'>
-										{product.productState}
-									</span>
-								)}
-                            </div>
-                            <div className="text-end d-flex justify-content-start align-items-center">
-                                <FaRegHeart className="text-danger me-2" />
-                                {product.productLikes}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			))}
 		</div>
 
