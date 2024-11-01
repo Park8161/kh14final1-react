@@ -10,13 +10,11 @@ import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { useRecoilValue } from "recoil";
 import { memberIdState, productColumnState, productKeywordState } from "../../utils/recoil";
 import moment from 'moment-timezone';
-
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
-
-
+// import moment from 'moment';
+// import "moment/locale/ko"; // moment에 한국어 정보 불러오기
 
 const ProductList = () => {
-
 	// navigate
 	const navigate = useNavigate();
 
@@ -47,17 +45,14 @@ const ProductList = () => {
 	const [like, setLike] = useState({}); // 좋아요 여부
 	const [likes, setLikes] = useState({}); // 좋아요 개수
 	const [currentProduct, setCurrentProduct] = useState(""); //좋아요 누를때 현재 상품 비교용
-
-
-
 	// 광고 상태 관리: 현재 배너의 인덱스
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [bannerList, setBannerList] = useState([]);
 
-
 	//effect
 	useEffect(() => {
 		loadProductList();
+		loadBannerList();
 	}, []);
 
 	useEffect(() => {
@@ -69,7 +64,6 @@ const ProductList = () => {
 	}, [page, size]);
 
 	useEffect(() => {
-		// console.log(input.beginRow,input.endRow);
 		if (page === null) setFirstPage(); // 초기상태
 		if (page <= 1) {
 			loadProductList();
@@ -107,18 +101,13 @@ const ProductList = () => {
 		const response = await axios.post("/product/list", input);
 		// setProductList(response.data.productList);
 		// console.log(response.data.productList);
-		// Log productDate for each product
-
 		setResult(response.data);
 		loading.current = false;
-
-		//const productListVO = response.data.productList;
 	}, [input, productColumn, productKeyword]);
 
 	const loadMoreProductList = useCallback(async () => {
 		loading.current = true;
 		const response = await axios.post("/product/list", input);
-		// console.log(response.data.productList);
 		setResult({
 			...result,
 			last: response.data.last,
@@ -180,7 +169,7 @@ const ProductList = () => {
 	};
 
 	//시간 계산 함수 (매개변수)
-	const timeCalculate = (productTime) => {
+	const timeCalculate = useCallback((productTime)=>{
 		const date = moment.utc(productTime).tz('Asia/Seoul'); // 한국 시간으로 변환
 
 		const nowDate = moment().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 설정
@@ -188,17 +177,11 @@ const ProductList = () => {
 
 		const seconds = milliSeconds / 1000;
 
-    	const nowDate = moment().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 설정
-		const milliSeconds = nowDate.diff(date); //상품 등록 시간을 밀리초로 변경
-
-		const seconds = milliSeconds / 1000; 
-
 		const minutes = seconds / 60;
 		const hours = minutes / 60;
 		const days = hours / 24;
 		const months = days / 30;
 		const years = months / 12;
-
 
 		if (seconds < 60) {
 			return "방금 전";
@@ -213,7 +196,7 @@ const ProductList = () => {
 		} else {
 			return `${Math.floor(years)}년 전`;
 		}
-	};
+	},[]);
 
 	// 좋아요 기능
 	const pushLike = useCallback(async (productNo) => {
@@ -242,11 +225,10 @@ const ProductList = () => {
 		setLikes(response.data.count);
 	}, [like, likes]);
 
-	//좋아아요 아이콘 변경
+	//좋아요 아이콘 변경
 	const handleHeart = () => {
 		setLike(!like);
 	}
-
 
 	// 광고
 	const BannerClick = useCallback((noticeNo) => {
@@ -281,22 +263,15 @@ const ProductList = () => {
 		return () => clearInterval(timer);
 	}, [bannerList]);
 
-
 	const loadBannerList = useCallback(async () => {
 		const resp = await axios.get("/notice/bannerList");
 		setBannerList(resp.data);
 	}, []);
 
-	//광고 effect
-	useEffect(() => {
-		loadBannerList();
-	}, [loadBannerList]);
-
 	//채팅 아이콘
 	const ChatLink = useCallback(() => {
 		navigate(`/Chat/roomlist`);
 	});
-
 
 	return (<>
 		<div className="mt-4 grid grid-cols-1 gap-4">
@@ -327,67 +302,33 @@ const ProductList = () => {
 									<div className="col" key={index}>
 										<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${banner.attachment}`}
 											className="d-block w-100" alt={banner.title} onClick={e => BannerClick(banner.noticeNo)}
-											style={{
-												width: '350px',
-												height: '350px',
-												objectFit: 'fill',
-												margin: '0 1px',
-
-											}} />
+											style={{width: '350px',height: '350px',objectFit: 'fill',margin: '0 1px',}} />
 									</div>
 								))}
 							</div>
 						</div>
 					</div>
 					{/* 이전 버튼 (<) */}
-					<button className="carousel-control-prev" type="button" onClick={prevBanner}
-						data-bs-slide="prev"
-						style={{
-							position: 'absolute',
-							left: '-70px',
-							top: '50%',
-							transform: 'translateY(-50%)',
-							zIndex: '1',
-							border: 'none'
-						}}>
+					<button className="carousel-control-prev" type="button" onClick={prevBanner} data-bs-slide="prev" 
+						style={{position:'absolute',left:'-70px',top:'50%',transform:'translateY(-50%)',zIndex:'1',border:'none'}}>
 						<span className="carousel-control-prev-icon" aria-hidden="true"></span>
 						<span className="visually-hidden">Previous</span>
 					</button>
 					{/* 다음 버튼 (>) */}
-					<button className="carousel-control-next" type="button" onClick={nextBanner}
-						data-bs-slide="next"
-						style={{
-							position: 'absolute',
-							right: '-70px',
-							top: '50%',
-							transform: 'translateY(-50%)',
-							zIndex: '1',
-							border: 'none'
-						}}>
-
+					<button className="carousel-control-next" type="button" onClick={nextBanner} data-bs-slide="next"
+						style={{position:'absolute',right:'-70px',top:'50%',transform:'translateY(-50%)',zIndex:'1',border:'none'}}>
 						<span className="carousel-control-next-icon" aria-hidden="true"></span>
 						<span className="visually-hidden">Next</span>
 					</button>
 
-
 					{/* 인디케이터 추가 */}
 					<div className="carousel-indicators mt-5">
 						{[...Array(Math.ceil(bannerList.length / 3))].map((_, index) => (
-							<button
-								key={index}
-								type="button"
-								className={currentIndex === index ? "active" : ""}
-								aria-current={currentIndex === index ? "true" : "false"}
-								onClick={() => setCurrentIndex(index)}
-								style={{
-									borderRadius: '20%',
-									width: '20px',
-									height: '6px',
-									margin: '2px',
-									backgroundColor: currentIndex === index ? 'black' : 'lightgray', // 색상 변경
-									border: 'none', // 기본 테두리 제거
-								}}
-							></button>
+							<button key={index} type="button" className={currentIndex === index ? "active" : ""} 
+								aria-current={currentIndex === index ? "true" : "false"} onClick={e=>setCurrentIndex(index)} 
+								style={{borderRadius:'20%',width:'20px',height:'6px',margin:'2px',
+								backgroundColor:currentIndex === index ? 'black' : 'lightgray'}}>
+							</button> /* 색상 변경border: 'none', 기본 테두리 제거*/
 						))}
 					</div>
 				</div>
@@ -449,21 +390,14 @@ const ProductList = () => {
 				<span style={{ fontWeight: "600", color: "#1e272e" }}>오늘의 추천 상품</span>
 			</h3>
 			{result.productList.map((product) => (
-				<div className="col-sm-5 col-md-5 col-lg-2 mt-3" key={product.productNo}
-					onClick={e => { navigate("/product/detail/" + product.productNo); }}>
+				<div className="col-sm-5 col-md-5 col-lg-2 mt-3" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
 					<div className="card">
 						<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
 							className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
 
 						<div className="card-body">
 							<h5 className="card-title justify-content-start align-items-center"
-								style={{
-									width: "100%",
-									overflow: "hidden",
-									whiteSpace: "nowrap",
-									textOverflow: "ellipsis",
-									display: "block"
-								}}>
+								style={{width:"100%",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",display:"block"}}>
 								{/* 상품 이름 */}
 								{product.productName}
 							</h5>
@@ -476,17 +410,14 @@ const ProductList = () => {
 								</h5>
 								<div className="text-muted mt-1">
 									{timeCalculate(product.productDate)}
+									{/* {moment(product.productDate).fromNow()} */}
 								</div>
 								<div className="text-end mt-1"
 									style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
 									onClick={e => { e.stopPropagation(); pushLike(product.productNo); }}>
 									{/* 상품 상태 */}
 									{product.productState === "판매중" && (
-
-										<span className='badge bg-danger me-2' >
-
 										<span className='badge bg-primary me-2' >
-
 											{product.productState}
 										</span>
 									)}
@@ -531,12 +462,6 @@ const ProductList = () => {
 			</div>
 
 		</div>
-
-
-
-
-
-
 
 	</>);
 };

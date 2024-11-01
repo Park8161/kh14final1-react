@@ -8,6 +8,8 @@ import { Modal } from "bootstrap";
 import { CiShare1,CiHeart } from "react-icons/ci";
 import { FaRegThumbsUp,FaRegThumbsDown,FaRegHandshake } from "react-icons/fa";
 import userImage from '../product/userImage.jpg';
+import moment from 'moment';
+import "moment/locale/ko"; // moment에 한국어 정보 불러오기
 
 const MemberDetail = ()=>{
     // navigate
@@ -21,10 +23,10 @@ const MemberDetail = ()=>{
         sell : false,
         reserve : false,
         soldout : false,
-        productButton : "btn w-100",
-        sellButton : "btn w-100",
-        reserveButton : "btn w-100",
-        soldoutButton : "btn w-100",
+        productButton : "btn w-100 font-16px",
+        sellButton : "btn w-100 font-16px",
+        reserveButton : "btn w-100 font-16px",
+        soldoutButton : "btn w-100 font-16px",
     });
     const [myList, setMyList] = useState([]);
     const [sellList, setSellList] = useState([]);
@@ -46,6 +48,17 @@ const MemberDetail = ()=>{
     useEffect(()=>{
         loadMember();
         loadProductList();
+        setCollpase({
+            ...collapse,
+            product : true,
+            sell : false,
+            reserve : false,
+            soldout : false,
+            productButton : "btn w-100 font-16px border-dark",
+            sellButton : "btn w-100 font-16px",
+            reserveButton : "btn w-100 font-16px",
+            soldoutButton : "btn w-100 font-16px",
+        });
     },[]);
 
     // callback
@@ -98,10 +111,10 @@ const MemberDetail = ()=>{
             sell : false,
             reserve : false,
             soldout : false,
-            productButton : "btn w-100",
-            sellButton : "btn w-100",
-            reserveButton : "btn w-100",
-            soldoutButton : "btn w-100",
+            productButton : "btn w-100 font-16px",
+            sellButton : "btn w-100 font-16px",
+            reserveButton : "btn w-100 font-16px",
+            soldoutButton : "btn w-100 font-16px",
         });
     },[collapse]);
 
@@ -110,7 +123,7 @@ const MemberDetail = ()=>{
         setCollpase({
             ...collapse,
             [e.target.name] : true,
-            [e.target.name+"Button"] : "btn w-100 border-dark"            
+            [e.target.name+"Button"] : "btn w-100 font-16px border-dark"            
         });
     },[]);
 
@@ -247,7 +260,8 @@ const MemberDetail = ()=>{
                             </div>
                             <div className="row">
                                 <div className="co d-flex align-items-center">
-                                    <FaRegHeart className="text-danger me-1"/>
+                                    {moment(product.productDate).fromNow()}
+                                    <FaRegHeart className="text-danger mx-1"/>
                                     {product.productLikes}
                                 </div>
                             </div>
@@ -276,7 +290,8 @@ const MemberDetail = ()=>{
                             </div>
                             <div className="row">
                                 <div className="co d-flex align-items-center">
-                                    <FaRegHeart className="text-danger me-1"/>
+                                    {moment(product.productDate).fromNow()}
+                                    <FaRegHeart className="text-danger mx-1"/>
                                     {product.productLikes}
                                 </div>
                             </div>                                    
@@ -303,7 +318,8 @@ const MemberDetail = ()=>{
                                 {formatCurrency(product.productPrice)}원
                                 <div className="row">
                                     <div className="d-flex align-items-center col-3">
-                                        <FaRegHeart className="text-danger me-1"/>
+                                        {moment(product.productDate).fromNow()}
+                                        <FaRegHeart className="text-danger mx-1"/>
                                         {product.productLikes}
                                     </div>
                                 </div>
@@ -331,7 +347,8 @@ const MemberDetail = ()=>{
                                 {formatCurrency(product.productPrice)}원
                                 <div className="row">
                                     <div className="d-flex align-items-center col-3">
-                                        <FaRegHeart className="text-danger me-1"/>
+                                        {moment(product.productDate).fromNow()}
+                                        <FaRegHeart className="text-danger mx-1"/>
                                         {product.productLikes}
                                     </div>
                                 </div>
@@ -344,14 +361,14 @@ const MemberDetail = ()=>{
         </div>
         )}
 
-        {/* 내가 쓴 거래 후기 목록 */}
+        {/* 내가 받은 거래 후기 목록 */}
         <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas1" aria-labelledby="offcanvas1Label">
             <div className="offcanvas-header">
                 <h5 className="offcanvas-title" id="offcanvas1Label">거래 후기</h5>
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
-                <p>{member.memberId}님이 쓴 거래 후기</p>
+                <p>{member.memberId}님이 받은 거래 후기</p>
                 {reviewList.map((review)=>(
                 <div className="row mt-4" key={review.reviewNo}>
                     <div className="col">

@@ -13,7 +13,7 @@ const AdminMemberList = ()=> {
     const [filteredMembers, setFilteredMembers] = useState([]); // 필터된 회원 목록
 
     //검색 state
-    const [column, setColumn] = useState("member_id");
+    const [column, setColumn] = useState("");
     const [keyword, setKeyword] = useState("");
        
     // 페이지 관련 state
@@ -70,6 +70,7 @@ const AdminMemberList = ()=> {
                 <div className="input-group">
                     <select name="column" className="form-select w-auto"
                             value={column} onChange={e=>setColumn(e.target.value)}>
+                        <option value="">선택</option>
                         <option value="member_id">회원 아이디</option>
                         <option value="member_name">회원 이름</option>
                         <option value="member_level">등급</option>
