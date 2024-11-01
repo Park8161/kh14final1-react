@@ -11,7 +11,12 @@ import { useRecoilValue } from "recoil";
 import { memberIdState, productColumnState, productKeywordState } from "../../utils/recoil";
 import moment from 'moment-timezone';
 
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
+
+
+
 const ProductList = () => {
+
 	// navigate
 	const navigate = useNavigate();
 
@@ -42,6 +47,13 @@ const ProductList = () => {
 	const [like, setLike] = useState({}); // 좋아요 여부
 	const [likes, setLikes] = useState({}); // 좋아요 개수
 	const [currentProduct, setCurrentProduct] = useState(""); //좋아요 누를때 현재 상품 비교용
+
+
+
+	// 광고 상태 관리: 현재 배너의 인덱스
+	const [currentIndex, setCurrentIndex] = useState(0);
+	const [bannerList, setBannerList] = useState([]);
+
 
 	//effect
 	useEffect(() => {
@@ -96,7 +108,7 @@ const ProductList = () => {
 		// setProductList(response.data.productList);
 		// console.log(response.data.productList);
 		// Log productDate for each product
-		
+
 		setResult(response.data);
 		loading.current = false;
 
@@ -170,10 +182,17 @@ const ProductList = () => {
 	//시간 계산 함수 (매개변수)
 	const timeCalculate = (productTime) => {
 		const date = moment.utc(productTime).tz('Asia/Seoul'); // 한국 시간으로 변환
+
+		const nowDate = moment().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 설정
+		const milliSeconds = nowDate.diff(date); //상품 등록 시간을 밀리초로 변경
+
+		const seconds = milliSeconds / 1000;
+
     	const nowDate = moment().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 설정
 		const milliSeconds = nowDate.diff(date); //상품 등록 시간을 밀리초로 변경
 
 		const seconds = milliSeconds / 1000; 
+
 		const minutes = seconds / 60;
 		const hours = minutes / 60;
 		const days = hours / 24;
@@ -228,34 +247,152 @@ const ProductList = () => {
 		setLike(!like);
 	}
 
+
+	// 광고
+	const BannerClick = useCallback((noticeNo) => {
+		navigate(`/notice/detail/${noticeNo}`);
+	});
+
+	// 다음 배너로 이동하는 함수
+	const nextBanner = () => {
+		if (bannerList.length > 0) {
+			setCurrentIndex((prevIndex) => (prevIndex + 1) % Math.ceil(bannerList.length / 3));
+		}
+	};
+
+	// 이전 배너로 이동하는 함수
+	const prevBanner = () => {
+		if (bannerList.length > 0) {
+			setCurrentIndex((prevIndex) => (prevIndex - 1 + Math.ceil(bannerList.length / 3)) % Math.ceil(bannerList.length / 3));
+		}
+	};
+
+	// 현재 배너 그룹 가져오기
+	const displayedBanners = bannerList.slice(currentIndex * 3, currentIndex * 3 + 3);
+	const totalPages = Math.ceil(bannerList.length / 3);
+
+	// 자동으로 배너를 변경하는 효과
+	useEffect(() => {
+		const timer = setInterval(() => {
+			nextBanner();
+		}, 4000); // 4초마다 다음 배너로 이동
+
+		// 컴포넌트가 언마운트될 때 타이머를 정리
+		return () => clearInterval(timer);
+	}, [bannerList]);
+
+
+	const loadBannerList = useCallback(async () => {
+		const resp = await axios.get("/notice/bannerList");
+		setBannerList(resp.data);
+	}, []);
+
+	//광고 effect
+	useEffect(() => {
+		loadBannerList();
+	}, [loadBannerList]);
+
+	//채팅 아이콘
+	const ChatLink = useCallback(() => {
+		navigate(`/Chat/roomlist`);
+	});
+
+
 	return (<>
+		<div className="mt-4 grid grid-cols-1 gap-4">
+			{/* <div className="flex items-center">
+                <h3 className="text-lg md:text-xl lg:text-2xl 2xl:text-3xl xl:leading-10 font-bold text-heading">
+                    진행중인 이벤트
+                </h3>
+            </div> */}
 
-		{/* 광고 */}
+			{/* 이벤트 배너 */}
+			<div className=" mt-4">
+				<div id="carouselExampleAutoplaying" className="carousel slide" data-bs-ride="carousel">
+					{/* <div className="carousel-inner">
+                        <div className="carousel-item active">
+                            <div className="row">
+                                {displayedBanners.map((banner, index) => (
+                                    <div className="col" key={index}>
+                                        <img src={banner[0]} className="d-block w-100" alt={banner[1]} style={{ width: '300px' , height: '300px', objectFit: 'contain', margin:'0 5px'}} />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div> */}
+					<div className="carousel-inner">
+						<div className="carousel-item active" style={{ height: "350px" }}>
+							<div className="row">
+								{displayedBanners.map((banner, index) => (
+									<div className="col" key={index}>
+										<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${banner.attachment}`}
+											className="d-block w-100" alt={banner.title} onClick={e => BannerClick(banner.noticeNo)}
+											style={{
+												width: '350px',
+												height: '350px',
+												objectFit: 'fill',
+												margin: '0 1px',
 
-		<div id="carouselExampleAutoplaying" className="carousel slide" data-bs-ride="carousel">
-			<div className="carousel-inner">
-				<div className="carousel-item active">
-					<img src="https://placehold.co/400x200" className="d-block w-100" alt="..." />
-				</div>
-				<div className="carousel-item">
-					<img src="https://placehold.co/400x200" className="d-block w-100" alt="..." />
-				</div>
-				<div className="carousel-item">
-					<img src="https://placehold.co/400x200" className="d-block w-100" alt="..." />
+											}} />
+									</div>
+								))}
+							</div>
+						</div>
+					</div>
+					{/* 이전 버튼 (<) */}
+					<button className="carousel-control-prev" type="button" onClick={prevBanner}
+						data-bs-slide="prev"
+						style={{
+							position: 'absolute',
+							left: '-70px',
+							top: '50%',
+							transform: 'translateY(-50%)',
+							zIndex: '1',
+							border: 'none'
+						}}>
+						<span className="carousel-control-prev-icon" aria-hidden="true"></span>
+						<span className="visually-hidden">Previous</span>
+					</button>
+					{/* 다음 버튼 (>) */}
+					<button className="carousel-control-next" type="button" onClick={nextBanner}
+						data-bs-slide="next"
+						style={{
+							position: 'absolute',
+							right: '-70px',
+							top: '50%',
+							transform: 'translateY(-50%)',
+							zIndex: '1',
+							border: 'none'
+						}}>
+
+						<span className="carousel-control-next-icon" aria-hidden="true"></span>
+						<span className="visually-hidden">Next</span>
+					</button>
+
+
+					{/* 인디케이터 추가 */}
+					<div className="carousel-indicators mt-5">
+						{[...Array(Math.ceil(bannerList.length / 3))].map((_, index) => (
+							<button
+								key={index}
+								type="button"
+								className={currentIndex === index ? "active" : ""}
+								aria-current={currentIndex === index ? "true" : "false"}
+								onClick={() => setCurrentIndex(index)}
+								style={{
+									borderRadius: '20%',
+									width: '20px',
+									height: '6px',
+									margin: '2px',
+									backgroundColor: currentIndex === index ? 'black' : 'lightgray', // 색상 변경
+									border: 'none', // 기본 테두리 제거
+								}}
+							></button>
+						))}
+					</div>
 				</div>
 			</div>
-			<button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
-				<span className="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span className="visually-hidden">Previous</span>
-			</button>
-			<button className="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
-				<span className="carousel-control-next-icon" aria-hidden="true"></span>
-				<span className="visually-hidden">Next</span>
-			</button>
 		</div>
-
-
-
 
 		{/* <div classNameName="col-sm-4 col-md-4 col-lg-3 mt-3">
   <div classNameName="Carousel">
@@ -307,7 +444,10 @@ const ProductList = () => {
 
 
 		{/* 상품 목록 */}
-		<div className="row mt-4">
+		<div className="row" style={{ marginTop: "100px" }}>
+			<h3>
+				<span style={{ fontWeight: "600", color: "#1e272e" }}>오늘의 추천 상품</span>
+			</h3>
 			{result.productList.map((product) => (
 				<div className="col-sm-5 col-md-5 col-lg-2 mt-3" key={product.productNo}
 					onClick={e => { navigate("/product/detail/" + product.productNo); }}>
@@ -342,7 +482,11 @@ const ProductList = () => {
 									onClick={e => { e.stopPropagation(); pushLike(product.productNo); }}>
 									{/* 상품 상태 */}
 									{product.productState === "판매중" && (
+
+										<span className='badge bg-danger me-2' >
+
 										<span className='badge bg-primary me-2' >
+
 											{product.productState}
 										</span>
 									)}
@@ -369,8 +513,24 @@ const ProductList = () => {
 					</div>
 				</div>
 			))}
-		</div>
 
+			{/* 플로팅 버튼 만들기 */}
+			<div style={{position: "fixed",marginTop: "100px",width: "75px", height: "75px", // 높이를 너비와 동일하게 설정
+				backgroundColor: "#ee5253",
+				border: "2px solid #ee5253",
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+				borderRadius: "50%", // 원을 만들기 위해 50%로 설정
+				bottom: "50px", // 화면 아래
+				right: "38px", // 화면 오른쪽에서의 위치
+				zIndex: "1000" // zIndex는 대문자로 시작해야 합니다
+			}}>
+				<IoChatbubbleEllipsesOutline  size="40" color="white" onClick={ChatLink}/>
+				
+			</div>
+
+		</div>
 
 
 
