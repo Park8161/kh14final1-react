@@ -220,7 +220,7 @@ const Menu = () => {
                         const data = JSON.parse(message.body); 
                         const currentUrl = getCurrentUrl(); // 현재 URL을 가져옴
                         const chatRoomUrl = getChatRoomUrl(room.roomNo);
-                        console.log(currentUrl);
+                        // console.log(currentUrl);
                         if(data.senderMemberId !== memberId && chatRoomUrl !== currentUrl){
                             // setNoticeCnt(prevCnt => prevCnt + 1); 
                             reloadNoticeCnt();
@@ -242,9 +242,9 @@ const Menu = () => {
                 setConnect(false);
                 reloadNoticeCnt();
             },
-            debug:(str)=>{
-                console.log(str);
-            }
+            // debug:(str)=>{
+            //     console.log(str);
+            // }
         });
         client.activate();
         return client;
