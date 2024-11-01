@@ -42,3 +42,11 @@
 .table-no-borders tbody td {
     border-bottom: none; /* 밑줄 제거 */
 }
+
+.text-truncate {
+    width: 100% !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    display: block;
+}
