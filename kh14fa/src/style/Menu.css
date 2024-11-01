@@ -17,3 +17,28 @@
 .dropdown-item {
     cursor: pointer;
 }
+
+.dropdown-toggle, .dropdown-item {
+    color:white !important;
+}
+.dropdown-toggle {
+    font-size: 16px !important;
+}
+.dropdown-item {
+    font-size: 14px !important;
+}
+
+.dropdown-menu:hover .dropdown-item:hover,
+.dropdown-menu .dropdown-item.active {
+    color:black !important;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.table-no-borders tbody tr,
+.table-no-borders tbody th,
+.table-no-borders tbody td {
+    border-bottom: none; /* 밑줄 제거 */
+}
