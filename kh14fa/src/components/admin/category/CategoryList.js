@@ -162,7 +162,7 @@ const CategoryList = () => {
                                 <th className="py-2">대분류</th>
                                 <th className="py-2">중분류</th>
                                 <th className="py-2">소분류</th>
-                                <th className="py-2">Actions</th>
+                                <th className="py-2">관리</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -174,9 +174,21 @@ const CategoryList = () => {
                                         {category.categoryDepth === 2 && '중분류'}
                                         {category.categoryDepth === 3 && '소분류'}
                                     </td>
-                                    <td>{category.categoryDepth === 1 && category.categoryName}</td>
-                                    <td>{category.categoryDepth === 2 && categories.filter(cat => cat.categoyNo === category.categoryGroup)[0]?.categoryName}</td>
-                                    <td>{category.categoryDepth === 3 && category.categoryUpper}</td>
+                                    <td>
+                                        {category.categoryDepth === 1 && category.categoryName}
+                                        {category.categoryDepth === 2 && categories.filter(cat => cat.categoryNo === category.categoryGroup)[0]?.categoryName}
+                                        {category.categoryDepth === 3 && categories.filter(cat => cat.categoryNo === category.categoryGroup)[0]?.categoryName}
+                                    </td>
+                                    <td>
+                                        {category.categoryDepth === 1 && "-"}
+                                        {category.categoryDepth === 2 && category.categoryName}
+                                        {category.categoryDepth === 3 && categories.filter(cat => cat.categoryNo === category.categoryUpper)[0]?.categoryName}
+                                    </td>
+                                    <td className="px-0">
+                                        {category.categoryDepth === 1 && "-"}
+                                        {category.categoryDepth === 2 && "-"}
+                                        {category.categoryDepth === 3 && category.categoryName}
+                                    </td>
                                     <td>
                                         <Link to={`/admin/category/edit/${category.categoryNo}`}>
                                             <button className="btn btn-primary me-2 btn-sm">수정</button>
