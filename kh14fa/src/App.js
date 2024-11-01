@@ -37,7 +37,6 @@ const App = ()=> {
     const refreshToken = sessionToken || localToken; // 앞이 없으면 뒤를 넣어라
     // [5] 헤더에 Authorization 설정
     axios.defaults.headers.common["Authorization"] = "Bearer " + refreshToken;
-    console.log("refreshToken", refreshToken);
     // [6] 백엔드에 갱신 요청을 전송
     const resoponse = await axios.post("/member/refresh");
     // [7] 갱신 성공 시 응답(response)에 담긴 데이터들을 적절하게 분배하여 저장(로그인과 동일)
