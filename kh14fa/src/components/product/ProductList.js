@@ -11,6 +11,8 @@ import { useRecoilValue } from "recoil";
 import { memberIdState, productColumnState, productKeywordState } from "../../utils/recoil";
 import moment from 'moment-timezone';
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
+// import moment from 'moment';
+// import "moment/locale/ko"; // moment에 한국어 정보 불러오기
 
 const ProductList = () => {
 	// navigate
@@ -167,7 +169,7 @@ const ProductList = () => {
 	};
 
 	//시간 계산 함수 (매개변수)
-	const timeCalculate = (productTime) => {
+	const timeCalculate = useCallback((productTime)=>{
 		const date = moment.utc(productTime).tz('Asia/Seoul'); // 한국 시간으로 변환
 
 		const nowDate = moment().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 설정
@@ -194,7 +196,7 @@ const ProductList = () => {
 		} else {
 			return `${Math.floor(years)}년 전`;
 		}
-	};
+	},[]);
 
 	// 좋아요 기능
 	const pushLike = useCallback(async (productNo) => {
@@ -395,13 +397,7 @@ const ProductList = () => {
 
 						<div className="card-body">
 							<h5 className="card-title justify-content-start align-items-center"
-								style={{
-									width: "100%",
-									overflow: "hidden",
-									whiteSpace: "nowrap",
-									textOverflow: "ellipsis",
-									display: "block"
-								}}>
+								style={{width:"100%",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",display:"block"}}>
 								{/* 상품 이름 */}
 								{product.productName}
 							</h5>
@@ -414,6 +410,7 @@ const ProductList = () => {
 								</h5>
 								<div className="text-muted mt-1">
 									{timeCalculate(product.productDate)}
+									{/* {moment(product.productDate).fromNow()} */}
 								</div>
 								<div className="text-end mt-1"
 									style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
