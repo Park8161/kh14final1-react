@@ -16,6 +16,7 @@ import { FaBell } from "react-icons/fa";
 import '../style/Search.css';
 import { TbShoppingBagEdit } from "react-icons/tb";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { BiSolidHot } from "react-icons/bi";
 
 // component
 const Menu = () => {
@@ -362,6 +363,7 @@ const Menu = () => {
                                     <div className="carousel-inner text-white">
                                         {hotList.map((hot,index)=>(
                                         <small className={"carousel-item "+(index===0 && ("active"))} key={index}>
+                                            {(index+1)+". "}
                                             {hot.categoryName}
                                         </small>
                                         ))}
