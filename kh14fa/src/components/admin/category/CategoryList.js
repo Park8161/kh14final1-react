@@ -100,8 +100,8 @@ const CategoryList = () => {
             
 
             {/* 검색창 */}
-            <div className="row mt-2">
-                <div className="col-md-4 offset-md-4">
+            <div className="row mt-4">
+                <div className="col-md-6 offset-md-3">
                     <div className="input-group">
                         <input
                             type="text"
