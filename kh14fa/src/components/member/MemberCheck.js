@@ -3,6 +3,7 @@ import {useState, useCallback, useEffect} from "react";
 import Jumbotron from "../Jumbotron";
 import { FaAnglesRight } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
+import out from "../../style/out.png";
 
 // component
 const MemberCheck = ()=>{ 
@@ -45,10 +46,18 @@ const MemberCheck = ()=>{
     // view
     return (
         <>
-            <Jumbotron title="이용약관 안내" />
+            {/* <Jumbotron title="이용약관 안내" /> */}
+
+            
+            <div className="row mt-4">
+                <div className="col text-center">
+                    <img src={out} className="rounded-circle" style={{width:"250px",height:"250px"}} />
+                </div>
+            </div>
+
 
             <div className="row mt-4 text-center">
-                <div className="col">
+                <div className="col mt-4">
                     {/* <div><img src="https://placehold.co/700x200" /></div> */}
                     {/* <div className="d-flex justify-content-center align-items-center">
                     <textarea className="form-control" style={{width:"700px",height:"200px",maxHeight:"200px"}} readOnly>
