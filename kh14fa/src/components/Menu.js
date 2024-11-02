@@ -294,7 +294,7 @@ const Menu = () => {
                         - 폭이 충분하지 않을 경우에는 접이식으로 표시 
                     */}
                     <div className="collapse navbar-collapse" id="top-menu">
-                        <ul className="navbar-nav ms-4"> {/*me-auto : 오른쪽으로 최대한 공간을 많이 부여하라*/}
+                        <ul className="navbar-nav ms-0"> {/*me-auto : 오른쪽으로 최대한 공간을 많이 부여하라*/}
                             {/* <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">상품</a>

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
 import { toast } from "react-toastify";
+import noPhoto from './noPhoto.jpg';
 
 const ProductInsert = ()=>{
     // navigate
@@ -211,121 +212,130 @@ const ProductInsert = ()=>{
         <>
             {/* <Jumbotron title="상품 등록 테스트"/> */}
 
-            <div className="row mt-4">
-                <div className="col">
+            <div className="row">
+                <div className="col-8 offset-2">
+
                     <div className="row mt-4">
                         <div className="col">
-                            <label>상품명</label>
-                            <input type="text" name="productName" value={input.productName} placeholder="중고나라장난감"
-                                className={"form-control "+productNameClass} onChange={changeInput} onBlur={checkProductName} onFocus={checkProductName}/>
-                            <div className="valid-feedback">올바른 입력입니다</div>
-                            <div className="invalid-feedback">영문 대소문자, 숫자, 한글(자음 모음 불가) 100자 제한</div>
-                        </div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col">
-                            <label className="form-label">파일</label>
-                            {/*  multiple accept -> 어떤 형식 받을건가*/}
-                            <input type="file" className={"form-control "+productFileClass} name="attachList" multiple accept="image/*" ref={inputFileRef} 
-                                    onChange={changeInput} onBlur={checkProductFile} onFocus={checkProductFile}/>
-                            {images.map((image, index) => (
-                                <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
-                            ))}
-                            <div className="valid-feedback">올바른 입력입니다</div>
-                            <div className="invalid-feedback">상품 이미지 업로드 필수</div>
-                        </div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col">
-                            <label>
-                                카테고리
-                            </label>
-                            <div className="input-group">
-                                <input type="text" className={"form-control "+productCategoryClass} value={categoryName} onChange={e=>setCategoryName(e.target.value)} onBlur={findCategory} onFocus={findCategory}/>
-                                <input type="hidden" name="productCategory" value={categoryName.length > 0 ? (input.productCategory):(input.productCategory === "")} className={"form-control "+productCategoryClass} onChange={changeInput} readOnly/>
-                                <div className="valid-feedback">올바른 입력입니다</div>
-                                <div className="invalid-feedback">카테고리 선택 필수 혹은 없는 카테고리 번호</div>
+                            <div className="row mt-4">
+                                <div className="col">
+                                    <label>상품명</label>
+                                    <input type="text" name="productName" value={input.productName} placeholder="중고나라장난감"
+                                        className={"form-control "+productNameClass} onChange={changeInput} onBlur={checkProductName} onFocus={checkProductName}/>
+                                    <div className="valid-feedback">올바른 입력입니다</div>
+                                    <div className="invalid-feedback">영문 대소문자, 숫자, 한글(자음 모음 불가) 100자 제한</div>
+                                </div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col">
+                                    <label>파일</label>
+                                    {/*  multiple accept -> 어떤 형식 받을건가*/}
+                                    <input type="file" className={"form-control "+productFileClass} name="attachList" multiple accept="image/*" ref={inputFileRef} 
+                                            onChange={changeInput} onBlur={checkProductFile} onFocus={checkProductFile}/>
+                                    {images.length === 0 ? (<img src={noPhoto} style={{maxWidth:'100px', margin:'5px', display:"block"}}/>) : (<>
+                                    {images.map((image, index) => (
+                                        <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
+                                    ))}
+                                    </>)}
+                                    <div className="valid-feedback">올바른 입력입니다</div>
+                                    <div className="invalid-feedback">상품 이미지 업로드 필수</div>
+                                </div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col">
+                                    <label>
+                                        카테고리
+                                    </label>
+                                    <div className="input-group">
+                                        <input type="text" className={"form-control "+productCategoryClass} value={categoryName} onChange={e=>setCategoryName(e.target.value)} onBlur={findCategory} onFocus={findCategory}/>
+                                        <input type="hidden" name="productCategory" value={categoryName.length > 0 ? (input.productCategory):(input.productCategory === "")} className={"form-control "+productCategoryClass} onChange={changeInput} readOnly/>
+                                        <div className="valid-feedback">올바른 입력입니다</div>
+                                        <div className="invalid-feedback">카테고리 선택 필수 혹은 없는 카테고리 번호</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row mt-2">
+                                <div className="col">
+                                    {loadRoot.group1Name} {loadRoot.group1Name.length > 0 && (<FaChevronRight/>)}
+                                    {loadRoot.group2Name} {loadRoot.group2Name.length > 0 && (<FaChevronRight/>)}
+                                    {loadRoot.group3Name}
+                                </div>
+                            </div>
+                            <div className="row mt-2">
+                                <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
+                                    {category.filter(category => category.categoryDepth === 1).map((cat)=>(
+                                    <ul className="list-group" key={cat.categoryNo}>
+                                        <li className={"list-group-item list-group-item-action "+(group1 === cat.categoryNo && "bg-secondary text-light")}
+                                            onClick={e=>(setGroup1(parseInt(e.target.value)),setGroup2(0),setGroup3(0))} value={cat.categoryNo}>
+                                            {cat.categoryName}
+                                        </li>
+                                    </ul>
+                                    ))}
+                                </div>
+                                <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
+                                    {category.filter(category => (category.categoryDepth === 2 && category.categoryGroup === group1)).map((cat)=>(
+                                    <ul className="list-group" key={cat.categoryNo}>
+                                        <li className={"list-group-item list-group-item-action "+(group2 === cat.categoryNo && "bg-secondary text-light")}
+                                            onClick={e=>(setGroup2(parseInt(e.target.value)),setGroup3(0))} value={cat.categoryNo}>
+                                            {cat.categoryName}
+                                        </li>
+                                    </ul>
+                                    ))}
+                                </div>
+                                <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
+                                    {category.filter(category => (category.categoryDepth === 3 && category.categoryGroup === group1 && category.categoryUpper === group2)).map((cat)=>(
+                                    <ul className="list-group" key={cat.categoryNo}>
+                                        <li className={"list-group-item list-group-item-action "+(group3 === cat.categoryNo && "bg-secondary text-light")}
+                                            onClick={e=>(setGroup3(parseInt(e.target.value)))} value={cat.categoryNo}>
+                                            {cat.categoryName}
+                                        </li>
+                                    </ul>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col">
+                                    <label>판매가(원)</label>
+                                    <input type="number" name="productPrice" value={input.productPrice}
+                                        className={"form-control "+productPriceClass} onChange={changeInput} onBlur={checkProductPrice} onFocus={checkProductPrice}/>
+                                    <div className="valid-feedback">올바른 입력입니다</div>
+                                    <div className="invalid-feedback">숫자 1~9999999999 이내 가능</div>
+                                </div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col">
+                                    <label>상품설명</label>
+                                    <textarea type="text" name="productDetail" value={input.productDetail}
+                                        className={"form-control "+productDetailClass} onChange={changeInput} onBlur={checkProductDetail} onFocus={checkProductDetail}/>
+                                    <div className="valid-feedback">올바른 입력입니다</div>
+                                    <div className="invalid-feedback">글자수 1~1000자 제한</div>
+                                </div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col">
+                                    <label>수량(개)</label>
+                                    <input type="number" name="productQty" value={input.productQty}
+                                        className={"form-control "+productQtyClass} onChange={changeInput} onBlur={checkProductQty} onFocus={checkProductQty}/>
+                                    <div className="valid-feedback">올바른 입력입니다</div>
+                                    <div className="invalid-feedback">숫자 1~9999999999 이내 가능</div>
+                                </div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col text-end">
+                                    <button type="button" className="btn btn-danger me-3" onClick={e=>navigate(-1)}>
+                                        돌아가기
+                                    </button>
+                                    <button className="btn btn-success" onClick={productInsert} disabled={isAllValid === false}>
+                                        상품등록
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div className="row mt-2">
-                        <div className="col">
-                            {loadRoot.group1Name} {loadRoot.group1Name.length > 0 && (<FaChevronRight/>)}
-                            {loadRoot.group2Name} {loadRoot.group2Name.length > 0 && (<FaChevronRight/>)}
-                            {loadRoot.group3Name}
-                        </div>
-                    </div>
-                    <div className="row mt-2">
-                        <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
-                            {category.filter(category => category.categoryDepth === 1).map((cat)=>(
-                            <ul className="list-group" key={cat.categoryNo}>
-                                <li className={"list-group-item list-group-item-action "+(group1 === cat.categoryNo && "bg-secondary text-light")}
-                                    onClick={e=>(setGroup1(parseInt(e.target.value)),setGroup2(0),setGroup3(0))} value={cat.categoryNo}>
-                                    {cat.categoryName}
-                                </li>
-                            </ul>
-                            ))}
-                        </div>
-                        <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
-                            {category.filter(category => (category.categoryDepth === 2 && category.categoryGroup === group1)).map((cat)=>(
-                            <ul className="list-group" key={cat.categoryNo}>
-                                <li className={"list-group-item list-group-item-action "+(group2 === cat.categoryNo && "bg-secondary text-light")}
-                                    onClick={e=>(setGroup2(parseInt(e.target.value)),setGroup3(0))} value={cat.categoryNo}>
-                                    {cat.categoryName}
-                                </li>
-                            </ul>
-                            ))}
-                        </div>
-                        <div className="col-3" style={{ overflowY: "auto", maxHeight: "300px" }}>
-                            {category.filter(category => (category.categoryDepth === 3 && category.categoryGroup === group1 && category.categoryUpper === group2)).map((cat)=>(
-                            <ul className="list-group" key={cat.categoryNo}>
-                                <li className={"list-group-item list-group-item-action "+(group3 === cat.categoryNo && "bg-secondary text-light")}
-                                    onClick={e=>(setGroup3(parseInt(e.target.value)))} value={cat.categoryNo}>
-                                    {cat.categoryName}
-                                </li>
-                            </ul>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col">
-                            <label>판매가(원)</label>
-                            <input type="number" name="productPrice" value={input.productPrice}
-                                className={"form-control "+productPriceClass} onChange={changeInput} onBlur={checkProductPrice} onFocus={checkProductPrice}/>
-                            <div className="valid-feedback">올바른 입력입니다</div>
-                            <div className="invalid-feedback">숫자 1~9999999999 이내 가능</div>
-                        </div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col">
-                            <label>상품설명</label>
-                            <textarea type="text" name="productDetail" value={input.productDetail}
-                                className={"form-control "+productDetailClass} onChange={changeInput} onBlur={checkProductDetail} onFocus={checkProductDetail}/>
-                            <div className="valid-feedback">올바른 입력입니다</div>
-                            <div className="invalid-feedback">글자수 1~1000자 제한</div>
-                        </div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col">
-                            <label>수량(개)</label>
-                            <input type="number" name="productQty" value={input.productQty}
-                                className={"form-control "+productQtyClass} onChange={changeInput} onBlur={checkProductQty} onFocus={checkProductQty}/>
-                            <div className="valid-feedback">올바른 입력입니다</div>
-                            <div className="invalid-feedback">숫자 1~9999999999 이내 가능</div>
-                        </div>
-                    </div>
-                    <div className="row mt-4">
-                        <div className="col text-end">
-                            <button type="button" className="btn btn-danger me-3" onClick={e=>navigate(-1)}>
-                                돌아가기
-                            </button>
-                            <button className="btn btn-success" onClick={productInsert} disabled={isAllValid === false}>
-                                상품등록
-                            </button>
-                        </div>
-                    </div>
+
                 </div>
             </div>
+
 
         </>
     );
