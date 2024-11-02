@@ -49,7 +49,6 @@ const ChatRoom = () => {
         loadProductInfo();
         const client = connectToServer();
         setClient(client);
-        // 메시지 창 스크롤을 아래에서 시작하게 
         return () => {
             disconnectFromServer(client);
         };
@@ -59,6 +58,12 @@ const ChatRoom = () => {
     useEffect(() => {
         loadFileImage();
     }, [client, connect])
+
+    useEffect(()=>{
+        if (messageEndRef.current) {
+           messageEndRef.current.scrollTop = messageEndRef.current.scrollHeight;
+                    }
+    },[messageList]);
 
     const connectToServer = useCallback(() => {
         // 소켓 연결 생성
@@ -79,9 +84,6 @@ const ChatRoom = () => {
                 client.subscribe(`/private/db/${roomNo}/${memberId}`, (message) => {
                     const data = JSON.parse(message.body);
                     setMessageList(data);
-                    if (messageEndRef.current) {
-                        messageEndRef.current.scrollTop = messageEndRef.current.scrollHeight;
-                    }
                 });
 
                 // @@파일 첨부 추가 코드 - 파일 목록
@@ -174,9 +176,6 @@ const ChatRoom = () => {
             body: JSON.stringify({ content: input })
         });
         setInput("");
-        if (messageEndRef.current) {
-            messageEndRef.current.scrollTop = messageEndRef.current.scrollHeight;
-        }
     }, [input, client, connect]);
 
     //상품정보 추출
@@ -206,7 +205,6 @@ const ChatRoom = () => {
             // replace는 기록에 남지 않도록 설정하는것(뒤로가기로 진입불가)
             navigate("/chat/roomlist", {replace:true});
         }
-        // console.log("채팅방진입가능여부"+resp.data);
     }, [roomNo]);
 
     // @@파일 첨부 추가코드 - reutrn 전까지 전부
@@ -310,7 +308,7 @@ const ChatRoom = () => {
                 </div>
             </div>
             <div className="font-weight-bold mt-2 mb-3">
-                {productInfo.productPrice}원
+                {productInfo.productPrice.toLocaleString()}원
             </div>
         </li>
             </>
@@ -319,50 +317,56 @@ const ChatRoom = () => {
                 <small className="col-6 fs-6">
                     상품정보가 없습니다.
                 </small>
-                {/* <li className="list-group-item"> */}
                         <div className="col-auto d-flex justify-content-end mb-3">
                             <button type="button" className="btn btn-secondary" onClick={() => leaveRoom(roomNo)}>
                                 나가기
                             </button>
                         </div>
-                {/* </li> */}
             </div>
         )}
-        <ul className="list-group bg-light borderless"  ref={messageEndRef} style={{maxHeight: '500px', minHeight: '500px', overflowY: 'auto' }}>
+        <ul className="list-group bg-light borderless"  ref={messageEndRef} 
+            style={{maxHeight: '500px', minHeight: '500px', overflowY: 'auto', width:'100'}}>
             {/* @@파일첨부 추가 코드 - type으로 file / chat 으로 구분해서 나눔 */}
             {messageList.map((message, index) => (
                 <li className="list-group-item bg-light border-0" key={index}>
-            <div className={`d-flex ${login && memberId === message.senderMemberId ? 'justify-content-end' : ''}`}>
+            <div className={` ${login && memberId === message.senderMemberId ? 'text-end' : 'text-start'}`}>
             {/* 내가보낸 메시지일 경우 우측에서 출력 */}
-                        <div className={`col-5${(login && memberId === message.senderMemberId) && 'justify-content-end'}`}>
+                        {/* <div className={`${(login && memberId === message.senderMemberId) ?
+                             'justify-content-end':'justify-content-start'}`}> */}
                             {/* 상대방 정보 출력 */}
-                            {(login && memberId !== message.senderMemberId) && (
+                            <div>{(login && memberId !== message.senderMemberId) && (
                                 <h6>
                                     {message.senderMemberId}
                                     <small>
                                         ({message.senderMemberLevel})
                                     </small>
                                 </h6>
-                            )}
+                            )}</div>
                             {/* @@파일첨부 추가 코드 - 사용자가 보낸 본문 , type이 file이면 file을 아니면 텍스트가 나옴*/}
                             {/* <div className="">
                                 {message.content}
                             </div> */}
-                                <div
-                                className={`d-flex p-3 rounded ${login && memberId === message.senderMemberId ? 'bg-primary text-white' : 'bg-white text-dark'}`}
-                                style={{ display: 'inline-block'}}
-                            >
+                            {/* 메시지 내용 */}
+                                <div className={`p-3 rounded text-wrap text-break
+                                    ${login && memberId === message.senderMemberId ?
+                                    'bg-primary text-white' : 'bg-white text-dark'}`}
+                                    style={{ display: 'inline-block'}}>
                                 {message.type === "file" ? (
                                     <img src={message.image} alt={`파일 ${index}`} style={{ maxWidth: '30%', height: 'auto' }} />
                                 ) : (
-                                    message.content
+                                    <p className="mb-1">{message.content}</p>                                    
                                 )}
                             </div>
                             {/* 시간 */}
-                            <p className="text-muted">
-                                {moment(message.time).format("a h:mm")}
-                            </p>
-                        </div>
+                            <div className="text-muted small mt-2 mb-0">
+                            {/* 그날 메시지일경우 시간만, 그 이전일 경우 날짜까지 */}
+                            {moment(message.time).isAfter(moment().startOf('day')) ? (
+                                <p>오늘 {moment(message.time).format("a h:mm")}</p>
+                            ) : (
+                                <p>{moment(message.time).format("YYYY-MM-DD h:mm")}</p>
+                            )}
+                            </div>
+                        {/* </div> */}
                     </div>
                 </li>
             ))}
