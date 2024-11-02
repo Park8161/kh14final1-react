@@ -5,6 +5,8 @@ import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { memberLevelState } from "../../utils/recoil";
+import moment from 'moment';
+import "moment/locale/ko"; // moment에 한국어 정보 불러오기
 
 const NoticeList = () => {
     const [notice, setNotice] = useState([]); // 전체 공지사항 리스트
@@ -71,80 +73,67 @@ const NoticeList = () => {
 
     return (
         <>
-            <Jumbotron title="공지사항 게시글" />
+            {/* <Jumbotron title="공지사항 게시글" /> */}
+
             {/* 검색창 */}
             <div className="row mt-4">
-                <div className="col">
+                <div className="col-6 offset-3">
                     <div className="input-group">
-                        <div className="col-3">
-                            <select className="form-select" name="column" value={column} onChange={e => setColumn(e.target.value)}>
-                                <option value="">선택</option>  
-                                <option value="notice_title">제목</option>
-                                <option value="notice_type">분류</option>
-                            </select>
-                        </div>
-                        <div className="col-7">
-                            <input type="search" className="form-control" name="keyword" value={keyword} onChange={e => setKeyword(e.target.value)} />
-                        </div>
-                        <div className="col-2">
-                            <button type="button" className="btn btn-secondary w-100" onClick={searchNoticeList}>
-                                <FaMagnifyingGlass />
-                                검색
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* 등록 버튼 */}
-            {memberLevel === "관리자" && (
-                <div className="row mt-4">
-                    <div className="col">
-                        <button className="btn btn-success ms-2" onClick={() => navigate("/notice/insert")}>
-                            <FaPlus />
-                            등록
+                        <select className="form-select w-auto" name="column" value={column} onChange={e=>setColumn(e.target.value)}>
+                            <option value="">선택</option>  
+                            <option value="notice_title">제목</option>
+                            <option value="notice_type">분류</option>
+                        </select>
+                        <input type="search" className="form-control w-auto" name="keyword" value={keyword} onChange={e=>setKeyword(e.target.value)} placeholder="검색어 입력" />
+                        <button type="button" className="btn btn-secondary" onClick={searchNoticeList}>
+                            <FaMagnifyingGlass /> 검색
                         </button>
                     </div>
                 </div>
-            )}
+                {/* 등록 버튼 */}
+                {memberLevel === "관리자" && (
+                <div className="col-3 text-start">
+                    <button className="btn btn-success" onClick={e=>navigate("/notice/insert")}>
+                        {/* <FaPlus /> */}
+                        등록
+                    </button>
+                </div>
+                )}
+            </div>
 
             {/* 목록 표시 자리 */}
             <div className="row mt-4">
-                <div className="col">
-                    <div className="table-responsive">
-                        <table className="table text-nowrap">
+                <div className="col-8 offset-2">
+                    {/* <div className="table-responsive"> */}
+                        <table className="table border table-hover table-no-borders text-center">
                             <thead>
                                 <tr>
                                     <th>글 번호</th>
-                                    <th>제목</th>
                                     <th>분류</th>
+                                    <th>제목</th>
                                     <th>작성일</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {getPagedNotice().map(n => (
-                                    <tr key={n.noticeNo}>
+                                    <tr key={n.noticeNo} className="cursor-pointer" onClick={e=>navigate(`/notice/detail/${n.noticeNo}`)}>
                                         <td>{n.noticeNo}</td>
-                                        <td>
-                                            <NavLink to={`/notice/detail/${n.noticeNo}`}>
-                                                {n.noticeTitle}
-                                            </NavLink>
-                                        </td>
                                         <td>{n.noticeType}</td>
+                                        <td className="text-start ps-4" style={{maxWidth:"350px"}}>{n.noticeTitle}</td>
+                                        {n.noticeUtime ? (
                                         <td>
-                                            {n.noticeUtime ? (
-                                                <>
-                                                    {n.noticeUtime} (수정됨)
-                                                </>
-                                            ) : (
-                                                n.noticeWtime
-                                            )}
+                                            {moment(n.noticeUtime).format("YYYY-MM-DD")} (수정됨)
                                         </td>
+                                        ) : (
+                                        <td>
+                                            {moment(n.noticeWtime).format("YYYY-MM-DD")}
+                                        </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    {/* </div> */}
                 </div>
             </div>
 
