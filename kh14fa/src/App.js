@@ -6,6 +6,8 @@ import { useRecoilState } from "recoil";
 import { memberIdState, memberLevelState,memberLoadingState } from "./utils/recoil";
 import 'react-toastify/dist/ReactToastify.css';
 import { Bounce, ToastContainer } from "react-toastify";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 // HashRouter : localhost:3000/#/ex01
 // 하나의 주소만 허용해줄 때 사용, /#/~~ (ex. GitHub)
@@ -60,8 +62,10 @@ const App = ()=> {
   
   return (
     <>
+      <Header />
       <Menu />
       <MainContent />
+      <Footer />
 
       {/* toast 메세지 출력을 위한 컨테이너 */}
       <ToastContainer
