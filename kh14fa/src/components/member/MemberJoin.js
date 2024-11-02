@@ -165,147 +165,158 @@ const MemberJoin = ()=>{
     // view
     return(
         <>
-            <Jumbotron title="신규 회원 가입" />
+            {/* <Jumbotron title="신규 회원 가입" /> */}
 
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        아이디<FaAsterisk className="text-danger" />
-                    </label>
-                    <input type="text" className={"form-control "+memberIdClass} placeholder="아이디"
-                        name="memberId" value={input.memberId} onChange={changeInput} onBlur={checkMemberId} onFocus={checkMemberId} />
-                    <div className="valid-feedback">좋은 아이디입니다!</div>
-                    <div className="invalid-feedback">영어 소문자와 숫자 구성 7~19자 제한</div>
-                    <div className="text-danger">{message}</div>
+            <div className="row">
+                <div className="col-8 offset-2">
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                아이디<FaAsterisk className="text-danger" />
+                            </label>
+                            <input type="text" className={"form-control "+memberIdClass} placeholder="아이디"
+                                name="memberId" value={input.memberId} onChange={changeInput} onBlur={checkMemberId} onFocus={checkMemberId} />
+                            <div className="valid-feedback">좋은 아이디입니다!</div>
+                            <div className="invalid-feedback">영어 소문자와 숫자 구성 7~19자 제한</div>
+                            <div className="text-danger">{message}</div>
+                        </div>
+                    </div>
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                비밀번호<FaAsterisk className="text-danger" />
+                            </label>
+                            <input type="checkbox" className="form-check-input d-none" checked={display} onChange={e=>setDisplay(e.target.checked)} />
+                            {display ? 
+                                <FaRegEye className="form-check-label" onClick={falseDisplay} /> 
+                                : 
+                                <FaEye className="form-check-label" onClick={trueDisplay} />
+                            }
+                            <input type={display ? "text":"password"} className={"form-control "+memberPwClass} placeholder="비밀번호"
+                                name="memberPw" value={input.memberPw} onChange={changeInput} onBlur={checkMemberPw} onFocus={checkMemberPw} />
+                            <div className="valid-feedback">좋은 비밀번호입니다!</div>
+                            <div className="invalid-feedback">영어 대문자, 영어 소문자, 특수문자(!@#$), 숫자 각 1개씩 필수 총8~16자 제한</div>
+                        </div>
+                    </div>
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                비밀번호 확인<FaAsterisk className="text-danger" />
+                            </label>
+                                <input type="checkbox" className="form-check-input d-none" checked={display2} onChange={e=>setDisplay2(e.target.checked)} />
+                                {display2 ? 
+                                    <FaRegEye className="form-check-label" onClick={falseDisplay2} /> 
+                                    : 
+                                    <FaEye className="form-check-label" onClick={trueDisplay2} />
+                                }
+                            <input type={display2 ? "text":"password"} className={"form-control "+memberPw2Class} placeholder="비밀번호 확인"
+                                name="memberPw2" value={memberPw2} onChange={e=>setMemberPw2(e.target.value)} onBlur={checkMemberPw2} onFocus={checkMemberPw2} />
+                            <div className="valid-feedback">비밀번호와 일치합니다!</div>
+                            <div className="invalid-feedback">비밀번호를 재확인해주세요</div>
+                        </div>
+                    </div>
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                이름<FaAsterisk className="text-danger" />
+                            </label>
+                            <input type="text" className={"form-control "+memberNameClass} placeholder="이름"
+                                name="memberName" value={input.memberName} onChange={changeInput} onBlur={checkMemberName} onFocus={checkMemberName} />
+                            <div className="valid-feedback">좋은 이름이네요!</div>
+                            <div className="invalid-feedback">한글 2~7자 제한(모음,자음 불가)</div>
+                        </div>
+                    </div>
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                이메일<FaAsterisk className="text-danger" />
+                            </label>
+                            <input type="email" className={"form-control "+memberEmailClass} placeholder="이메일"
+                                name="memberEmail" value={input.memberEmail} onChange={changeInput} onBlur={checkMemberEmail} onFocus={checkMemberEmail} />
+                            <div className="valid-feedback">좋은 이메일이에요!</div>
+                            <div className="invalid-feedback">이메일 형식을 지켜주세요</div>
+                        </div>
+                    </div>
+
+                    {/* <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                우편번호
+                            </label>
+                            <input type="text" className={"form-control "+memberAddressClass} placeholder="우편번호"
+                                name="memberPost" value={input.memberPost} onChange={changeInput} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                        </div>
+                    </div>
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                기본주소
+                            </label>
+                            <input type="text" className={"form-control "+memberAddressClass} placeholder="기본주소"
+                                name="memberAddress1" value={input.memberAddress1} onChange={changeInput} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                        </div>
+                    </div> */}
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                주소
+                            </label>
+                            <input type="text" className={"form-control w-auto "+memberAddressClass} placeholder="우편번호"
+                                name="memberPost" value={input.memberPost} onChange={changeInput} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                            <input type="text" className={"form-control "+memberAddressClass} placeholder="기본주소"
+                                name="memberAddress1" value={input.memberAddress1} onChange={changeInput} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />                                
+                            <input type="text" className={"form-control "+memberAddressClass} placeholder="상세주소"
+                                name="memberAddress2" value={input.memberAddress2} onChange={changeInput} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                            <div className="valid-feedback">좋은 곳에 사시는군요!</div>
+                            <div className="invalid-feedback">우편번호,기본주소,상세주소를 모두 입력하거나 모두 비워주세요</div>
+                        </div>
+                    </div>
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                전화번호
+                            </label>
+                            <input type="tel" className={"form-control "+memberContactClass} placeholder="전화번호"
+                                name="memberContact" value={input.memberContact} onChange={changeInput} onBlur={checkMemberContact} onFocus={checkMemberContact} />
+                            <div className="valid-feedback">좋은 전화번호에요!</div>
+                            <div className="invalid-feedback">전화번호 형식에 맞지 않네요(ex:01012345678)</div>
+                        </div>
+                    </div>
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>
+                                생년월일
+                            </label>
+                            <input type="date" className={"form-control "+memberBirthClass} placeholder="생년월일"
+                                name="memberBirth" value={input.memberBirth} onChange={changeInput} onBlur={checkMemberBirth} onFocus={checkMemberBirth} />
+                            <div className="valid-feedback">좋은 날에 태어나셨네요!</div>
+                            <div className="invalid-feedback">날짜를 선택 및 입력해주세요</div>
+                        </div>
+                    </div>
+
+                    <div className="row mt-4 text-end">
+                        <div className="col mt-4">
+                            <button className="btn btn-danger me-3" onClick={returnHome}>
+                                돌아가기
+                            </button>
+                            <button className="btn btn-success" onClick={goMemberJoin} disabled={isAllValid === false} >
+                                가입하기
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        비밀번호<FaAsterisk className="text-danger" />
-                    </label>
-                    <input type="checkbox" className="form-check-input d-none" checked={display} onChange={e=>setDisplay(e.target.checked)} />
-                    {display ? 
-                        <FaRegEye className="form-check-label" onClick={falseDisplay} /> 
-                        : 
-                        <FaEye className="form-check-label" onClick={trueDisplay} />
-                    }
-                    <input type={display ? "text":"password"} className={"form-control "+memberPwClass} placeholder="비밀번호"
-                        name="memberPw" value={input.memberPw} onChange={changeInput} onBlur={checkMemberPw} onFocus={checkMemberPw} />
-                    <div className="valid-feedback">좋은 비밀번호입니다!</div>
-                    <div className="invalid-feedback">영어 대문자, 영어 소문자, 특수문자(!@#$), 숫자 각 1개씩 필수 총8~16자 제한</div>
-                </div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        비밀번호 확인<FaAsterisk className="text-danger" />
-                    </label>
-                        <input type="checkbox" className="form-check-input d-none" checked={display2} onChange={e=>setDisplay2(e.target.checked)} />
-                        {display2 ? 
-                            <FaRegEye className="form-check-label" onClick={falseDisplay2} /> 
-                            : 
-                            <FaEye className="form-check-label" onClick={trueDisplay2} />
-                        }
-                    <input type={display2 ? "text":"password"} className={"form-control "+memberPw2Class} placeholder="비밀번호 확인"
-                        name="memberPw2" value={memberPw2} onChange={e=>setMemberPw2(e.target.value)} onBlur={checkMemberPw2} onFocus={checkMemberPw2} />
-                    <div className="valid-feedback">비밀번호와 일치합니다!</div>
-                    <div className="invalid-feedback">비밀번호를 재확인해주세요</div>
-                </div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        이름<FaAsterisk className="text-danger" />
-                    </label>
-                    <input type="text" className={"form-control "+memberNameClass} placeholder="이름"
-                        name="memberName" value={input.memberName} onChange={changeInput} onBlur={checkMemberName} onFocus={checkMemberName} />
-                    <div className="valid-feedback">좋은 이름이네요!</div>
-                    <div className="invalid-feedback">한글 2~7자 제한(모음,자음 불가)</div>
-                </div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        이메일<FaAsterisk className="text-danger" />
-                    </label>
-                    <input type="email" className={"form-control "+memberEmailClass} placeholder="이메일"
-                        name="memberEmail" value={input.memberEmail} onChange={changeInput} onBlur={checkMemberEmail} onFocus={checkMemberEmail} />
-                    <div className="valid-feedback">좋은 이메일이에요!</div>
-                    <div className="invalid-feedback">이메일 형식을 지켜주세요</div>
-                </div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        우편번호
-                    </label>
-                    <input type="text" className={"form-control "+memberAddressClass} placeholder="우편번호"
-                        name="memberPost" value={input.memberPost} onChange={changeInput} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
-                </div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        기본주소
-                    </label>
-                    <input type="text" className={"form-control "+memberAddressClass} placeholder="기본주소"
-                        name="memberAddress1" value={input.memberAddress1} onChange={changeInput} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
-                </div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        상세주소
-                    </label>
-                    <input type="text" className={"form-control "+memberAddressClass} placeholder="상세주소"
-                        name="memberAddress2" value={input.memberAddress2} onChange={changeInput} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
-                    <div className="valid-feedback">좋은 곳에 사시는군요!</div>
-                    <div className="invalid-feedback">우편번호,기본주소,상세주소를 모두 입력하거나 모두 비워주세요</div>
-                </div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        전화번호
-                    </label>
-                    <input type="tel" className={"form-control "+memberContactClass} placeholder="전화번호"
-                        name="memberContact" value={input.memberContact} onChange={changeInput} onBlur={checkMemberContact} onFocus={checkMemberContact} />
-                    <div className="valid-feedback">좋은 전화번호에요!</div>
-                    <div className="invalid-feedback">전화번호 형식에 맞지 않네요(ex:01012345678)</div>
-                </div>
-            </div>
-
-            <div className="row mt-4">
-                <div className="col">
-                    <label>
-                        생년월일
-                    </label>
-                    <input type="date" className={"form-control "+memberBirthClass} placeholder="생년월일"
-                        name="memberBirth" value={input.memberBirth} onChange={changeInput} onBlur={checkMemberBirth} onFocus={checkMemberBirth} />
-                    <div className="valid-feedback">좋은 날에 태어나셨네요!</div>
-                    <div className="invalid-feedback">날짜를 선택 및 입력해주세요</div>
-                </div>
-            </div>
-
-            <div className="row mt-4 text-end">
-                <div className="col mt-4">
-                    <button className="btn btn-danger me-3" onClick={returnHome}>
-                        돌아가기
-                    </button>
-                    <button className="btn btn-success" onClick={goMemberJoin} disabled={isAllValid === false} >
-                        가입하기
-                    </button>
-                </div>
-            </div>
 
         </>
     );

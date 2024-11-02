@@ -9,6 +9,8 @@ import { useRecoilState } from "recoil";
 import { memberIdState, memberLevelState } from "../../utils/recoil";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
+import noPhoto from "../product/noPhoto.jpg";
+import out from "../../style/out.png";
 
 const MemberLogin = () => {
     // navigate
@@ -100,9 +102,15 @@ const MemberLogin = () => {
     return (
         <>
             <div className="row mt-4">
-                <div className="col-md-6 offset-md-3 mt-4">
+                <div className="col-md-4 offset-md-4 mt-4 border">
 
-                    <Jumbotron title="회원 로그인" content="로고 이미지 넣을자리" />
+                    {/* <Jumbotron title="회원 로그인" content="로고 이미지 넣을자리" /> */}
+
+                    <div className="row mt-4">
+                        <div className="col text-center">
+                            <img src={out} className="rounded-circle" style={{width:"250px",height:"250px"}} />
+                        </div>
+                    </div>
 
                     <div className="row mt-4">
                         <div className="col">
@@ -127,24 +135,24 @@ const MemberLogin = () => {
                     </div>
 
                     <div className="row mt-4">
-                        <div className="col-6">
-                            <label>
-                                <input type="checkbox" className="form-check-input" 
-                                    checked={display} onChange={e=>setDisplay(e.target.checked)}/>
-                                <span className="form-check-label ms-1 me-3">비밀번호 표시</span>
-                            </label>
+                        <div className="col-5 pe-0">
                             <label>
                                 <input type="checkbox" className="form-check-input"  
                                     checked={stay} onChange={e=>setStay(e.target.checked)}/>
                                 <span className="form-check-label ms-1 me-3">로그인 유지</span>
                             </label>
+                            <label>
+                                <input type="checkbox" className="form-check-input" 
+                                    checked={display} onChange={e=>setDisplay(e.target.checked)}/>
+                                <span className="form-check-label ms-1 me-3">비밀번호 표시</span>
+                            </label>
                         </div>
                         {error === true ? (
-                            <div className="col-3 text-danger mt-0 justify-content-center align-items-center">회원 정보 불일치</div>
+                            <div className="col-3 px-0 text-danger mt-3 justify-content-center align-items-center">회원정보 불일치</div>
                         ) : (
                             <div className="col-3"></div>
                         )}
-                        <div className="col-3 text-end">
+                        <div className="col-4 text-end mt-3">
                             <label>
                                 <NavLink className="text-decoration-none" to="/member/findpw">
                                     비밀번호 찾기
@@ -162,7 +170,9 @@ const MemberLogin = () => {
                         </div>
                     </div>
 
-                    <div className="row mt-4">
+                    <hr/>
+
+                    <div className="row mt-3 mb-4">
                         <div className="col">
                             <button className="btn btn-secondary w-100" onClick={e=>navigate("/member/join")}>
                                 <RiLoginBoxLine />

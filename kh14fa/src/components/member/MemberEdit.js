@@ -121,81 +121,87 @@ const MemberEdit = ()=>{
     // view
     return(
         <>
-            <Jumbotron title={`${edit.memberId} 님의 정보`} content="개인 정보 수정" />
-            
-            <div className="row mt-3">
-                <div className="col-3 d-flex align-items-center">이름<FaAsterisk className="text-danger" /></div>
-                <div className="col-5 ps-1">
-                    <input type="text" className={"form-control "+memberNameClass} placeholder="이름"
-                        name="memberName" value={edit.memberName} onChange={changeEdit} onBlur={checkMemberName} onFocus={checkMemberName} />
-                    <div className="valid-feedback">좋은 이름이네요!</div>
-                    <div className="invalid-feedback">한글 2~7자 제한(모음,자음 불가)</div>
-                </div>
-            </div>
-            <div className="row mt-3">
-                <div className="col-3 d-flex align-items-center">이메일<FaAsterisk className="text-danger" /></div>
-                <div className="col-5 ps-1">
-                    <input type="email" className={"form-control "+memberEmailClass} placeholder="이메일"
-                        name="memberEmail" value={edit.memberEmail} onChange={changeEdit} onBlur={checkMemberEmail} onFocus={checkMemberEmail} />
-                    <div className="valid-feedback">좋은 이메일이에요!</div>
-                    <div className="invalid-feedback">이메일 형식을 지켜주세요(미입력 불가)</div>
-                </div>
-            </div>
-            <div className="row mt-3">
-                <div className="col-3">주소</div>
-                <div className="col-5 ps-1">
-                        <input type="text" className={"form-control w-auto "+memberAddressClass} placeholder="우편번호"
-                            name="memberPost" value={edit.memberPost} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
-                        <input type="text" className={"form-control "+memberAddressClass} placeholder="기본주소"
-                            name="memberAddress1" value={edit.memberAddress1} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
-                        <input type="text" className={"form-control "+memberAddressClass} placeholder="상세주소"
-                            name="memberAddress2" value={edit.memberAddress2} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
-                        <div className="valid-feedback">좋은 곳에 사시는군요!</div>
-                        <div className="invalid-feedback">모두 입력하거나 모두 비워주세요</div>
-                </div>
-            </div>
-            <div className="row mt-3">
-                <div className="col-3 d-flex align-items-center">전화번호</div>
-                <div className="col-5 ps-1">
-                    <input type="tel" className={"form-control "+memberContactClass} placeholder="전화번호"
-                        name="memberContact" value={edit.memberContact} onChange={changeEdit} onBlur={checkMemberContact} onFocus={checkMemberContact} />
-                    <div className="valid-feedback">좋은 전화번호에요!</div>
-                    <div className="invalid-feedback">전화번호 형식에 맞지 않네요(ex:01012345678)</div>
-                </div>
-            </div>
-            <div className="row mt-3">
-                <div className="col-3 d-flex align-items-center">생년월일</div>
-                <div className="col-5 ps-1">
-                    <input type="date" className={"form-control "+memberBirthClass} placeholder="생년월일"
-                        name="memberBirth" value={edit.memberBirth} onChange={changeEdit} onBlur={checkMemberBirth} onFocus={checkMemberBirth} />
-                    <div className="valid-feedback">좋은 날에 태어나셨네요!</div>
-                    <div className="invalid-feedback">날짜를 선택 및 입력해주세요</div>
-                </div>
-            </div>
-            <div className="row mt-3">
-                <div className="col-3 d-flex align-items-center">포인트</div>
-                <div className="col-5">{edit.memberPoint} (수정불가)</div>
-            </div>
-            <div className="row mt-3">
-                <div className="col-3 d-flex align-items-center">가입일</div>
-                <div className="col-5">{edit.memberJoin} (수정불가)</div>
-            </div>
-            <div className="row mt-3">
-                <div className="col-3 d-flex align-items-center">최근접속</div>
-                <div className="col-5">{edit.memberLogin} (수정불가)</div>
-            </div>
+            {/* <Jumbotron title={`${edit.memberId} 님의 정보`} content="개인 정보 수정" /> */}
 
-            <div className="row mt-4 text-end">
-                <div className="col mt-4">
-                    <button className="btn btn-danger me-3" onClick={returnBack}>
-                        돌아가기
-                    </button>
-                    <button className="btn btn-success" onClick={goMemberEdit} disabled={isAllValid === false} >
-                        수정하기
-                    </button>
+            <div className="row">
+                <div className="col-8 offset-2">
+
+                    <div className="row mt-4">
+                        <div className="col-2 d-flex align-items-center">이름<FaAsterisk className="text-danger" /></div>
+                        <div className="col-10 ps-1">
+                            <input type="text" className={"form-control "+memberNameClass} placeholder="이름"
+                                name="memberName" value={edit.memberName} onChange={changeEdit} onBlur={checkMemberName} onFocus={checkMemberName} />
+                            <div className="valid-feedback">좋은 이름이네요!</div>
+                            <div className="invalid-feedback">한글 2~7자 제한(모음,자음 불가)</div>
+                        </div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col-2 d-flex align-items-center">이메일<FaAsterisk className="text-danger" /></div>
+                        <div className="col-10 ps-1">
+                            <input type="email" className={"form-control "+memberEmailClass} placeholder="이메일"
+                                name="memberEmail" value={edit.memberEmail} onChange={changeEdit} onBlur={checkMemberEmail} onFocus={checkMemberEmail} />
+                            <div className="valid-feedback">좋은 이메일이에요!</div>
+                            <div className="invalid-feedback">이메일 형식을 지켜주세요(미입력 불가)</div>
+                        </div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col-2">주소</div>
+                        <div className="col-10 ps-1">
+                                <input type="text" className={"form-control w-auto "+memberAddressClass} placeholder="우편번호"
+                                    name="memberPost" value={edit.memberPost} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                                <input type="text" className={"form-control "+memberAddressClass} placeholder="기본주소"
+                                    name="memberAddress1" value={edit.memberAddress1} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                                <input type="text" className={"form-control "+memberAddressClass} placeholder="상세주소"
+                                    name="memberAddress2" value={edit.memberAddress2} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                                <div className="valid-feedback">좋은 곳에 사시는군요!</div>
+                                <div className="invalid-feedback">모두 입력하거나 모두 비워주세요</div>
+                        </div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col-2 d-flex align-items-center">전화번호</div>
+                        <div className="col-10 ps-1">
+                            <input type="tel" className={"form-control "+memberContactClass} placeholder="전화번호"
+                                name="memberContact" value={edit.memberContact} onChange={changeEdit} onBlur={checkMemberContact} onFocus={checkMemberContact} />
+                            <div className="valid-feedback">좋은 전화번호에요!</div>
+                            <div className="invalid-feedback">전화번호 형식에 맞지 않네요(ex:01012345678)</div>
+                        </div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col-2 d-flex align-items-center">생년월일</div>
+                        <div className="col-10 ps-1">
+                            <input type="date" className={"form-control "+memberBirthClass} placeholder="생년월일"
+                                name="memberBirth" value={edit.memberBirth} onChange={changeEdit} onBlur={checkMemberBirth} onFocus={checkMemberBirth} />
+                            <div className="valid-feedback">좋은 날에 태어나셨네요!</div>
+                            <div className="invalid-feedback">날짜를 선택 및 입력해주세요</div>
+                        </div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col-2 d-flex align-items-center">포인트</div>
+                        <div className="col-10">{edit.memberPoint} (수정불가)</div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col-2 d-flex align-items-center">가입일</div>
+                        <div className="col-10">{edit.memberJoin} (수정불가)</div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col-2 d-flex align-items-center">최근접속</div>
+                        <div className="col-10">{edit.memberLogin} (수정불가)</div>
+                    </div>
+
+                    <div className="row mt-4 text-end">
+                        <div className="col mt-4">
+                            <button className="btn btn-danger me-3" onClick={returnBack}>
+                                돌아가기
+                            </button>
+                            <button className="btn btn-success" onClick={goMemberEdit} disabled={isAllValid === false} >
+                                수정하기
+                            </button>
+                        </div>
+                    </div>
+                
                 </div>
             </div>
-            
+                        
         </>
     );
 

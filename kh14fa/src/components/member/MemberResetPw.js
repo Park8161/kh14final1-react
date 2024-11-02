@@ -90,49 +90,58 @@ const MemberResetPw = ()=>{
     // view
     return(
         <>
-            <Jumbotron title={`${input.memberId} 님의 정보`} content="비밀번호 재설정 : 보안에 주의하시기 바랍니다" />
+            {/* <Jumbotron title={`${input.memberId} 님의 정보`} content="비밀번호 재설정 : 보안에 주의하시기 바랍니다" /> */}
 
-            <div className="row mt-3">
-                <div className="col">
-                    <label className="ps-2">
-                        비밀번호<FaAsterisk className="text-danger" />
-                    </label>
-                    <input type="checkbox" className="form-check-input d-none" checked={display2} onChange={e=>setDisplay2(e.target.checked)} />
-                    {display2 ? 
-                        <FaRegEye className="form-check-label" onClick={falseDisplay2} /> 
-                        : 
-                        <FaEye className="form-check-label" onClick={trueDisplay2} />
-                    }
-                    <input type={display2 ? "text":"password"} className={"form-control "+changePwClass} placeholder="비밀번호 입력"
-                        name="changePw" value={input.changePw} onChange={changeInput} onBlur={checkChangePw} onFocus={checkChangePw} />
-                    <div className="valid-feedback">좋은 비밀번호입니다!</div>
-                    <div className="invalid-feedback">영어 대문자, 영어 소문자, 특수문자(!@#$), 숫자 각 1개씩 필수 총8~16자 제한</div>
-                </div>
-            </div>
+            <div className="row mt-4">
+                <div className="col-6 offset-3">
 
-            <div className="row mt-3">
-                <div className="col">
-                    <label className="ps-2">
-                        비밀번호 확인<FaAsterisk className="text-danger" />
-                    </label>                    
-                    <input type="checkbox" className="form-check-input d-none" checked={display3} onChange={e=>setDisplay3(e.target.checked)} />
-                    {display3 ? 
-                        <FaRegEye className="form-check-label" onClick={falseDisplay3} /> 
-                        : 
-                        <FaEye className="form-check-label" onClick={trueDisplay3} />
-                    }
-                    <input type={display3 ? "text":"password"} className={"form-control "+changePw2Class} placeholder="비밀번호 확인"
-                        name="changePw2" value={changePw2} onChange={e=>setChangePw2(e.target.value)} onBlur={checkChangePw2} onFocus={checkChangePw2} />
-                    <div className="valid-feedback">비밀번호와 일치합니다!</div>
-                    <div className="invalid-feedback">비밀번호를 재확인해주세요</div>
-                </div>
-            </div>
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label className="ps-2">
+                                비밀번호<FaAsterisk className="text-danger" />
+                            </label>
+                            <input type="checkbox" className="form-check-input d-none" checked={display2} onChange={e=>setDisplay2(e.target.checked)} />
+                            {display2 ? 
+                                <FaRegEye className="form-check-label" onClick={falseDisplay2} /> 
+                                : 
+                                <FaEye className="form-check-label" onClick={trueDisplay2} />
+                            }
+                            <input type={display2 ? "text":"password"} className={"form-control "+changePwClass} placeholder="비밀번호 입력"
+                                name="changePw" value={input.changePw} onChange={changeInput} onBlur={checkChangePw} onFocus={checkChangePw} />
+                            <div className="valid-feedback">좋은 비밀번호입니다!</div>
+                            <div className="invalid-feedback">영어 대문자, 영어 소문자, 특수문자(!@#$), 숫자 각 1개씩 필수 총8~16자 제한</div>
+                        </div>
+                    </div>
 
-            <div className="row mt-4 text-end">
-                <div className="col mt-4">
-                    <button className="btn btn-success" onClick={goResetPw} disabled={isAllValid === false} >
-                        수정하기
-                    </button>
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label className="ps-2">
+                                비밀번호 확인<FaAsterisk className="text-danger" />
+                            </label>                    
+                            <input type="checkbox" className="form-check-input d-none" checked={display3} onChange={e=>setDisplay3(e.target.checked)} />
+                            {display3 ? 
+                                <FaRegEye className="form-check-label" onClick={falseDisplay3} /> 
+                                : 
+                                <FaEye className="form-check-label" onClick={trueDisplay3} />
+                            }
+                            <input type={display3 ? "text":"password"} className={"form-control "+changePw2Class} placeholder="비밀번호 확인"
+                                name="changePw2" value={changePw2} onChange={e=>setChangePw2(e.target.value)} onBlur={checkChangePw2} onFocus={checkChangePw2} />
+                            <div className="valid-feedback">비밀번호와 일치합니다!</div>
+                            <div className="invalid-feedback">비밀번호를 재확인해주세요</div>
+                        </div>
+                    </div>
+
+                    <div className="row mt-4 text-end">
+                        <div className="col-8 mt-4 d-flex justify-content-end align-items-center">
+                            <span className="text-danger">비밀번호 변경 : 보안에 주의하시기 바랍니다</span>
+                        </div>
+                        <div className="col-4 mt-4">
+                            <button className="btn btn-success" onClick={goResetPw} disabled={isAllValid === false} >
+                                수정하기
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

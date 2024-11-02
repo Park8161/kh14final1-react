@@ -305,7 +305,7 @@ const Menu = () => {
                             </li> */}
                             {/* 카테고리 */}
                             <li className="nav-item dropdown" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                <a className="nav-link text-white font-16px" role="button"><GiHamburgerMenu className="me-1" />카테고리</a>
+                                <a className="nav-link text-white font-16px d-flex justify-content-center align-items-center" role="button"><GiHamburgerMenu className="me-1" />카테고리</a>
                                 <div className="dropdown-menu">
                                     {categoryTree.map(cat1 => (
                                         <div key={cat1.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -332,7 +332,7 @@ const Menu = () => {
                             </li>
                         </ul>
 
-                        <ul className="navbar-nav ms-2 me-4">
+                        <ul className="navbar-nav ms-0 me-2">
                             <li>
                                 {/* 검색창 */}
                                 <div className="row w-100 d-flex jusityfy-content-center align-items-center search-window">
@@ -358,12 +358,12 @@ const Menu = () => {
                         </ul>
                         
                         {/* 인기 순위 목록 : 현재 카테고리 */}
-                        <ul className="navbar-nav ms-1 me-4">
+                        <ul className="navbar-nav mx-1">
                             <li>
-                                <div id="carouselExampleAutoplaying" className="carousel slide vertical" data-bs-ride="carousel">
+                                <div id="carouselExampleAutoplaying" className="carousel slide vertical carousel-fade" data-bs-ride="carousel" data-bs-delay='{"show":300,"hide":300}'>
                                     <div className="carousel-inner text-white">
                                         {hotList.map((hot,index)=>(
-                                        <small className={"carousel-item cursor-pointer "+(index===0 && ("active"))} key={index} onClick={e=>goToProduct(hot.categoryName)}>
+                                        <small className={"carousel-item carousel-slide cursor-pointer "+(index===0 && ("active"))} key={index} onClick={e=>goToProduct(hot.categoryName)}>
                                             {(index+1)+". "}
                                             {hot.categoryName}
                                         </small>

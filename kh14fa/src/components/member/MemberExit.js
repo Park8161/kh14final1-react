@@ -56,34 +56,47 @@ const MemberExit = ()=>{
 
     return (
         <>
-            <Jumbotron title="회원 탈퇴 페이지" content="비밀번호와 '회원탈퇴'를 입력해주세요"/>
+            {/* <Jumbotron title="회원 탈퇴 페이지" content="비밀번호와 '회원탈퇴'를 입력해주세요"/> */}
 
             <div className="row mt-4">
-                <div className="col">
-                    <label>비밀번호 입력</label>
-                    <input type="password" className="form-control" 
-                        value={password} onChange={e=>setPassword(e.target.value)} />
+                <div className="col-6 mt-4 offset-3 border">
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>비밀번호 입력</label>
+                            <input type="password" className="form-control" 
+                                value={password} onChange={e=>setPassword(e.target.value)} />
+                        </div>
+                    </div>
+
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>'회원탈퇴'를 입력해주세요</label>
+                            <input type="text" className="form-control" 
+                                value={exitword} onChange={e=>setExitword(e.target.value)} />
+                        </div>
+                    </div>
+
+                    <div className="row mt-4 mb-3">
+                        <div className="col mt-4 text-end">
+                            <button className="btn btn-info me-3" onClick={goBack}>
+                                돌아가기
+                            </button>
+                            <button className="btn btn-danger" onClick={goMemberExit} disabled={checkAll === false}>
+                                회원탈퇴
+                            </button>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
 
             <div className="row mt-4">
-                <div className="col">
-                    <label>'회원탈퇴'를 입력해주세요</label>
-                    <input type="text" className="form-control" 
-                        value={exitword} onChange={e=>setExitword(e.target.value)} />
+                <div className="col-6 offset-3 mt-4 text-center">
+                    <Jumbotron title="안녕히 가세요!" content="다음에 또 만나요!"/>
                 </div>
             </div>
 
-            <div className="row mt-4">
-                <div className="col text-end">
-                    <button className="btn btn-info me-3" onClick={goBack}>
-                        돌아가기
-                    </button>
-                    <button className="btn btn-danger" onClick={goMemberExit} disabled={checkAll === false}>
-                        회원탈퇴
-                    </button>
-                </div>
-            </div>
         </>
     );
 };
