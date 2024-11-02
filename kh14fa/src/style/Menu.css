@@ -54,3 +54,7 @@
     white-space: nowrap; 
     max-width: 100px;
 }
+
+.cursor-pointer {
+    cursor: pointer;
+}

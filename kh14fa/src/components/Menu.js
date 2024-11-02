@@ -258,11 +258,12 @@ const Menu = () => {
         }
     },[]);
   
-    const goToProduct = useCallback((categoryNo)=>{
-        setProductColumn("product_category");
-        setProductKeyword(categoryNo);
+    // 카테고리 관련 목록들 전용 검색기능
+    const goToProduct = useCallback((categoryName)=>{
+        setProductColumn("category_name");
+        setProductKeyword(categoryName);
         navigate("/product/list");
-        window.location.reload();
+        // window.location.reload();
     },[input]);
 
     // 인기 카테고리(소분류) 20위까지
@@ -304,20 +305,20 @@ const Menu = () => {
                             </li> */}
                             {/* 카테고리 */}
                             <li className="nav-item dropdown" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                <a className="nav-link text-white" style={{fontSize:"16px"}} role="button"><GiHamburgerMenu className="me-1" />카테고리</a>
+                                <a className="nav-link text-white font-16px" role="button"><GiHamburgerMenu className="me-1" />카테고리</a>
                                 <div className="dropdown-menu">
                                     {categoryTree.map(cat1 => (
                                         <div key={cat1.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                                            <a className="dropdown-item" >{cat1.categoryName}</a>
+                                            <a className="dropdown-item" onClick={e=>goToProduct(cat1.categoryName)}>{cat1.categoryName}</a>
                                             {cat1.children.length > 0 && (
                                                 <div className="dropdown-menu">
                                                     {cat1.children.map(cat2 => (
-                                                        <div key={cat2.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                                        <div key={cat2.categoryNo} className="dropdown-submenu" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={e=>goToProduct(cat2.categoryName)}>
                                                             <a className="dropdown-item">{cat2.categoryName}</a>
                                                             {cat2.children.length > 0 && (
                                                                 <div className="dropdown-menu dropdown-menu-end">
                                                                     {cat2.children.map(cat3 => (
-                                                                        <a key={cat3.categoryNo} className="dropdown-item" onClick={e=>goToProduct(cat3.categoryNo)}>{cat3.categoryName}</a>
+                                                                        <a key={cat3.categoryNo} className="dropdown-item" onClick={e=>goToProduct(cat3.categoryName)}>{cat3.categoryName}</a>
                                                                     ))}
                                                                 </div>
                                                             )}
@@ -357,12 +358,12 @@ const Menu = () => {
                         </ul>
                         
                         {/* 인기 순위 목록 : 현재 카테고리 */}
-                        <ul className="navbar-nav mx-4">
+                        <ul className="navbar-nav ms-1 me-4">
                             <li>
                                 <div id="carouselExampleAutoplaying" className="carousel slide vertical" data-bs-ride="carousel">
                                     <div className="carousel-inner text-white">
                                         {hotList.map((hot,index)=>(
-                                        <small className={"carousel-item "+(index===0 && ("active"))} key={index}>
+                                        <small className={"carousel-item cursor-pointer "+(index===0 && ("active"))} key={index} onClick={e=>goToProduct(hot.categoryName)}>
                                             {(index+1)+". "}
                                             {hot.categoryName}
                                         </small>
@@ -372,9 +373,9 @@ const Menu = () => {
                             </li>
                         </ul>
 
-                        <ul className="navbar-nav me-4 ms-auto">
+                        <ul className="navbar-nav me-2 ms-auto">
                             {memberLevel === '관리자' && (
-                            <li className="nav-item dropdown me-4">
+                            <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">관리 메뉴</a>
                                 <div className="dropdown-menu">
@@ -394,11 +395,11 @@ const Menu = () => {
                             </li>
                         </ul>
                         
-                        <ul className="navbar-nav ms-4">
+                        <ul className="navbar-nav ms-2">
                             {/* 로그인이 되어있다면 아이디(등급) 형태로 출력 */}
                             {login ? (<>
-                            <li className="nav-item dropdown">
-                                <NavLink className="nav-link text-white me-2" to="/product/insert" style={{fontSize:"16px"}}>
+                            <li className="nav-item dropdown me-3">
+                                <NavLink className="nav-link text-white font-16px" to="/product/insert">
                                     <TbShoppingBagEdit />
                                     판매하기
                                 </NavLink>
@@ -428,14 +429,14 @@ const Menu = () => {
                                 </button>
                             </li>
                             </>) : (<>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" to="/member/check">
+                            <li className="nav-item dropdown">
+                                <NavLink className="nav-link text-white font-16px" to="/member/check">
                                     <FaUserPlus />
                                     회원가입
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" to="/member/login">
+                            <li className="nav-item dropdown">
+                                <NavLink className="nav-link text-white font-16px" to="/member/login">
                                     <RiLoginBoxLine />
                                     로그인
                                 </NavLink>

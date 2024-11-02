@@ -301,7 +301,7 @@ const ProductList = () => {
 								{displayedBanners.map((banner, index) => (
 									<div className="col" key={index}>
 										<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${banner.attachment}`}
-											className="d-block w-100" alt={banner.title} onClick={e => BannerClick(banner.noticeNo)}
+											className="d-block w-100 cursor-pointer" alt={banner.title} onClick={e => BannerClick(banner.noticeNo)}
 											style={{width: '350px',height: '350px',objectFit: 'fill',margin: '0 1px',}} />
 									</div>
 								))}
@@ -390,7 +390,7 @@ const ProductList = () => {
 				<span style={{ fontWeight: "600", color: "#1e272e" }}>오늘의 추천 상품</span>
 			</h3>
 			{result.productList.map((product) => (
-				<div className="col-sm-5 col-md-5 col-lg-2 mt-3" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
+				<div className="col-sm-5 col-md-5 col-lg-2 mt-3 cursor-pointer" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
 					<div className="card">
 						<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
 							className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />

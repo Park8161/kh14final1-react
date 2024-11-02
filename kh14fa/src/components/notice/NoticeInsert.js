@@ -91,55 +91,62 @@ const NoticeInsert = () => {
 
     return (
         <>
-            <Jumbotron title="새 글 등록" />
+            {/* <Jumbotron title="새 글 등록" /> */}
+            <div className="row">
+                <div className="col-8 offset-2">
 
-            <div className="row mt-4">
-                <div className="col">
-                    <label>분류</label>
-                    <select name="noticeType" className="form-select"
-                        value={input.noticeType} onChange={changeInput}>
-                        <option value="">선택하세요</option>
-                        <option value="공지">공지</option>
-                        <option value="이벤트">이벤트</option>
-                    </select>
-                </div>
-            </div>
-            <div className="row mt-4">
-                <div className="col">
-                    <label className="form-label">파일</label>
-                    <input type="file" className="form-control" name="attachList" multiple accept="image/*" onChange={changeInput} ref={inputFileRef} />
-                    {images.map((image, index) => (
-                        <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
-                    ))}
-                </div>
-            </div>
-            <div className="row mt-4">
-                <div className="col">
-                    <label>제목</label>
-                    <input type="text" name="noticeTitle" className="form-control"
-                        value={input.noticeTitle} onChange={changeInput} />
-                </div>
-            </div>
-            <div className="row mt-4">
-                <div className="col">
-                    <label>내용</label>
-                    <textarea
-                        name="noticeContent"
-                        className="form-control"
-                        value={input.noticeContent}
-                        onChange={changeInput}
-                        rows={15} // 초기 높이
-                        style={{ resize: 'none' }} // 크기 조절 비활성화 (선택 사항) 
-                    />
-                </div>
-            </div>
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>분류</label>
+                            <select name="noticeType" className="form-select"
+                                value={input.noticeType} onChange={changeInput}>
+                                <option value="">선택하세요</option>
+                                <option value="공지">공지</option>
+                                <option value="이벤트">이벤트</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>파일</label>
+                            <input type="file" className="form-control" name="attachList" multiple accept="image/*" onChange={changeInput} ref={inputFileRef} />
+                            {images.map((image, index) => (
+                                <img key={index} src={image} alt={`미리보기 ${index + 1}`} style={{ maxWidth: '100px', margin: '5px' }} />
+                            ))}
+                        </div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>제목</label>
+                            <input type="text" name="noticeTitle" className="form-control"
+                                value={input.noticeTitle} onChange={changeInput} />
+                        </div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col">
+                            <label>내용</label>
+                            <textarea
+                                name="noticeContent"
+                                className="form-control"
+                                value={input.noticeContent}
+                                onChange={changeInput}
+                                rows={15} // 초기 높이
+                                style={{ resize: 'none' }} // 크기 조절 비활성화 (선택 사항) 
+                            />
+                        </div>
+                    </div>
 
-            <div className="row mt-4">
-                <div className="col mt-4">
-                    <button type="button" className="btn btn-success me-3"
-                        onClick={saveNotice}>등록</button>
-                    <button type="button" className="btn btn-secondary"
-                        onClick={() => navigate("/notice/list")}>목록</button>
+                    <div className="row mt-4">
+                        <div className="col text-end">
+                            <button type="button" className="btn btn-secondary me-3" onClick={e=>navigate("/notice/list")}>
+                                돌아가기
+                            </button>
+                            <button type="button" className="btn btn-success" onClick={saveNotice}>
+                                등록하기
+                            </button>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         </>

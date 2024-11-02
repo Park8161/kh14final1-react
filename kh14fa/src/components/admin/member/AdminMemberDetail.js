@@ -5,21 +5,22 @@ import { useNavigate, useParams } from "react-router-dom";  // useNavigate 추�
 import { toast } from "react-toastify";
 
 const AdminMemberDetail = () => {
-    //parameter
+    // navigate
+    const navigate = useNavigate(); 
+    
+    // parameter
     const { memberId } = useParams();
 
-    //state
+    // state
     const [member, setMember] = useState(null);
     const [load, setLoad] = useState(false);
 
-    const navigate = useNavigate(); 
-
-    //effect
+    // effect
     useEffect(() => {
         loadMember();
     }, [memberId]); // memberId가 변경될 때마다 데이터를 다시 로드하도록 설정
 
-    //callback
+    // callback
     const loadMember = useCallback(async () => {
         try {
             const resp = await axios.get(`/admin/member/detail/${memberId}`);
@@ -30,12 +31,12 @@ const AdminMemberDetail = () => {
         setLoad(true);
     }, [memberId]);  // memberId를 의존성 배열에 추가하여 변경 시 호출되도록 설정
 
-    //삭제 callback
+    // 회원정보 삭제
     const deleteMember = useCallback(async () => {
         const isConfirmed = window.confirm("정말 삭제하시겠습니까?");
         if (isConfirmed) {
             try {
-                console.log(`삭제 요청 경로: /admin/member/detail/${memberId}`);
+                // console.log(`삭제 요청 경로: /admin/member/detail/${memberId}`);
                 await axios.delete(`/admin/member/${memberId}`);
                 toast.success("회원 삭제 완료");
                 navigate("/admin/member/list");
@@ -43,20 +44,20 @@ const AdminMemberDetail = () => {
                 // 서버 오류 처리
                 if (error.response) {
                     // 서버 응답이 있는 경우
-                    console.error("삭제 실패: ", error.response.data);
+                    // console.error("삭제 실패: ", error.response.data);
                     toast.error(`삭제 실패: ${error.response.data.message || "알 수 없는 오류"}`);
                 } else if (error.request) {
                     // 요청이 보내졌으나 응답이 없는 경우
-                    console.error("응답 없음: ", error.request);
+                    // console.error("응답 없음: ", error.request);
                     toast.error("서버와 연결할 수 없습니다.");
                 } else {
                     // 요청을 설정하는 중에 오류가 발생한 경우
-                    console.error("요청 설정 오류: ", error.message);
+                    // console.error("요청 설정 오류: ", error.message);
                     toast.error("삭제 요청을 처리하는 중 오류가 발생했습니다.");
                 }
             }
         } else {
-            console.log("삭제 취소");
+            // console.log("삭제 취소");
         }
     }, [member, memberId]);
 
@@ -76,11 +77,11 @@ const blockMember = useCallback(async () => {
             toast.success("회원이 차단되었습니다.");
             loadMember();
         } catch (error) {
-            console.error("차단 실패", error.response || error.message);
+            // console.error("차단 실패", error.response || error.message);
             toast.error("차단 실패: 서버에 문제가 발생했습니다.");
         }
     } else {
-        console.log("차단 취소");
+        // console.log("차단 취소");
     }
 }, [memberId, loadMember]);
 
@@ -100,11 +101,11 @@ const unblockMember = useCallback(async () => {
             toast.success("회원 차단이 해제되었습니다.");
             loadMember();
         } catch (error) {
-            console.error("차단 해제 실패", error.response || error.message);
+            // console.error("차단 해제 실패", error.response || error.message);
             toast("차단 해제 실패: 서버에 문제가 발생했습니다.");
         }
     } else {
-        console.log("차단 해제 취소");
+        // console.log("차단 해제 취소");
     }
 }, [memberId, loadMember]);
 
