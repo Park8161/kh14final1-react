@@ -10,6 +10,7 @@ import { FaRegThumbsUp,FaRegThumbsDown,FaRegHandshake } from "react-icons/fa";
 import userImage from '../product/userImage.jpg';
 import moment from 'moment';
 import "moment/locale/ko"; // moment에 한국어 정보 불러오기
+import { toast } from "react-toastify";
 
 const MemberDetail = ()=>{
     // navigate
@@ -37,6 +38,7 @@ const MemberDetail = ()=>{
     const [reviewList, setReviewList] = useState([]);
     const [review, setReview] = useState([]);
     const [reviewCount, setReviewCount] = useState();
+    const [paymentCount, setPaymentCount] = useState();
     const [edit, setEdit] = useState({
         reviewNo : "",
         reviewContent : "",
@@ -74,6 +76,7 @@ const MemberDetail = ()=>{
         }
         countReview();
         loadReview();
+        countPayment();
         setLoad(true); //로딩 진행상황 마킹
     }, [memberId]);
 
@@ -103,6 +106,12 @@ const MemberDetail = ()=>{
         const response = await axios.get("/review/count/"+memberId);
         setReviewCount(response.data);
     },[review]);
+
+    // 거래횟수 조회
+    const countPayment = useCallback(async()=>{
+        const response = await axios.get("/pay/count/"+memberId);
+        setPaymentCount(response.data);
+    },[]);
 
     // 내 상품, 판매중, 예약중, 판매완료 탭 만드는 함수
     const clearCollapse = useCallback(()=>{
@@ -146,6 +155,13 @@ const MemberDetail = ()=>{
         return new Intl.NumberFormat('ko-KR').format(amount);
     };
 
+    // url 공유하기 함수
+    const copyToClipboard = useCallback(()=>{
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        toast.info("주소 복사 완료\n"+url);
+    },[]);
+
     if(load===false){
         return(<>
         </>);
@@ -154,8 +170,48 @@ const MemberDetail = ()=>{
         return(<>no data</>);
     }
 
+    
+
     return(<>
         
+        {/* 링크 공유하기 모달 */}
+        <div className="modal fade" tabIndex="-1" ref={modal} /*data-bs-backdrop="static"*/>
+            <div className="modal-dialog">
+                <div className="modal-content">
+
+                    {/* 모달 헤더 - 제목, x버튼 */}
+                    <div className="modal-header">
+                        <p className="modal-title">공유하기</p>
+                        <button type="button" className="btn-close btn-manual-close" onClick={closeModal} />
+                    </div>
+
+                    {/* 모달 본문 */}
+                    <div className="modal-body">
+                        {/* 모달은 나중에 만들고 모달 내부에 있을 화면만 구현 */}
+                        <div className="row">
+                            <div className="col">
+                                <input type="text" className="form-control" value={window.location.href} readOnly/>
+                            </div>                                
+                        </div>    
+                        <div className="row">
+                            <div className="col mt-2 text-end">
+                                <button className="btn btn-info" onClick={copyToClipboard}>복사</button>
+                            </div>
+                        </div>    
+
+                    </div>
+
+                    {/* 모달 푸터 - 종료, 확인, 저장 등 각종 버튼 */}
+                    {/* <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                            닫기<IoMdClose className="ms-1 btn-lg-white" />
+                        </button>
+                    </div> */}
+
+                </div>
+            </div>
+        </div>
+
         <div className="row mt-4">
             <div className="col-6 col-sm-5">
                 <div className="row">
@@ -177,7 +233,7 @@ const MemberDetail = ()=>{
                                 </div>
                                 <div className="row">
                                     <div className="col mt-1">
-                                        <h5>0</h5>
+                                        <h5>{paymentCount}</h5>
                                     </div>
                                 </div>                                            
                             </li>
