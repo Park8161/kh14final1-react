@@ -32,6 +32,7 @@ const ProductDetail = ()=>{
     const [review, setReview] = useState(); // 판매자 리뷰 개수
     const [reviewList, setReviewList] = useState([]); // 판매자 리뷰 목록
     const [reviewProduct, setReviewProduct] = useState("");
+    const [paymentCount, setPaymentCount] = useState();
 
     // ref
     const modal = useRef();
@@ -40,6 +41,10 @@ const ProductDetail = ()=>{
     useEffect(()=>{
         loadProduct();
     },[]);
+
+    useEffect(()=>{
+        countPayment(product.productMember);
+    },[product]);
     
     // callback
     const loadProduct = useCallback(async()=>{
@@ -70,6 +75,12 @@ const ProductDetail = ()=>{
     const goRelation = useCallback((product)=>{
         navigate("/product/detail/"+product.productNo);
         window.location.reload(); // 화면 새로고침 : 데이터 갱신 목적
+    },[]);
+
+     // 거래횟수 조회
+     const countPayment = useCallback(async(productMember)=>{
+        const response = await axios.get("/pay/count/"+productMember);
+        setPaymentCount(response.data);
     },[]);
 
     // url 공유하기 함수
@@ -150,7 +161,7 @@ const ProductDetail = ()=>{
             navigate("/Chat/chatroom/"+roomId);
         }
         catch(e){
-            console.log("Error creating or retrieving chat room:");
+            console.log("오류발생");
         }
     },[productNo,product]);
     
@@ -316,23 +327,38 @@ const ProductDetail = ()=>{
                                 {/* <span className="text-danger text-center">{likes}</span> */}
                             </div>
                         </div>
-                        <div className="col-5">
+                        {/* 내 상품이면 채팅, 거래 버튼 보이지 않게 처리 */}
+                            {product.productMember === memberId ? (<>
+                            <div className="col-5" style={{height:"50px"}}></div>
+                            <div className="col-5" style={{height:"50px"}}></div>
+                            </>):(<>
+                            <div className="col-5">
                             <button className="btn btn-outline-dark btn-lg w-100 text-nowrap" style={{height:"50px"}}
                                     onClick={goChat}>
                                 <FaRegCommentDots />
                                 채팅하기
                             </button>
                         </div>
-                        <div className="col-5">
-                            <button className="btn btn-outline-success btn-lg w-100 text-nowrap" style={{height:"50px"}}
-                                    onClick={e=>toast.warning("미구현 기능")}>
-                                <AiOutlineSafety />
-                                안전거래
-                            </button>
+                                {/* 판매중일때만 구매버튼 활성화 */}
+                                {product.productState === "판매중" ?(<>
+                                    <div className="col-5">
+                                    <button className="btn btn-outline-success btn-lg w-100 text-nowrap" style={{height:"50px"}}
+                                            onClick={e=>navigate("/Pay/paystart/" + product.productNo)}>
+                                        <AiOutlineSafety />
+                                        안전거래
+                                    </button>
+                                </div>
+                                </>):(<>
+                                    <div className="col-5">
+                                    <button className="btn btn-outline-success btn-lg w-100 text-nowrap" 
+                                    style={{height:"50px"}} disabled={true}>거래불가상태
+                                    </button>
+                                </div>
+                                </>)}
+                            </>)}
                         </div>
                     </div>
                 </div>
-            </div>
             
             {/* 하단의 상품 상세 정보 및 판매자 정보*/}
             <div className="row mt-4">
@@ -366,7 +392,7 @@ const ProductDetail = ()=>{
                                             </div>
                                             <div className="row">
                                                 <div className="col mt-1">
-                                                    <h5>0</h5>
+                                                    <h5>{paymentCount}</h5>
                                                 </div>
                                             </div>                                            
                                         </li>
