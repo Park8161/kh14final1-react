@@ -8,7 +8,7 @@ import { useNavigate } from "react-router";
 import { throttle } from "lodash";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { useRecoilValue } from "recoil";
-import { memberIdState, productColumnState, productKeywordState } from "../../utils/recoil";
+import { memberIdState, memberLoadingState, productColumnState, productKeywordState } from "../../utils/recoil";
 import moment from 'moment-timezone';
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 // import moment from 'moment';
@@ -40,19 +40,24 @@ const ProductList = () => {
 	});
 	//임시 state 
 	const [temp, setTemp] = useState({});
-	//좋아요 관련 state 
-	const [productNo, setProductNo] = useState({});//누를때 쓸 productNo
+
+	// 좋아요 관련 state 
+	//const [productNo, setProductNo] = useState({});//누를때 쓸 productNo
 	const [like, setLike] = useState({}); // 좋아요 여부
 	const [likes, setLikes] = useState({}); // 좋아요 개수
-	const [currentProduct, setCurrentProduct] = useState(""); //좋아요 누를때 현재 상품 비교용
+	// const [currentProduct, setCurrentProduct] = useState(""); //좋아요 누를때 현재 상품 비교용
+
 	// 광고 상태 관리: 현재 배너의 인덱스
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [bannerList, setBannerList] = useState([]);
 
 	//effect
 	useEffect(() => {
-		loadProductList();
+		//loadProductList();
 		loadBannerList();
+		// if(memberId.length > 0){
+		// 	checkLikes();
+		// }
 	}, []);
 
 	useEffect(() => {
@@ -169,7 +174,7 @@ const ProductList = () => {
 	};
 
 	//시간 계산 함수 (매개변수)
-	const timeCalculate = useCallback((productTime)=>{
+	const timeCalculate = useCallback((productTime) => {
 		const date = moment.utc(productTime).tz('Asia/Seoul'); // 한국 시간으로 변환
 
 		const nowDate = moment().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 설정
@@ -196,39 +201,43 @@ const ProductList = () => {
 		} else {
 			return `${Math.floor(years)}년 전`;
 		}
-	},[]);
+	}, []);
 
-	// 좋아요 기능
-	const pushLike = useCallback(async (productNo) => {
-		const response = await axios.get("/product/like/" + productNo);
-
+	//좋아요 기능
+	const pushLike = useCallback(async (product) => {
+		const response = await axios.get("/product/like/" + product.productNo);
 		//좋아요가 상세에서는 한번에 관리되므로 목록에서는 따로 관리 해줌
+		if (response.data.success) {
+		};
 		setLike(prev => ({
 			...prev,
-			[productNo]: response.data.checked
+			[product.productNo]: response.data.checked
 		}));
 
 		setLikes(response.data.count);
-		checkLikes(productNo);
+
+
+		// checkLikes(product);
 	}, [setLike, setLikes])
 
 	// 좋아요 했는지 확인
-	const checkLikes = useCallback(async (productNo) => {
-		if (memberId === "") return;
-		const response = await axios.get("/product/check/" + productNo);
-		if (response.data.checked) {
-			setLike(true);
-		}
-		else {
-			setLike(false);
-		}
-		setLikes(response.data.count);
-	}, [like, likes]);
+	// const checkLikes = useCallback(async (product) => {
+	// 	const response = await axios.get("/product/check/" + product.productNo);
+	// 	if (response.data.checked) {
+	// 		setLike(true);
+	// 		console.log("통신")
+	// 	}
+	// 	else {
+	// 		setLike(false);
+	// 	}
+	// 	console.log(product.productNo)
+	// 	setLikes(response.data.count);
+	// }, [like, likes]);
 
-	//좋아요 아이콘 변경
-	const handleHeart = () => {
-		setLike(!like);
-	}
+	// //좋아요 아이콘 변경
+	// const handleHeart = () => {
+	// 	setLike(!like);
+	// }
 
 	// 광고
 	const BannerClick = useCallback((noticeNo) => {
@@ -302,21 +311,21 @@ const ProductList = () => {
 									<div className="col" key={index}>
 										<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${banner.attachment}`}
 											className="d-block w-100 cursor-pointer" alt={banner.title} onClick={e => BannerClick(banner.noticeNo)}
-											style={{width: '350px',height: '350px',objectFit: 'fill',margin: '0 1px',}} />
+											style={{ width: '350px', height: '350px', objectFit: 'fill', margin: '0 1px', }} />
 									</div>
 								))}
 							</div>
 						</div>
 					</div>
 					{/* 이전 버튼 (<) */}
-					<button className="carousel-control-prev" type="button" onClick={prevBanner} data-bs-slide="prev" 
-						style={{position:'absolute',left:'-70px',top:'50%',transform:'translateY(-50%)',zIndex:'1',border:'none'}}>
+					<button className="carousel-control-prev" type="button" onClick={prevBanner} data-bs-slide="prev"
+						style={{ position: 'absolute', left: '-70px', top: '50%', transform: 'translateY(-50%)', zIndex: '1', border: 'none' }}>
 						<span className="carousel-control-prev-icon" aria-hidden="true"></span>
 						<span className="visually-hidden">Previous</span>
 					</button>
 					{/* 다음 버튼 (>) */}
 					<button className="carousel-control-next" type="button" onClick={nextBanner} data-bs-slide="next"
-						style={{position:'absolute',right:'-70px',top:'50%',transform:'translateY(-50%)',zIndex:'1',border:'none'}}>
+						style={{ position: 'absolute', right: '-70px', top: '50%', transform: 'translateY(-50%)', zIndex: '1', border: 'none' }}>
 						<span className="carousel-control-next-icon" aria-hidden="true"></span>
 						<span className="visually-hidden">Next</span>
 					</button>
@@ -324,10 +333,12 @@ const ProductList = () => {
 					{/* 인디케이터 추가 */}
 					<div className="carousel-indicators mt-5">
 						{[...Array(Math.ceil(bannerList.length / 3))].map((_, index) => (
-							<button key={index} type="button" className={currentIndex === index ? "active" : ""} 
-								aria-current={currentIndex === index ? "true" : "false"} onClick={e=>setCurrentIndex(index)} 
-								style={{borderRadius:'20%',width:'20px',height:'6px',margin:'2px',
-								backgroundColor:currentIndex === index ? 'black' : 'lightgray'}}>
+							<button key={index} type="button" className={currentIndex === index ? "active" : ""}
+								aria-current={currentIndex === index ? "true" : "false"} onClick={e => setCurrentIndex(index)}
+								style={{
+									borderRadius: '20%', width: '20px', height: '6px', margin: '2px',
+									backgroundColor: currentIndex === index ? 'black' : 'lightgray'
+								}}>
 							</button> /* 색상 변경border: 'none', 기본 테두리 제거*/
 						))}
 					</div>
@@ -390,14 +401,14 @@ const ProductList = () => {
 				<span style={{ fontWeight: "600", color: "#1e272e" }}>오늘의 추천 상품</span>
 			</h3>
 			{result.productList.map((product) => (
-				<div className="col-sm-5 col-md-5 col-lg-2 mt-3 cursor-pointer" key={product.productNo} onClick={e=>navigate("/product/detail/"+product.productNo)}>
+				<div className="col-sm-5 col-md-5 col-lg-2 mt-3 cursor-pointer" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
 					<div className="card">
 						<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
 							className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
 
 						<div className="card-body">
 							<h5 className="card-title justify-content-start align-items-center"
-								style={{width:"100%",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",display:"block"}}>
+								style={{ width: "100%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", display: "block" }}>
 								{/* 상품 이름 */}
 								{product.productName}
 							</h5>
@@ -412,9 +423,12 @@ const ProductList = () => {
 									{timeCalculate(product.productDate)}
 									{/* {moment(product.productDate).fromNow()} */}
 								</div>
-								<div className="text-end mt-1"
+								{/* <div className="text-end mt-1"
 									style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
-									onClick={e => { e.stopPropagation(); pushLike(product.productNo); }}>
+									onClick={e => {e.preventDefault();	e.stopPropagation(); pushLike(product);}}> */}
+								{/* 좋아요 추가 기능 */}
+								<div className="text-start mt-1"
+									style={{ display: 'flex', alignItems: 'center' }}>
 									{/* 상품 상태 */}
 									{product.productState === "판매중" && (
 										<span className='badge bg-primary me-2' >
@@ -431,12 +445,23 @@ const ProductList = () => {
 											{product.productState}
 										</span>
 									)}
-									{like[product.productNo] ? (
-										<FaHeart className="text-danger" size="30" />
+									{/* {like[product.productNo] ? (
+										<FaHeart className="text-danger" size="25" />
 									) : (
-										<FaRegHeart className="text-danger" size="30" />
+										<FaRegHeart className="text-danger" size="25" />
 									)}
-									{/* {product.productLikes} 좋아요 수는 안보여줘도 될듯*/}
+									{product.productLikes}  */}
+									{product.productLikes > 0 ? (
+										<div className="d-flex align-items-center">
+											<FaHeart className="text-danger me-2" size="20" />
+											<span style={{fontWeight:"600"}}>{product.productLikes}</span>
+										</div>
+									) : (
+										<>
+											<FaRegHeart className="text-danger" size="20" />
+
+										</>
+									)}
 
 								</div>
 							</div>
@@ -446,7 +471,7 @@ const ProductList = () => {
 			))}
 
 			{/* 플로팅 버튼 만들기 */}
-			<div style={{position: "fixed",marginTop: "100px",width: "75px", height: "75px", // 높이를 너비와 동일하게 설정
+			{/* <div style={{position: "fixed",marginTop: "100px",width: "75px", height: "75px", // 높이를 너비와 동일하게 설정
 				backgroundColor: "#ee5253",
 				border: "2px solid #ee5253",
 				display: "flex",
@@ -459,7 +484,7 @@ const ProductList = () => {
 			}}>
 				<IoChatbubbleEllipsesOutline  size="40" color="white" onClick={ChatLink}/>
 				
-			</div>
+			</div> */}
 
 		</div>
 
