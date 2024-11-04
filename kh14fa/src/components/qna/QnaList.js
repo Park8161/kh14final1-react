@@ -5,6 +5,8 @@ import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { memberLevelState } from "../../utils/recoil";
+import moment from 'moment';
+import "moment/locale/ko"; // moment에 한국어 정보 불러오기
 
 const QnaList = () => {
     const [qna, setQna] = useState([]); // 전체 공지사항 리스트
@@ -52,84 +54,70 @@ const QnaList = () => {
 
     return (
         <>
-            <Jumbotron title="1:1문의 게시글" content="목록" />
             {/* 검색창 */}
             <div className="row mt-4">
-                <div className="col">
+                <div className="col-6 offset-3">
                     <div className="input-group">
-                        <div className="col-3">
-                            <select className="form-select" name="column" value={column} onChange={e => setColumn(e.target.value)}>
+                            <select className="form-select w-auto" name="column" value={column} onChange={e => setColumn(e.target.value)}>
                                 <option value="">선택</option>
                                 <option value="qna_title">제목</option>
                                 <option value="qna_type">분류</option>
                             </select>
-                        </div>
-                        <div className="col-7">
-                            <input type="search" className="form-control" name="keyword" value={keyword} onChange={e => setKeyword(e.target.value)} />
-                        </div>
-                        <div className="col-2">
-                            <button type="button" className="btn btn-secondary w-100" onClick={searchQnaList}>
+                            <input type="search" className="form-control w-auto" name="keyword" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="검색어 입력"/>
+                            <button type="button" className="btn btn-secondary" onClick={searchQnaList}>
                                 <FaMagnifyingGlass />
                                 검색
                             </button>
                         </div>
                     </div>
-                </div>
-            </div>
-
             {/* 등록 버튼 */}
             {memberLevel !== "관리자" &&(
-            <div className="row mt-4">
-                <div className="col">
-                    <button className="btn btn-success ms-2" onClick={() => navigate("/qna/insert")}>
+            <div className="col-3 text-start">
+                    <button className="btn btn-success" onClick={e=>navigate("/qna/insert")}>
                         <FaPlus />
                         등록
                     </button>
                 </div>
-            </div>
         )}
+        </div>
 
             {/* 목록 표시 자리 */}
             <div className="row mt-4">
-                <div className="col">
-                    <div className="table-responsive">
-                        <table className="table text-nowrap">
+                <div className="col-8 offset-2">
+                    {/*<div className="table-responsive">*/}
+                        <table className="table border table-hover table-no-borders text-center">
                             <thead>
                                 <tr>
                                     <th>글 번호</th>
-                                    <th>제목</th>
                                     <th>분류</th>
+                                    <th>제목</th>
                                     <th>작성자</th>
                                     <th>작성일</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {getPagedQna().map(q => (
-                                    <tr key={q.qnaNo}>
+                                    <tr key={q.qnaNo} className="cursor-pointer" onClick={e=>navigate(`/qna/detail/${q.qnaNo}`)}>
                                         <td>{q.qnaNo}</td>
-                                        <td>
-                                            <NavLink to={`/qna/detail/${q.qnaNo}`}>
-                                                {q.qnaTitle}
-                                            </NavLink>  [{q.qnaReplies}]
-                                        </td>
                                         <td>{q.qnaType}</td>
-                                        <td>{q.qnaWriter}</td>
-                                        <td>
-                                            {q.qnaUtime ? (
-                                                <>
-                                                    {q.qnaUtime} (수정됨)
-                                                </>
-                                            ) : (
-                                                q.qnaWtime
-                                            )}
+                                        <td className="text-start ps-4" style={{maxWidth:"350px"}}>{q.qnaTitle} [{q.qnaReplies}]
                                         </td>
+                                        <td>{q.qnaWriter}</td>
+                                        {q.qnaUtime ? (
+                                        <td>
+                                            {moment(q.qnaUtime).format("YYYY-MM-DD")}(수정됨)
+                                        </td>
+                                        ) : (
+                                        <td>
+                                            {moment(q.qnaWtime).format("YYYY-MM-DD")}  
+                                        </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
 
             {/* 페이징 */}
             <div className="row mt-4">

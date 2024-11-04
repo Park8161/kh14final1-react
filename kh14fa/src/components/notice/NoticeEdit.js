@@ -150,12 +150,6 @@ const NoticeEdit = () => {
 
                     <div className="row mt-4">
                         <div className="col">
-                            <label>기존 이미지 파일</label>
-                        </div>
-                    </div>
-
-                    <div className="row mt-4">
-                        <div className="col">
                             <label className="form-label">파일</label>
                             <input type="file" className="form-control" name="attachList" multiple accept="image/*"
                                 onChange={targetChange} ref={inputFileRef} />

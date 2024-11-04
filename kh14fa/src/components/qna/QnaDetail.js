@@ -7,6 +7,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRecoilValue } from "recoil";
 import { memberIdState, memberLevelState } from "../../utils/recoil";
+import moment from 'moment';
+import "moment/locale/ko"; // moment에 한국어 정보 불러오기
 
 const QnaDetail = () => {
     const { qnaNo } = useParams();
@@ -141,105 +143,37 @@ const QnaDetail = () => {
 
     return (
         <>
-            <Jumbotron title={qnaNo + "번 글 상세정보"} />
+            <div className="row mt-4">
+                <div className="col-8 offset-2 border">
 
-            {/* QnA 정보 표시 */}
-            <div className="row mt-4">
-                <div className="col-sm-3">작성자</div>
-                <div className="col-sm-9">{qna.qnaWriter}</div>
-            </div>
-            <div className="row mt-4">
-                <div className="col-sm-3">분류</div>
-                <div className="col-sm-9">{qna.qnaType}</div>
-            </div>
-            <div className="row mt-4">
-                <div className="col-sm-3">제목</div>
-                <div className="col-sm-9">{qna.qnaTitle}</div>
-            </div>
-            <div className="row mt-4">
-                <div className="col-sm-3">내용</div>
-                <div className="col-sm-9">
-                    <span style={{ wordBreak: 'break-word', display: 'inline-block', maxWidth: '100%' }}>
-                        {qna.qnaContent} {qna.edited && <span>(수정됨)</span>}
-                    </span>
+                    {/* QnA 정보 표시 */}
+                    <div className="row mt-4">
+                        <div className="col text-center" style={{ fontWeight: 'bold', fontSize: '1.5rem' }}>
+                            {qna.qnaTitle}
+                        </div>
+                    </div>
+                    <div className="row mt-4">
+                        <div className="col" style={{ opacity: 0.6 }}>
+                            분류 : {qna.qnaType}
+                        </div>
+                    </div>
+                    <div className="col" style={{ opacity: 0.6 }}>
+                        작성시각 : {moment(qna.qnaWtime).format("YYYY-MM-DD")}
+                        {qna.edited && <span> (수정됨)</span>}
+                    </div>
+                    <div className="col" style={{ opacity: 0.6 }}>
+                        작성자 : {qna.qnaWriter}</div>
+                    <div className="row mt-4">
+                        <div className="col mb-4">
+                            <div className="qna-content" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxWidth: '100%' }}>
+                                {qna.qnaContent} {qna.edited && <span>(수정됨)</span>}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="row mt-4">
-                <div className="col-sm-3">작성시간</div>
-                <div className="col-sm-9">{qna.qnaWtime}</div>
-            </div>
-            <div className="row mt-4">
-                <div className="col-sm-3">수정시간</div>
-                <div className="col-sm-9">{qna.qnaUtime}</div>
-            </div>
-
-            {/* 답글 입력 */}
-            {memberLevel === "관리자" && (
-            <div className="mt-4">
-                <h5>답글 작성</h5>
-                <form onSubmit={handleReplySubmit}>
-                    <textarea
-                        className="form-control"
-                        rows="3"
-                        value={reply}
-                        onChange={handleReplyChange}
-                        placeholder="답글을 입력하세요"
-                    />
-                    <button className="btn btn-primary float-end mt-2" type="submit">답글 추가</button>
-                </form>
-            </div>
-            )}
-
-            {/* 답글 목록 */}
-            <div className="mt-4">
-                <h5>답글 목록</h5>
-                {replies.length > 0 ? (
-                    <ul className="list-group">
-                        {replies.slice().reverse().map((replyItem) => (
-                            <li key={replyItem.replyNo} className="list-group-item">
-                                <div className="text-muted" style={{ fontSize: '0.8rem' }}>
-                                    {replyItem.replyUtime ? (
-                                        <>
-                                            {new Date(replyItem.replyUtime).toLocaleString()} (수정됨)
-                                        </>
-                                    ) : (
-                                        new Date(replyItem.replyWtime).toLocaleString()
-                                    )}
-                                </div>
-                                <div>
-                                    <strong>관리자     :      </strong>
-                                    <span style={{ wordBreak: 'break-word', display: 'inline-block', maxWidth: '100%' }}>
-                                        {replyItem.replyContent}
-                                    </span>
-                                </div>
-                                {replyItem.replyWriter === memberId && (
-                                    <>
-                                        <button className="btn btn-danger btn-sm float-end" onClick={() => {
-                                            setReplyToDelete(replyItem.replyNo);
-                                            setShowReplyDeleteModal(true);
-                                        }}>
-                                            삭제
-                                        </button>
-                                        <button className="btn btn-info btn-sm float-end me-2" onClick={() => {
-                                            setReplyToEdit(replyItem.replyNo);
-                                            setEditContent(replyItem.replyContent);
-                                            setShowEditModal(true);
-                                        }}>
-                                            수정
-                                        </button>
-                                    </>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>답글이 없습니다.</p>
-                )}
-            </div>
-
-            {/* 버튼들 */}
-            <div className="row mt-4">
-                <div className="col text-end">
+                <div className="col-8 offset-2 text-end pe-0">
                     <button className="btn btn-secondary ms-2" onClick={() => navigate("/qna/list")}>목록</button>
                     {qna.qnaWriter === memberId && (
                         <>
@@ -250,7 +184,94 @@ const QnaDetail = () => {
                         </>
                     )}
                 </div>
+
+
+                {/* 답글 입력 */}
+                <div className="row mt-4">
+                    <div className="col-8 offset-2">
+                        {memberLevel === "관리자" && (
+                            <div className="mt-4">
+                                <h5>답글 작성</h5>
+                                <form onSubmit={handleReplySubmit}>
+                                    <textarea
+                                        className="form-control"
+                                        rows="3"
+                                        value={reply}
+                                        onChange={handleReplyChange}
+                                        placeholder="답글을 입력하세요"
+                                    />
+                                    <button className="btn btn-primary float-end mt-2" type="submit">답글 추가</button>
+                                </form>
+                            </div>
+                        )}
+
+                        {/* 답글 목록 */}
+                        <div className="mt-4">
+                            <h5>답글 목록</h5>
+                            {replies.length > 0 ? (
+                                <ul className="list-group" style={{ listStyleType: 'none', padding: 0 }}>
+                                    {replies.slice().reverse().map((replyItem) => (
+                                        <li key={replyItem.replyNo} className="list-group-item" style={{ padding: '15px', borderBottom: '1px solid #e9ecef' }}>
+                                            <div className="text-muted" style={{ fontSize: '0.8rem', marginBottom: '5px' }}>
+                                                {replyItem.replyUtime ? (
+                                                    <span>
+                                                        {moment(replyItem.replyUtime).format("YYYY-MM-DD")}(수정됨)
+                                                    </span>
+                                                ) : (
+                                                    <span>
+                                                        {moment(replyItem.replyWtime).format("YYYY-MM-DD")}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <strong>관리자:</strong>
+                                                <span style={{ wordBreak: 'break-word', display: 'inline-block', maxWidth: '100%', marginLeft: '5px' }}>
+                                                    {replyItem.replyContent}
+                                                </span>
+                                            </div>
+                                            {replyItem.replyWriter === memberId && (
+                                                <div className="float-end mt-2">
+                                                    <button className="btn btn-danger btn-sm me-2" onClick={() => {
+                                                        setReplyToDelete(replyItem.replyNo);
+                                                        setShowReplyDeleteModal(true);
+                                                    }}>
+                                                        삭제
+                                                    </button>
+                                                    <button className="btn btn-info btn-sm" onClick={() => {
+                                                        setReplyToEdit(replyItem.replyNo);
+                                                        setEditContent(replyItem.replyContent);
+                                                        setShowEditModal(true);
+                                                    }}>
+                                                        수정
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>답글이 없습니다.</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
+
+
+            {/* 버튼들 */}
+            {/* <div className="row mt-4">
+                <div className="col-8 offset-2 text-end pe-0">
+                    <button className="btn btn-secondary ms-2" onClick={() => navigate("/qna/list")}>목록</button>
+                    {qna.qnaWriter === memberId && (
+                        <>
+                            <button className="btn btn-info ms-2" onClick={() => {
+                                navigate("/qna/edit/" + qnaNo)
+                            }}>수정</button>
+                            <button className="btn btn-danger ms-2" onClick={handleDeleteClick}>삭제</button>
+                        </>
+                    )}
+                </div>
+            </div> */}
 
             {/* 삭제 확인 모달 */}
             <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
