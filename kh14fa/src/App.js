@@ -65,6 +65,7 @@ const App = ()=> {
       <Header />
       <Menu />
       <MainContent />
+      <div id='wrapper' /> {/* MainContent 길이 조정용 */}
       <Footer />
 
       {/* toast 메세지 출력을 위한 컨테이너 */}
