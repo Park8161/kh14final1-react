@@ -49,7 +49,6 @@ const QnaEdit = () => {
     //view
     return (
         <>
-            <Jumbotron title={`${edit.qnaWriter}의 게시글`} content="게시글 수정" />
 
             <div className="row mt-4">
             <div className="col-3">분류<FaAsterisk className="text-danger" /></div> 
