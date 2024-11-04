@@ -385,14 +385,14 @@ const Menu = () => {
                                 </div>
                             </li>
                             )}
-                            <li className="nav-item dropdown">
+                            {/* <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="true" aria-expanded="false">게시판</a>
                                 <div className="dropdown-menu">
                                     <NavLink className="dropdown-item" to="/qna/list">1:1 문의</NavLink>
                                     <NavLink className="dropdown-item" to="/notice/list">공지사항</NavLink>
                                 </div>
-                            </li>
+                            </li> */}
                         </ul>
                         
                         <ul className="navbar-nav ms-2">
