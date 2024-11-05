@@ -1,0 +1,12 @@
+/* 특정 버튼에만 적용하려면 해당 버튼 클래스에만 설정 */
+:root {
+    --bs-btn-active-bg: #265073;  /* 활성화 시 배경색을 설정 */
+  }
+.btn-outline-info-mypage {
+    background-color: transparent;
+    background-color: #265073 !important;
+  }
+.btn-outline-info:active {
+    background-color: #265073 !important;
+    color: white !important
+}
