@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { Modal } from "bootstrap";
 import { useRecoilValue } from "recoil";
 import { memberIdState } from "../../utils/recoil";
+import BeatLoader from "react-spinners/BeatLoader";
 
 const Paystart = ()=>{
     
@@ -14,11 +15,17 @@ const Paystart = ()=>{
     const {productNo} = useParams();
     const navigate = useNavigate();
 
-    const [delivery, setDelivery] = useState("");
     const [total, setTotal] = useState(0);
     const [product, setProduct] = useState({});
     const [deliveryFee, setDeliveryFee] = useState(0);
     const [member, setMember] = useState({});
+
+    // 주소 수정을 위한 변수
+    const [edit, setEdit] = useState({
+      memberPost : "",
+      memberAddress1 : "",
+      memberAddress2 : ""
+  });
 
     const [checkItem, setCheckItem] = useState({
         checkAll: false,
@@ -26,11 +33,15 @@ const Paystart = ()=>{
         checkItem2 : false,
         checkItem3 : false
     });
+    
+    const [memberAddressClass, setMemberAddressClass] = useState("");
+    const [memberAddressValid, setMemberAddressValid] = useState(false);
 
     // ref
     const modal1 = useRef();
     const modal2 = useRef();
     const modal3 = useRef();
+    const addressModal = useRef();
     
     // useEffect
     useEffect(()=>{
@@ -65,7 +76,41 @@ const Paystart = ()=>{
         const resp = await axios.get("/member/detail/"+memberId);
         const data = resp.data;
         setMember(data);
+        setEdit(data);
     },[]);
+
+    const changeAddress = useCallback(e=>{
+      setEdit({
+          ...edit,
+          [e.target.name] : e.target.value
+      });
+  }, [edit]);
+
+  const goAddressEdit = useCallback(async()=>{
+    if(memberAddressValid === false) return;
+    const response = await axios.put("/member/edit", edit);
+    closeModal(addressModal);
+    loadMember();
+    },[edit, memberAddressValid]);
+
+  const checkMemberAddress = useCallback(()=>{
+    const check1 = (!edit.memberPost || edit.memberPost.length === 0) && 
+                   (!edit.memberAddress1 || edit.memberAddress1.length === 0) && 
+                   (!edit.memberAddress2 || edit.memberAddress2.length === 0);
+    const check2 = (edit.memberPost && edit.memberPost.length > 0) && 
+                   (edit.memberAddress1 && edit.memberAddress1.length > 0) && 
+                   (edit.memberAddress2 && edit.memberAddress2.length > 0);
+    const checkPost = edit.memberPost && edit.memberPost.length >= 6 && /^[0-9]{6}$/.test(edit.memberPost);;
+    const valid = check1 || (check2 && checkPost);
+    console.log("memberPost"+edit.memberPost);
+    console.log("check1"+check1);
+    console.log("check2"+check2);
+    console.log("checkPost"+checkPost);
+    console.log(valid);
+    setMemberAddressValid(valid);
+    if(check1) setMemberAddressClass("");
+    else setMemberAddressClass(valid ? "is-valid" : "is-invalid");
+    }, [edit]);
 
     const changeCheckItem = (e) => {
         setCheckItem((prevCheckItem) => {
@@ -125,6 +170,7 @@ const Paystart = ()=>{
         }
     },[isCheckAll, total]);
 
+
     // 동의 약관 모달 
     const openModal1 = useCallback(()=>{
       const tag = Modal.getOrCreateInstance(modal1.current);
@@ -140,6 +186,11 @@ const Paystart = ()=>{
       const tag = Modal.getOrCreateInstance(modal3.current);
       tag.show();
     },[modal3]);
+
+    const openAddressModal = useCallback(()=>{
+      const tag = Modal.getOrCreateInstance(addressModal.current);
+      tag.show();
+    },[addressModal]);
     
     const closeModal = useCallback((eachModal)=>{
       var tag = Modal.getInstance(eachModal.current);
@@ -302,6 +353,39 @@ const Paystart = ()=>{
             </div>
         </div>
 
+        {/* 배송지 수정 모달 */}
+        <div className="modal fade" tabIndex="-1" ref={addressModal} /*data-bs-backdrop="static"*/>
+            <div className="modal-dialog">
+                <div className="modal-content">
+
+                    {/* 모달 헤더 - 제목, x버튼 */}
+                    <div className="modal-header">
+                        <p className="modal-title">주소수정</p>
+                        <button type="button" className="btn-close btn-manual-close" onClick={() => closeModal(addressModal)} />
+                    </div>
+
+                    {/* 모달 본문 */}
+                    <div className="modal-body">
+                        <div className="row p-2">
+                        <input type="text" className={"mb-2 w-auto form-control "+memberAddressClass} placeholder="우편번호"
+                                    name="memberPost" value={edit.memberPost} onChange={changeAddress} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                                <input type="text" className={"mb-2 form-control "+memberAddressClass} placeholder="기본주소"
+                                    name="memberAddress1" value={edit.memberAddress1} onChange={changeAddress} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                                <input type="text" className={"mb-2 form-control "+memberAddressClass} placeholder="상세주소"
+                                    name="memberAddress2" value={edit.memberAddress2} onChange={changeAddress} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
+                                <div className="valid-feedback">좋은 곳에 사시는군요!</div>
+                                <div className="invalid-feedback">모두 입력하거나 모두 비워주세요(우편번호 : 6자리 숫자만)</div>
+                        </div>    
+
+                        <button className="btn btn-primary" onClick={goAddressEdit} disabled={memberAddressValid !== true} >
+                                수정하기
+                            </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
           <div className="container">
             <div className="row mb-3">
               <p className="fs-5">거래방법 선택하기</p>
@@ -346,8 +430,8 @@ const Paystart = ()=>{
                   배송지
                 </div>
                 <div className="col link-info 
-                  text-decoration-underline text-end">
-                  주소수정(구현예정)
+                  text-decoration-underline text-end" onClick={e=>openAddressModal()}>
+                  주소수정
                 </div>
                 {member.memberPost ?(<>
                   <p className="fs-5 mb-2">{member.memberName}</p>

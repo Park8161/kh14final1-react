@@ -14,7 +14,7 @@ const Pay = ()=>{
         <Routes>
             {/* 중첩 라우팅 : path="/pay/*" */}
             <Route path="/paystart/:productNo" element={<PrivateRoute element={<Paystart/>}/>} /> 
-            <Route path="/paystart/:productNo/success/:partnerOrderId" element={<Paysuccess/>} /> 
+            <Route path="/paystart/:productNo/success/:partnerOrderId" element={<PrivateRoute element={<Paysuccess/>}/>} /> 
             <Route path="/paystart/:productNo/fail" element={<PayFail2/>} /> 
             <Route path="/list" element={<PrivateRoute element={<PayList/>}/>} /> 
         </Routes>
