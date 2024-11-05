@@ -429,18 +429,6 @@ const MyPage = () => {
                                             </div>
                                         </div>
                                     </li>
-                                    <li className="list-group-item text-center">
-                                        <div className="row">
-                                            <div className="col">
-                                                <small className="text-muted mx-4">단골</small>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col mt-1">
-                                                <h5>0</h5>
-                                            </div>
-                                        </div>
-                                    </li>
                                 </ul>
                             </div>
                         </div>
