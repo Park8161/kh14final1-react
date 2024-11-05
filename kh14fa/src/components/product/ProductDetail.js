@@ -32,7 +32,8 @@ const ProductDetail = () => {
     const [review, setReview] = useState(); // 판매자 리뷰 개수
     const [reviewList, setReviewList] = useState([]); // 판매자 리뷰 목록
     const [reviewProduct, setReviewProduct] = useState("");
-
+    const [paymentCount, setPaymentCount] = useState(); //거래횟수
+    
     // ref
     const modal = useRef();
 
@@ -43,6 +44,10 @@ const ProductDetail = () => {
             checkLikes();
         }
     }, [memberId]);
+
+    useEffect(()=>{
+        countPayment(product.productMember);
+    },[product]);
 
     // callback
     const loadProduct = useCallback(async () => {
@@ -122,6 +127,12 @@ const ProductDetail = () => {
         setReview(response.data);
     }, [review]);
 
+    // 거래횟수 조회
+    const countPayment = useCallback(async(productMember)=>{
+        const response = await axios.get("/pay/count/"+productMember);
+        setPaymentCount(response.data);
+    },[]);
+
     // 판매자 거래 후기 목록 불러오기
     const loadReview = useCallback(async (productMember) => {
         const response = await axios.get("/review/list/" + productMember);
@@ -151,7 +162,7 @@ const ProductDetail = () => {
             navigate("/Chat/chatroom/" + roomId);
         }
         catch (e) {
-            console.log("Error creating or retrieving chat room:");
+            console.log("오류발생");
         }
     }, [productNo, product]);
 
@@ -323,6 +334,10 @@ const ProductDetail = () => {
                                 {/* <span className="text-danger text-center">{likes}</span> */}
                             </div>
                         </div>
+                        {product.productMember === memberId ? (<>
+                            <div className="col-5" style={{height:"50px"}}></div>
+                            <div className="col-5" style={{height:"50px"}}></div>
+                        </>):(<>
                         <div className="col-5 d-flex align-items-center">
                             <button className="btn btn-outline-dark btn-lg text-nowrap" style={{ height: "50px", width: "100%" }}
                                 onClick={goChat}>
@@ -330,13 +345,23 @@ const ProductDetail = () => {
                                 채팅하기
                             </button>
                         </div>
+                         {/* 판매중일때만 구매버튼 활성화 */}
+                         {product.productState === "판매중" ?(<>
                         <div className="col-5 d-flex align-items-center">
                             <button className="btn btn-outline-success btn-lg text-nowrap " style={{ height: "50px", width: "100%" }}
-                                onClick={e => toast.warning("미구현 기능")}>
+                                onClick={e=>navigate("/Pay/paystart/" + product.productNo)}>
                                 <AiOutlineSafety />
                                 안전거래
                             </button>
                         </div>
+                         </>):(<>
+                            <div className="col-5">
+                                    <button className="btn btn-outline-success btn-lg w-100 text-nowrap" 
+                                    style={{height:"50px"}} disabled={true}>거래불가상태
+                                    </button>
+                                </div>
+                         </>)}
+                        </>)}
                     </div>
                 </div>
             </div>
@@ -374,7 +399,7 @@ const ProductDetail = () => {
                                             </div>
                                             <div className="row">
                                                 <div className="col mt-1">
-                                                    <h5>0</h5>
+                                                    <h5>{paymentCount}</h5>
                                                 </div>
                                             </div>
                                         </li>

@@ -1,18 +1,25 @@
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal } from "bootstrap";
+import { useRecoilValue } from "recoil";
+import { memberIdState } from "../../utils/recoil";
 
 const Paystart = ()=>{
     
   // state
+    const memberId = useRecoilValue(memberIdState);
     const {productNo} = useParams();
+    const navigate = useNavigate();
+
     const [delivery, setDelivery] = useState("");
     const [total, setTotal] = useState(0);
     const [product, setProduct] = useState({});
     const [deliveryFee, setDeliveryFee] = useState(0);
+    const [member, setMember] = useState({});
+
     const [checkItem, setCheckItem] = useState({
         checkAll: false,
         checkItem1 : false,
@@ -27,12 +34,17 @@ const Paystart = ()=>{
     
     // useEffect
     useEffect(()=>{
+      checkState();
       loadProduct();
+      loadMember();
     },[]);
-
 
     // useCallback
     // **구매완료면 진입 불가로 만드는 함수 추가
+    const checkState = useCallback(async()=>{
+        const resp = await axios.get("/product/checkState/"+productNo);
+        if(resp.data !== "판매중") navigate("/product/detail/"+productNo);
+    },[productNo]);
 
     //거래방법(택배,직거래) 선택시마다 전체 결제금액, 배송비 정보 업데이트
     const updatePayInfo = useCallback((fee)=>{
@@ -44,9 +56,15 @@ const Paystart = ()=>{
     const loadProduct = useCallback(async()=>{
         const response = await axios.get("/product/detail/"+productNo);
         setProduct(response.data.productDto);
-        // console.log("로그"+response.data.productDto.productPrice);
         // product.price 로 하면  새로고침시 undefined
         setTotal(response.data.productDto.productPrice);
+    },[]);
+
+    // 주소지 추출
+    const loadMember = useCallback(async()=>{
+        const resp = await axios.get("/member/detail/"+memberId);
+        const data = resp.data;
+        setMember(data);
     },[]);
 
     const changeCheckItem = (e) => {
@@ -151,7 +169,7 @@ const Paystart = ()=>{
 
 제1조 (목적)
 
-본 약관은 번개장터 주식회사(이하 “회사”)가 웹사이트 및 애플리케이션을 통하여 제공하는 온라인 개인 간 거래 중개 및 기타 서비스(이하 “서비스”)의 이용과 관련하여 회사와 회원의 권리 및 의무, 기타 제반사항을 규정함을 목적으로 합니다.
+본 약관은 Once Upon A Time 주식회사(이하 “회사”)가 웹사이트 및 애플리케이션을 통하여 제공하는 온라인 개인 간 거래 중개 및 기타 서비스(이하 “서비스”)의 이용과 관련하여 회사와 회원의 권리 및 의무, 기타 제반사항을 규정함을 목적으로 합니다.
 
 제2조 (정의)
 
@@ -187,8 +205,7 @@ const Paystart = ()=>{
 
 본 약관은 2024년 8월 1일부터 시행됩니다.
 
-이전의 번개장터 서비스 이용약관은 아래에서 확인하실 수 있습니다.
-
+이전의 Once Upon A Time 서비스 이용약관은 아래에서 확인하실 수 있습니다.
 
                                 </p>                 
                         </div>    
@@ -213,7 +230,7 @@ const Paystart = ()=>{
                     <div className="modal-body">
                         <div className="row">
                         원활한 서비스 제공을 위해 이용자로부터 아래와 같이 회원의 개인정보를 수집, 이용합니다. 회원은 아래 내용에 대해 동의를 해야 구매를 진행할 수 있습니다.
-                                <table>
+                                <table className="table table-bordered">
                                   <thead>
                                     <tr>
                                       <td>목적</td>
@@ -258,11 +275,11 @@ const Paystart = ()=>{
 
                     {/* 모달 본문 */}
                     <div className="modal-body">
-                        <div className="row">
-                          <table>
+                        <div className="row table-responsive">
+                          <table className="table table-borderd">
                             <thead>
                               <tr>
-                                <td>제공받는 자</td>
+                                <td className="col-2">제공받는 자</td>
                                 <td>목적</td>
                                 <td>항목</td>
                                 <td>보유 및 이용기간</td>
@@ -277,7 +294,7 @@ const Paystart = ()=>{
                               </tr>
                             </tbody>
                           </table>              
-                          본 동의는 번개장터의 안전결제 서비스 이용을 위한 개인정보 제3자 제공 동의로서, 개인정보의 제3자 제공 동의를 거부할 수 있으나 동의를 거부하는 경우 안전결제 서비스 이용이 어려울 수 있습니다.
+                          본 동의는 Once Upon A Time 안전결제 서비스 이용을 위한 개인정보 제3자 제공 동의로서, 개인정보의 제3자 제공 동의를 거부할 수 있으나 동의를 거부하는 경우 안전결제 서비스 이용이 어려울 수 있습니다.
                         </div>    
                     </div>
 
@@ -296,23 +313,51 @@ const Paystart = ()=>{
                 <p className="text-muted fs-6">{product.productName}</p>
               </div>
             </div>
-    
-            <div className="card mb-3">
-                <button className="btn w-100 btn-outline-primary" onClick={() => updatePayInfo(3000)}>
+
+            
+            {member.memberPost ? (<>
+              <div className="card mb-3">
+                  <button
+                  className={`btn w-100 ${deliveryFee === 3000? "btn-primary" : "btn-outline-primary"}`}
+                  onClick={() => updatePayInfo(3000)}>
                   <p className="mt-3 fs-6 fw-bold">일반택배</p>
                   <p>원하는 주소로 받기 (+3,000)</p>
                 </button></div>
+            </>):(<>
+              <div className="card mb-3">
+                  <button
+                  className={"btn w-100 btn-outline-primary"} disabled={true}>
+                  <p className="mt-3 fs-6 fw-bold">일반택배</p>
+                  <p>주소를 먼저 등록해 주세요.</p>
+                </button></div>
+            </>)}
 
                 <div className="card mb-3">
-                <button className="btn w-100 btn-outline-primary" onClick={() => updatePayInfo(0)}>
+                <button
+                className={`btn w-100 ${deliveryFee === 0 ? "btn-primary" : "btn-outline-primary"}`}
+                onClick={() => updatePayInfo(0)}>
                   <p className="mt-3 fs-6 fw-bold">직거래</p>
                   <p>직접 만나서 받기</p>
                 </button></div>
     
             <div className="card mb-3">
-              <div className="card-body">
-                <p>배송지</p>
-                <div>배송지 정보</div>
+              <div className="card-body row">
+                <div className="col text-muted mb-2">
+                  배송지
+                </div>
+                <div className="col link-info 
+                  text-decoration-underline text-end">
+                  주소수정(구현예정)
+                </div>
+                {member.memberPost ?(<>
+                  <p className="fs-5 mb-2">{member.memberName}</p>
+                  <p className="fs-5">[{member.memberPost}] {member.memberAddress1} {member.memberAddress2}</p>
+                </>):(<>
+                  <p className="fs-5 my-2">
+                    등록된 주소가 없습니다.
+                  </p>
+                </>)}
+                  
               </div>
             </div>
 
@@ -367,11 +412,11 @@ const Paystart = ()=>{
     
             <div className="card">
               {isCheckAll === false ? (<>
-              <button className="btn btn-outline-primary fs-6" disabled={true}>
+              <button className="btn btn-outline-primary fs-6 p-2" disabled={true}>
                 결제 약관에 동의 바랍니다.
               </button>
               </>):(<>
-              <button className="btn btn-primary" onClick={sendBuyRequest}>
+              <button className="btn btn-primary fs-6 p-2" onClick={sendBuyRequest}>
                 결제하기
               </button>
               </>)}
