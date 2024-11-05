@@ -3,6 +3,7 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import { loginState, memberLoadingState } from "../../utils/recoil";
 import { Navigate } from "react-router";
+import BeatLoader from "react-spinners/BeatLoader";
 
 const PrivateRoute = (props)=>{
     // 로그인 검사 결과를 불러온다
@@ -11,7 +12,16 @@ const PrivateRoute = (props)=>{
     // const [memberLoading] = useRecoilValue(memberLoadingState); // 같음
 
     if(memberLoading === false){ // 로딩 진행중
-        return <h1>Loading...</h1>;
+        return (<div className="row d-flex align-items-center" style={{ height: '100vh' }}>
+            <div className="col text-center">
+                <div className="text-primary">
+                    <h1>Loading...</h1>
+                </div>
+                <div>
+                    <BeatLoader/>
+                </div>
+            </div>
+        </div>);
     }
 
     // return login === true ? props.children : <Navigate to="/member/login" />;
