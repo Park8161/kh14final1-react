@@ -67,7 +67,7 @@ const NoticeDetail = () => {
     return (
         <>
             <div className="row mt-4">
-                <div className="col-8 offset-2 border">
+                <div className="col-8 offset-2">
 
                     {/* 게시글 정보 */}
                     <div className="row mt-4">
