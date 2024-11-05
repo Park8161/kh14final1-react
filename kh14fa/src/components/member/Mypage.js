@@ -16,6 +16,9 @@ import { TbShoppingBagPlus, TbShoppingBagSearch, TbShoppingBagX } from "react-ic
 import PacmanLoader from "react-spinners/PacmanLoader";
 import moment from "moment";
 import { AiFillHome } from "react-icons/ai";
+import '../../style/Mypage.css';
+import { set } from "lodash";
+
 
 const MyPage = () => {
     // navigate
@@ -34,10 +37,10 @@ const MyPage = () => {
         sell: false,
         reserve: false,
         soldout: false,
-        productButton: "btn w-100 font-16px",
-        sellButton: "btn w-100 font-16px",
-        reserveButton: "btn w-100 font-16px",
-        soldoutButton: "btn w-100 font-16px",
+        productButton: "btn w-100 font-16px btn-outline-primary",
+        sellButton: "btn w-100 font-16px btn-outline-primary",
+        reserveButton: "btn w-100 font-16px btn-outline-primary",
+        soldoutButton: "btn w-100 font-16px btn-outline-primary",
     });
     const [likeList, setLikeList] = useState([]);
     const [myList, setMyList] = useState([]);
@@ -69,10 +72,10 @@ const MyPage = () => {
             sell: false,
             reserve: false,
             soldout: false,
-            productButton: "btn w-100 font-16px border-dark",
-            sellButton: "btn w-100 font-16px",
-            reserveButton: "btn w-100 font-16px",
-            soldoutButton: "btn w-100 font-16px",
+            productButton: "btn w-100 font-16px btn-outline-primary active",
+            sellButton: "btn w-100 font-16px btn-outline-primary",
+            reserveButton: "btn w-100 font-16px btn-outline-primary",
+            soldoutButton: "btn w-100 font-16px btn-outline-primary",
         });
     }, []);
 
@@ -189,20 +192,25 @@ const MyPage = () => {
             sell: false,
             reserve: false,
             soldout: false,
-            productButton: "btn w-100 font-16px",
-            sellButton: "btn w-100 font-16px",
-            reserveButton: "btn w-100 font-16px",
-            soldoutButton: "btn w-100 font-16px",
+            productButton: "btn w-100 font-16px btn-outline-primary",
+            sellButton: "btn w-100 font-16px btn-outline-primary",
+            reserveButton: "btn w-100 font-16px btn-outline-primary",
+            soldoutButton: "btn w-100 font-16px btn-outline-primary",            
         });
     }, [collapse]);
+
+    //버튼 활성화
+    // 버튼 active css
+      const [isActive, setActive] = useState("false");
 
     const changeCollapse = useCallback((e) => {
         clearCollapse();
         setCollpase({
             ...collapse,
             [e.target.name]: true,
-            [e.target.name + "Button"]: "btn w-100 font-16px border-dark"
+            [e.target.name + "Button"]: "btn w-100 font-16px btn-outline-primary active"
         });
+
     }, []); // 왜 연관항목이 없어야 되는거..?
 
     // GPT 이용해서 만든 숫자에 콤마 찍기 함수
@@ -307,6 +315,7 @@ const MyPage = () => {
         }
     };
 
+  
     return (<>
         {/* <Jumbotron title={`${member.memberId} 님의 정보`}/> */}
 
@@ -314,11 +323,11 @@ const MyPage = () => {
 
             <div className="col-2 border-end">
                 <div className="row mt-4">
-                    <h3 className="mt-4">거래 정보</h3>
+                    <h4 className="mt-4" style={{fontWeight:"600"}}>거래 정보</h4>
                     <div className="col ps-3">
                         <div className="row">
-                            <div className="col">
-                                <button className="btn me-3 font-16px" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas1">
+                            <div className="col"  style={{ marginLeft: "0" }}>
+                                <button className="btn me-3 font-16px" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas1" >
                                     판매 내역
                                 </button>
                             </div>
@@ -342,11 +351,11 @@ const MyPage = () => {
                 <hr />
                 <div className="row mt-4">
                     <div className="col">
-                        <h3>내 정보</h3>
+                        <h4 style={{fontWeight:"600"}}>내 정보</h4>
                         <div className="row">
                             <div className="col">
                                 <button className="btn me-3 font-16px" data-bs-toggle="offcanvas" data-bs-target="#offcanvas4" >
-                                    거래 후기
+                                    작성한 거래 후기
                                 </button>
                             </div>
                         </div>
@@ -401,14 +410,14 @@ const MyPage = () => {
                                     {member.memberName}#{member.memberId}
                                 </h2>
                             </div>
-                            <div className="col-3 text-center pe-4">
+                            <div className="col-3 text-end">
                                 <h4 onClick={openModal}><CiShare1 /></h4>
                             </div>
                         </div>
                         <div className="row mt-3">
                             <div className="col">
                                 <ul className="list-group list-group-horizontal" style={{ maxHeight: "75px" }}>
-                                    <li className="list-group-item text-center">
+                                    <li className="list-group-item text-center" style={{ width: "33.3%" }}>
                                         <div className="row">
                                             <div className="col">
                                                 <small className="text-muted mx-2">거래횟수</small>
@@ -420,7 +429,7 @@ const MyPage = () => {
                                             </div>
                                         </div>
                                     </li>
-                                    <li className="list-group-item text-center">
+                                    <li className="list-group-item text-center" style={{ width: "33.3%" }}>
                                         <div className="row">
                                             <div className="col">
                                                 <small className="text-muted mx-2">거래후기</small>
@@ -438,9 +447,10 @@ const MyPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-6 col-sm-5 justify-content-start align-items-center">
-                        <p className="mt-5" style={{paddingLeft:"12px", fontWeight:"600", color:"#265073", fontSize:"18px", marginBottom:"6px"}}>
-                            신뢰지수 <span style={{fontSize:"22px"}}>{member.memberReliability}</span>
+                    <div className="col-6 col-sm-5 justify-content-start align-items-center" style={{marginLeft:"50px"}}>
+                        <p className="mt-5" style={{fontWeight:"600", color:"#265073", 
+                                        fontSize:"18px", marginBottom:"6px"}}>
+                            신뢰지수 <span style={{fontSize:"25px"}}>{member.memberReliability}</span>
                         </p>
                         <div className="progress" style={{ height: "20px" }}>
                             <div
@@ -455,38 +465,39 @@ const MyPage = () => {
                     </div>
                 </div>
 
-                <div className="row mt-4">
+                <div className="row mt-3 justify-content">
                     <div className="col">
-                        <button className="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#myInfo">
+                        <button className="btn btn-outline-primary" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#myInfo" style={{fontWeight:"400"}}>
                             내 정보 확인
                         </button>
-                        <div className="collapse ms-4 mt-4 p-4 border" id="myInfo">
+                        <div className="collapse  mt-4 p-4 border" id="myInfo">
                             <div className="row">
                                 <div className="col-3">
                                     <div className="row mt-4">
-                                        <div className="col-5">이름</div>
+                                        <div className="col-5"><span style={{fontWeight:"600"}}>이름</span></div>
                                         <div className="col-7">{member.memberName}</div>
                                     </div>
                                     <div className="row mt-4">
-                                        <div className="col-5">이메일</div>
+                                        <div className="col-5"><span style={{fontWeight:"600"}}>이메일</span></div>
                                         <div className="col-7">{member.memberEmail}</div>
                                     </div>
                                     <div className="row mt-4">
-                                        <div className="col-5">회원등급</div>
+                                        <div className="col-5"><span style={{fontWeight:"600"}}>회원등급</span></div>
                                         <div className="col-7">{member.memberLevel}</div>
                                     </div>
                                     <div className="row mt-4">
-                                        <div className="col-5">포인트</div>
+                                        <div className="col-5"><span style={{fontWeight:"600"}}>포인트</span></div>
                                         <div className="col-7">{member.memberPoint}</div>
                                     </div>
                                     <div className="row mt-4">
-                                        <div className="col-5">신뢰지수</div>
+                                        <div className="col-5"><span style={{fontWeight:"600"}}>신뢰지수</span></div>
                                         <div className="col-7">{member.memberReliability}</div>
                                     </div>
                                 </div>
-                                <div className="col-8 offset-1">
+                                <div className="col-8 ms-auto">
                                     <div className="row mt-4">
-                                        <div className="col-2">주소</div>
+                                        <div className="col-2"><span style={{fontWeight:"600"}}>주소</span></div>
                                         <div className="col-10">
                                             {!member.mebmerPost ? (
                                                 <span>- -</span>
@@ -500,7 +511,7 @@ const MyPage = () => {
                                         </div>
                                     </div>
                                     <div className="row mt-4">
-                                        <div className="col-2">전화번호</div>
+                                        <div className="col-2"><span style={{fontWeight:"600"}}>전화번호</span></div>
                                         <div className="col-10">
                                             {!member.memberContact ? (
                                                 <span>- -</span>
@@ -512,7 +523,7 @@ const MyPage = () => {
                                         </div>
                                     </div>
                                     <div className="row mt-4">
-                                        <div className="col-2">생년월일</div>
+                                        <div className="col-2"><span style={{fontWeight:"600"}}>생년월일</span></div>
                                         <div className="col-10">
                                             {!member.memberBirth ? (
                                                 <span>- -</span>
@@ -524,11 +535,11 @@ const MyPage = () => {
                                         </div>
                                     </div>
                                     <div className="row mt-4">
-                                        <div className="col-2">최근접속</div>
+                                        <div className="col-2"><span style={{fontWeight:"600"}}>최근접속</span></div>
                                         <div className="col-10">{member.memberLogin}</div>
                                     </div>
                                     <div className="row mt-4">
-                                        <div className="col-2">가입일</div>
+                                        <div className="col-2"><span style={{fontWeight:"600"}}>가입일</span></div>
                                         <div className="col-10">{member.memberJoin}</div>
                                     </div>
                                 </div>
@@ -537,18 +548,22 @@ const MyPage = () => {
                     </div>
                 </div>
 
-                <div className="row mt-4 text-center">
+                <div className="row text-center" style={{marginTop:"60px"}} >
                     <div className="col-3">
-                        <button className={collapse.productButton} name="product" onClick={changeCollapse}>내 상품</button>
+                        <button className={collapse.productButton} 
+                                                            name="product"  onClick={changeCollapse} style={{border: "none",fontWeight:"600"}}>내 상품</button>
                     </div>
                     <div className="col-3">
-                        <button className={collapse.sellButton} name="sell" onClick={changeCollapse}>판매중</button>
+                        <button className={collapse.sellButton} 
+                                                            name="sell"  onClick={changeCollapse} style={{border: "none",fontWeight:"600"}}>판매중</button>
                     </div>
                     <div className="col-3">
-                        <button className={collapse.reserveButton} name="reserve" onClick={changeCollapse}>예약중</button>
+                        <button className={collapse.reserveButton} 
+                                                            name="reserve"  onClick={changeCollapse}  style={{border: "none",fontWeight:"600"}}>예약중</button>
                     </div>
                     <div className="col-3">
-                        <button className={collapse.soldoutButton} name="soldout" onClick={changeCollapse}>판매완료</button>
+                        <button className={collapse.soldoutButton} 
+                                                            name="soldout" onClick={changeCollapse} style={{border: "none",fontWeight:"600"}}>판매완료</button>
                     </div>
                 </div>
 
@@ -556,7 +571,7 @@ const MyPage = () => {
 
                 {/* 내 상품 */}
                 {collapse.product === true && (
-                    <div className="row mt-4 ms-4">
+                    <div className="row mt-4">
                         {myList.map((product) => (
                             <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo}>
                                 <div className="card">
@@ -864,30 +879,35 @@ const MyPage = () => {
         {/* 판매 내역 */}
         <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas1" aria-labelledby="offcanvas1Label">
             <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="offcanvas1Label">판매 내역</h5>
+                <h5 className="offcanvas-title" id="offcanvas1Label"  style={{fontWeight:"600"}} >
+                    판매 내역
+                </h5>
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
                 {soldoutList.map((product) => (
-                    <div className="row" key={product.productNo} data-bs-dismiss="offcanvas">
+                    <div className="row mt-2" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)} data-bs-dismiss="offcanvas">
                         <div className="col-6">
-                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" 
+                                style={{width:"160px", height:"160px", objectFit: 'cover'}}/>
                         </div>
-                        <div className="col-6">
+                        <div className="col-6" style={{paddingLeft:"0"}}>
                             <div className="row mt-4">
-                                <div className="col">
+                                <div className="col text-muted"  style={{fontWeight:"600"}}>
                                     {product.productName}
                                 </div>
                             </div>
-                            <div className="row mt-1">
-                                <div className="col">
+                            <div className="row mt-2">
+                                <div className="col" style={{fontWeight:"600", fontSize:"19px"}}>
                                     {formatCurrency(product.productPrice)}원,
                                     {" " + product.productQty}개
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col">
+                                    <span className="badge bg-success mt-1" style={{fontWeight:"600", fontSize:"13px"}} >
                                     {product.productState}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -899,18 +919,19 @@ const MyPage = () => {
         {/* 결제 내역 */}
         <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas2" aria-labelledby="offcanvas2Label">
             <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="offcanvas2Label">결제 내역</h5>
+                <h5 className="offcanvas-title" id="offcanvas2Label" style={{fontWeight:"600"}}>결제 내역</h5>
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
                 {payList.map((payment) => (
-                    <div className="row mt-2" key={payment.paymentNo} onClick={e => navigate("/product/detail/" + payment.productNo)} data-bs-dismiss="offcanvas">
+                    <div className="row mt-2" key={payment.paymentNo} data-bs-dismiss="offcanvas">
                         <div className="col-5">
-                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${payment.attachment}`} className="card-img-top" />
+                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${payment.attachment}`} className="card-img-top" 
+                                 style={{width:"160px", height:"160px", objectFit: 'cover'}}/>
                         </div>
-                        <div className="col-7">
+                        <div className="col-7 mt-2">
                             <div className="row">
-                                <div className="col">
+                                <div className="col ms-1">
                                     {payment.paymentName}
                                 </div>
                             </div>
@@ -997,30 +1018,46 @@ const MyPage = () => {
         {/* 찜한 상품 */}
         <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas3" aria-labelledby="offcanvas3Label">
             <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="offcanvas3Label">내 관심</h5>
+                <h5 className="offcanvas-title" id="offcanvas3Label" style={{fontWeight:"600"}}>내 관심</h5>
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
                 {likeList.map((product) => (
-                    <div className="row" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)} data-bs-dismiss="offcanvas">
+                    <div className="row mt-2" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)} data-bs-dismiss="offcanvas">
                         <div className="col-6">
-                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
+                            <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" 
+                                 style={{width:"160px", height:"160px", objectFit: 'cover'}}/>
                         </div>
-                        <div className="col-6">
+                        <div className="col-6" style={{paddingLeft:"0"}}>
                             <div className="row mt-4">
-                                <div className="col">
+                                <div className="col  text-muted"  style={{fontWeight:"600"}}>
                                     {product.productName}
                                 </div>
                             </div>
-                            <div className="row mt-1">
-                                <div className="col">
+                            <div className="row mt-2">
+                                <div className="col" style={{fontWeight:"600", fontSize:"19px"}}>
                                     {formatCurrency(product.productPrice)}원,
                                     {" " + product.productQty}개
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col">
-                                    {product.productState}
+                                    {/* 상품 상태 */}
+									{product.productState === "판매중" && (
+										<span className='badge bg-primary me-2' style={{fontWeight:"600", fontSize:"13px"}}>
+											{product.productState}
+										</span>
+									)}
+									{product.productState === "판매보류" && (
+										<span className='badge bg-danger me-2' style={{fontWeight:"600", fontSize:"13px"}}>
+											{product.productState}
+										</span>
+									)}
+									{product.productState === "판매완료" && (
+										<span className='badge bg-success me-2 style={{fontWeight:"600", fontSize:"13px"}}'>
+											{product.productState}
+										</span>
+									)}
                                 </div>
                             </div>
                         </div>
@@ -1130,13 +1167,14 @@ const MyPage = () => {
         {/* 내가 쓴 거래 후기 목록 */}
         <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas4" aria-labelledby="offcanvas4Label">
             <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="offcanvas4Label">거래 후기</h5>
+                <h5 className="offcanvas-title" id="offcanvas4Label" style={{fontWeight:"600"}}>거래 후기</h5>
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
-                <p>{member.memberId}님이 쓴 거래 후기</p>
+                <span style={{fontWeight:"600", fontSize:"20px"}}>{member.memberId}</span>
+                <span>님이 쓴 거래 후기</span>
                 {reviewList.map((review) => (
-                    <div className="row mt-4" key={review.reviewNo}>
+                    <div className="row mt-4" key={review.reviewNo} style={{background:"#F1F6F9", padding: "12px"}}>
                         <div className="col">
                             <div className="row">
                                 <div className="col-2 mt-2">
@@ -1144,33 +1182,33 @@ const MyPage = () => {
                                 </div>
                                 <div className="col-10">
                                     <div className="row">
-                                        <div className="col-8">
+                                        <div className="col-7 ms-2" style={{fontWeight:"600"}}>
                                             {review.reviewWriter}
                                         </div>
-                                        <div className="col-4">
-                                            <span>평가 : </span>
+                                        <div className="col-4 ms-1  d-flex justify-content-end align-items-center" style={{padding:"0"}}>
+                                            <span className="me-1" style={{fontWeight:"600"}}>평가 : </span>
                                             {review.reviewScore === 1 && (<FaRegThumbsUp className=" w-auto" />)}
                                             {review.reviewScore === 0 && (<FaRegHandshake className=" w-auto" />)}
                                             {review.reviewScore === -1 && (<FaRegThumbsDown className=" w-auto" />)}
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col">
+                                        <div className="col ms-1">
                                             <small className="text-muted">{"구매일시 | " + review.reviewWtime}</small>
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col">
+                                        <div className="col ms-1">
                                             <small className="text-muted">{"구매상품 | " + review.productName}</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div className="row mt-2">
-                                <div className="col input-group">
-                                    <input className="form-control bg-light border-0" value={review.reviewContent} disabled />
-                                    <button className="btn btn-info text-light btn-sm" onClick={e => openERModal(review)}>수정</button>
-                                    <button className="btn btn-danger btn-sm" onClick={e => openDRModal(review)}>삭제</button>
+                                <div className="col input-group d-flex justify-content-end align-items-center">
+                                    <input className="form-control border-0"style={{background:"#FFFFFF", height: "38px"}}  value={review.reviewContent} disabled />
+                                    <button className="btn btn-info text-light btn-sm"  style={{ height: "38px", padding: "0.375rem 0.75rem" }}  onClick={e => openERModal(review)}>수정</button>
+                                    <button className="btn btn-danger btn-sm"  style={{ height: "38px", padding: "0.375rem 0.75rem" }} onClick={e => openDRModal(review)}>삭제</button>
                                 </div>
                             </div>
                         </div>
@@ -1182,13 +1220,14 @@ const MyPage = () => {
         {/* 내가 받은 거래 후기 목록 */}
         <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvas5" aria-labelledby="offcanvas5Label">
             <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="offcanvas5Label">거래 후기</h5>
+                <h5 className="offcanvas-title" id="offcanvas5Label" style={{fontWeight:"600"}}>거래 후기</h5>
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
-                <p>{member.memberId}님이 받은 거래 후기</p>
+                <span style={{fontWeight:"600", fontSize:"20px"}}>{member.memberId}</span>
+                <span>님이 받은 거래 후기</span>
                 {reviewList.map((review) => (
-                    <div className="row mt-4" key={review.reviewNo}>
+                    <div className="row mt-4" key={review.reviewNo} style={{background:"#F1F6F9", padding: "12px"}}>
                         <div className="col">
                             <div className="row">
                                 <div className="col-2 mt-2">
@@ -1196,23 +1235,23 @@ const MyPage = () => {
                                 </div>
                                 <div className="col-10">
                                     <div className="row">
-                                        <div className="col-8">
+                                        <div className="col-7 ms-2" style={{fontWeight:"600"}}>
                                             {review.reviewWriter}
                                         </div>
-                                        <div className="col-4">
-                                            <span>평가 : </span>
+                                        <div className="col-4 d-flex justify-content-end align-items-center" style={{padding:"0"}}>
+                                            <span className="me-1" style={{fontWeight:"600"}}>평가 : </span>
                                             {review.reviewScore === 1 && (<FaRegThumbsUp className=" w-auto" />)}
                                             {review.reviewScore === 0 && (<FaRegHandshake className=" w-auto" />)}
                                             {review.reviewScore === -1 && (<FaRegThumbsDown className=" w-auto" />)}
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col">
+                                        <div className="col  ms-1">
                                             <small className="text-muted">{"구매일시 | " + review.reviewWtime}</small>
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col">
+                                        <div className="col  ms-1">
                                             <small className="text-muted">{"구매상품 | " + review.productName}</small>
                                         </div>
                                     </div>
@@ -1220,7 +1259,7 @@ const MyPage = () => {
                             </div>
                             <div className="row mt-2">
                                 <div className="col input-group">
-                                    <input className="form-control bg-light border-0" value={review.reviewContent} disabled />
+                                    <input className="form-control border-0" style={{background:"#FFFFFF", height: "38px"}} value={review.reviewContent} disabled />
                                 </div>
                             </div>
                         </div>
