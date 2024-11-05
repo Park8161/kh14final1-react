@@ -40,7 +40,7 @@ const Footer = ()=>{
                                         <div className="col">
                                             <small className="mt-0 font-12px text-muted me-2 cursor-pointer text-decoration-underline" onClick={e=>navigate("/notice/list")}>공지사항</small>
                                             <small className="mt-0 font-12px text-muted me-2 cursor-pointer text-decoration-underline" onClick={e=>navigate("/qna/list")}>1:1 문의하기</small>
-                                            <small className="mt-0 font-12px text-muted cursor-pointer text-decoration-underline" onClick={e=>toast.warning("미구현")}>자주 묻는 질문</small>
+                                            <small className="mt-0 font-12px text-muted me-2 cursor-pointer text-decoration-underline" onClick={e=>navigate("/faq/list")}>자주 묻는 질문</small>
                                         </div>
                                     </div>
                                 </div>
