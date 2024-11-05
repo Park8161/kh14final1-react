@@ -206,7 +206,7 @@ const ProductDetail = () => {
 
             <div className="row mt-4">
                 {/* 이미지 슬라이드 */}
-                <div className="col-md-5 col-sm-7 d-flex">
+                <div className="col-md-5 col-sm-7 ">
                     <div id="carouselExampleCaptions" className="carousel slide" data-bs-ride="carousel">
                         <div className="carousel-indicators">
                             {images.map((image, index) => (
@@ -221,7 +221,7 @@ const ProductDetail = () => {
                             {images.map((image, index) => (
 
                                 <div className={"carousel-item " + (index === 0 && ("active"))} key={index}>
-                                    <div className="card" style={{ width: "600px", height: "600px", borderRadius: "0" }}>
+                                    <div className="card d-flex justify-content-center align-items-center" style={{ height: "400px", borderRadius: "0" }}>
                                         <img src={process.env.REACT_APP_BASE_URL + "/attach/download/" + image}
                                             className="card-img-top" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                                         <div className="carousel-caption d-none d-md-block">
@@ -245,7 +245,7 @@ const ProductDetail = () => {
                 </div>
 
                 {/* 이미지 오른쪽에 상품 정보 및 기능 */}
-                <div className="col-5 align-items-center">
+                <div className="col-7 align-items-center">
                     <div className="row mt-2 ps-1">
                         <div className="d-flex justify-content-start align-items-center" style={{ padding: "9" }}>
                             <span className="text-muted">{category.category1st} <FaChevronRight /></span>
