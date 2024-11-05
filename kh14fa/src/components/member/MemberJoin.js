@@ -116,7 +116,8 @@ const MemberJoin = ()=>{
     const checkMemberAddress = useCallback(()=>{
         const check1 = input.memberPost.length === 0 && input.memberAddress1.length === 0 && input.memberAddress2.length === 0;
         const check2 = input.memberPost.length > 0 && input.memberAddress1.length > 0 && input.memberAddress2.length > 0;
-        const valid = check1 || check2;
+        const checkPost = input.memberPost.length >= 6 && /^[0-9]{6}$/;
+        const valid = check1 || (check2 && checkPost);
         setMemberAddressValid(valid);
         if(check1) setMemberAddressClass("");
         else setMemberAddressClass(valid ? "is-valid" : "is-invalid");
@@ -275,7 +276,7 @@ const MemberJoin = ()=>{
                             <input type="text" className={"form-control "+memberAddressClass} placeholder="상세주소"
                                 name="memberAddress2" value={input.memberAddress2} onChange={changeInput} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
                             <div className="valid-feedback">좋은 곳에 사시는군요!</div>
-                            <div className="invalid-feedback">우편번호,기본주소,상세주소를 모두 입력하거나 모두 비워주세요</div>
+                            <div className="invalid-feedback">우편번호,기본주소,상세주소를 모두 입력하거나 모두 비워주세요(우편번호 : 0~6자 숫자만)</div>
                         </div>
                     </div>
 
