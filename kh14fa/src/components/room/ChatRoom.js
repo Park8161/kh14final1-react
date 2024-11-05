@@ -277,7 +277,8 @@ const ChatRoom = () => {
             {/* <Jumbotron title="웹소켓 클라이언트(삭제예정)"
                 content={"현재 연결 상태 = " + (connect ? "연결됨" : "종료됨")} /> */}
 
-            <div>
+            
+            <div className="d-flex justify-content-center">
         {/* 메세지 목록 */}
         <div className="col-9">
         {productInfo.productNo ? (
