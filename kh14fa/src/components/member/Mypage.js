@@ -3,7 +3,7 @@ import Jumbotron from "../Jumbotron";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button, Collapse, Modal } from "bootstrap";
-import { FaRegHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { CiShare1, CiHeart } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
@@ -15,6 +15,7 @@ import { FaRegThumbsUp, FaRegThumbsDown, FaRegHandshake } from "react-icons/fa";
 import { TbShoppingBagPlus, TbShoppingBagSearch, TbShoppingBagX } from "react-icons/tb";
 import PacmanLoader from "react-spinners/PacmanLoader";
 import moment from "moment";
+import { AiFillHome } from "react-icons/ai";
 
 const MyPage = () => {
     // navigate
@@ -394,13 +395,17 @@ const MyPage = () => {
                     <div className="col-6 col-sm-5">
                         <div className="row">
                             <div className="col-9">
-                                <h2>{member.memberName}#{member.memberId}</h2>
+                                <h2 className="d-flex justify-content-start align-items-center"
+                                    style={{ fontWeight: "600" }}>
+                                    <AiFillHome className="me-2" size="40" />
+                                    {member.memberName}#{member.memberId}
+                                </h2>
                             </div>
                             <div className="col-3 text-center pe-4">
                                 <h4 onClick={openModal}><CiShare1 /></h4>
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row mt-3">
                             <div className="col">
                                 <ul className="list-group list-group-horizontal" style={{ maxHeight: "75px" }}>
                                     <li className="list-group-item text-center">
@@ -445,8 +450,10 @@ const MyPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-6 col-sm-5">
-                        <p className="row">신뢰지수 {member.memberReliability}</p>
+                    <div className="col-6 col-sm-5 justify-content-start align-items-center">
+                        <p className="mt-5" style={{paddingLeft:"12px", fontWeight:"600", color:"#265073", fontSize:"18px", marginBottom:"6px"}}>
+                            신뢰지수 <span style={{fontSize:"22px"}}>{member.memberReliability}</span>
+                        </p>
                         <div className="progress" style={{ height: "20px" }}>
                             <div
                                 className="progress-bar"
@@ -493,18 +500,40 @@ const MyPage = () => {
                                     <div className="row mt-4">
                                         <div className="col-2">주소</div>
                                         <div className="col-10">
-                                            [{member.memberPost}]
-                                            {" " + member.memberAddress1}
-                                            {" " + member.memberAddress2}
+                                            {!member.mebmerPost ? (
+                                                <span>- -</span>
+                                            ) : (
+                                                <>
+                                                    [{member.memberPost}]
+                                                    {" " + member.memberAddress1}
+                                                    {" " + member.memberAddress2}
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="row mt-4">
                                         <div className="col-2">전화번호</div>
-                                        <div className="col-10">{member.memberContact}</div>
+                                        <div className="col-10">
+                                            {!member.memberContact ? (
+                                                <span>- -</span>
+                                            ) : (
+                                                <>
+                                                    {member.memberContact}
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="row mt-4">
                                         <div className="col-2">생년월일</div>
-                                        <div className="col-10">{member.memberBirth}</div>
+                                        <div className="col-10">
+                                            {!member.memberBirth ? (
+                                                <span>- -</span>
+                                            ) : (
+                                                <>
+                                                    {member.memberBirth}
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="row mt-4">
                                         <div className="col-2">최근접속</div>
@@ -546,7 +575,9 @@ const MyPage = () => {
                                     <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
                                         className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
                                     <div className="card-body">
-                                        <h5 className="card-title">{product.productName}</h5>
+                                        <h5 className="card-title justify-content-start align-items-center"
+                                            style={{ width: "100%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", display: "block" }}>
+                                            {product.productName}</h5>
                                         <div className="card-text text-start">
                                             <div className="row mt-3">
                                                 <h5>
@@ -557,13 +588,37 @@ const MyPage = () => {
 
                                                 <div className="col d-flex align-items-center justify-content-between">
                                                     <span className="text-muted">{timeCalculate(product.productDate)}</span>
-                                                    <div className="d-flex align-items-center">
-                                                        <FaRegHeart className="text-danger mx-1" size="20" />
-                                                        {product.productLikes > 0 && (
-                                                            <spna>{product.productLikes}</spna>
-                                                        )}
+                                                </div>
+                                                <div className="text-start mt-2"
+                                                    style={{ display: 'flex', alignItems: 'center' }}>
+                                                    {/* 상품 상태 */}
+                                                    {product.productState === "판매중" && (
+                                                        <span className='badge bg-primary me-2' >
+                                                            {product.productState}
+                                                        </span>
+                                                    )}
+                                                    {product.productState === "판매보류" && (
+                                                        <span className='badge bg-danger me-2'>
+                                                            {product.productState}
+                                                        </span>
+                                                    )}
+                                                    {product.productState === "판매완료" && (
+                                                        <span className='badge bg-success me-2'>
+                                                            {product.productState}
+                                                        </span>
+                                                    )}
+                                                    {product.productLikes > 0 ? (
+                                                        <div className="d-flex align-items-center mx-1">
+                                                            <FaHeart className="text-danger me-1" size="20" />
+                                                            <span style={{ fontWeight: "600" }}>{product.productLikes}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <FaRegHeart className="text-danger mx-1" size="20" />
 
-                                                    </div>
+                                                        </>
+                                                    )}
+
                                                 </div>
                                             </div>
                                             {/* <div className="row mt-3">
@@ -622,7 +677,10 @@ const MyPage = () => {
                                     <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
                                         className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
                                     <div className="card-body">
-                                        <h5 className="card-title">{product.productName}</h5>
+                                        <h5 className="card-title justify-content-start align-items-center"
+                                            style={{ width: "100%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", display: "block" }}>
+                                            {product.productName}
+                                        </h5>
                                         <div className="card-text text-start">
                                             <div className="row mt-3">
                                                 <h5>
@@ -633,14 +691,40 @@ const MyPage = () => {
 
                                                 <div className="col d-flex align-items-center justify-content-between">
                                                     <span className="text-muted">{timeCalculate(product.productDate)}</span>
-                                                    <div className="d-flex align-items-center">
-                                                        <FaRegHeart className="text-danger mx-1" size="20" />
-                                                        {product.productLikes > 0 && (
-                                                            <spna>{product.productLikes}</spna>
-                                                        )}
-
-                                                    </div>
                                                 </div>
+                                                <div className="text-start mt-2"
+                                                    style={{ display: 'flex', alignItems: 'center' }}>
+                                                    {/* 상품 상태 */}
+                                                    {product.productState === "판매중" && (
+                                                        <span className='badge bg-primary me-2' >
+                                                            {product.productState}
+                                                        </span>
+                                                    )}
+                                                    {product.productState === "판매보류" && (
+                                                        <span className='badge bg-danger me-2'>
+                                                            {product.productState}
+                                                        </span>
+                                                    )}
+                                                    {product.productState === "판매완료" && (
+                                                        <span className='badge bg-success me-2'>
+                                                            {product.productState}
+                                                        </span>
+                                                    )}
+                                                    {product.productLikes > 0 ? (
+                                                        <div className="d-flex align-items-center mx-1">
+                                                            <FaHeart className="text-danger me-1" size="20" />
+                                                            <span style={{ fontWeight: "600" }}>{product.productLikes}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <FaRegHeart className="text-danger mx-1" size="20" />
+
+                                                        </>
+                                                    )}
+
+                                                </div>
+
+
                                             </div>
 
                                         </div>
@@ -660,7 +744,10 @@ const MyPage = () => {
                                     <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
                                         className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
                                     <div className="card-body">
-                                        <h5 className="card-title">{product.productName}</h5>
+                                        <h5 className="card-title justify-content-start align-items-center"
+                                            style={{ width: "100%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", display: "block" }}>
+                                            {product.productName}
+                                        </h5>
                                         <div className="card-text">
                                             {/* {product.productDetail} */}
                                             <div className="text-start">
@@ -673,13 +760,37 @@ const MyPage = () => {
 
                                                     <div className="col d-flex align-items-center justify-content-between">
                                                         <span className="text-muted">{timeCalculate(product.productDate)}</span>
-                                                        <div className="d-flex align-items-center">
-                                                            <FaRegHeart className="text-danger mx-1" size="20" />
-                                                            {product.productLikes > 0 && (
-                                                                <spna>{product.productLikes}</spna>
-                                                            )}
+                                                    </div>
+                                                    <div className="text-start mt-2"
+                                                        style={{ display: 'flex', alignItems: 'center' }}>
+                                                        {/* 상품 상태 */}
+                                                        {product.productState === "판매중" && (
+                                                            <span className='badge bg-primary me-2' >
+                                                                {product.productState}
+                                                            </span>
+                                                        )}
+                                                        {product.productState === "판매보류" && (
+                                                            <span className='badge bg-danger me-2'>
+                                                                {product.productState}
+                                                            </span>
+                                                        )}
+                                                        {product.productState === "판매완료" && (
+                                                            <span className='badge bg-success me-2'>
+                                                                {product.productState}
+                                                            </span>
+                                                        )}
+                                                        {product.productLikes > 0 ? (
+                                                            <div className="d-flex align-items-center mx-1">
+                                                                <FaHeart className="text-danger me-1" size="20" />
+                                                                <span style={{ fontWeight: "600" }}>{product.productLikes}</span>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <FaRegHeart className="text-danger mx-1" size="20" />
 
-                                                        </div>
+                                                            </>
+                                                        )}
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -700,7 +811,10 @@ const MyPage = () => {
                                     <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
                                         className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
                                     <div className="card-body">
-                                        <h5 className="card-title">{product.productName}</h5>
+                                        <h5 className="card-title justify-content-start align-items-center"
+                                            style={{ width: "100%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", display: "block" }}>
+                                            {product.productName}
+                                        </h5>
                                         <div className="card-text">
                                             {/* {product.productDetail} */}
                                             <div className="row mt-3">
@@ -712,13 +826,37 @@ const MyPage = () => {
 
                                                 <div className="col d-flex align-items-center justify-content-between">
                                                     <span className="text-muted">{timeCalculate(product.productDate)}</span>
-                                                    <div className="d-flex align-items-center">
-                                                        <FaRegHeart className="text-danger mx-1" size="20" />
-                                                        {product.productLikes > 0 && (
-                                                            <spna>{product.productLikes}</spna>
-                                                        )}
+                                                </div>
+                                                <div className="text-start mt-2"
+                                                    style={{ display: 'flex', alignItems: 'center' }}>
+                                                    {/* 상품 상태 */}
+                                                    {product.productState === "판매중" && (
+                                                        <span className='badge bg-primary me-2' >
+                                                            {product.productState}
+                                                        </span>
+                                                    )}
+                                                    {product.productState === "판매보류" && (
+                                                        <span className='badge bg-danger me-2'>
+                                                            {product.productState}
+                                                        </span>
+                                                    )}
+                                                    {product.productState === "판매완료" && (
+                                                        <span className='badge bg-success me-2'>
+                                                            {product.productState}
+                                                        </span>
+                                                    )}
+                                                    {product.productLikes > 0 ? (
+                                                        <div className="d-flex align-items-center mx-1">
+                                                            <FaHeart className="text-danger me-1" size="20" />
+                                                            <span style={{ fontWeight: "600" }}>{product.productLikes}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <FaRegHeart className="text-danger mx-1" size="20" />
 
-                                                    </div>
+                                                        </>
+                                                    )}
+
                                                 </div>
                                             </div>
                                         </div>
@@ -743,7 +881,7 @@ const MyPage = () => {
             </div>
             <div className="offcanvas-body">
                 {soldoutList.map((product) => (
-                    <div className="row" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)} data-bs-dismiss="offcanvas">
+                    <div className="row" key={product.productNo} data-bs-dismiss="offcanvas">
                         <div className="col-6">
                             <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`} className="card-img-top" />
                         </div>
