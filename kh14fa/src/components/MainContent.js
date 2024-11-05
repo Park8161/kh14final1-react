@@ -28,6 +28,8 @@ import Qna from "./tmp/Qna";
 import Pay from "./tmp/Pay";
 import Review from "./tmp/Review";
 import AdminRoute from "./router/AdminRoute";
+import Faq from "./tmp/Faq";
+import FaqList from "./faq/FaqList";
 
 // component
 const MainContent = ()=>{
@@ -64,6 +66,7 @@ const MainContent = ()=>{
                             <Route path="/review/*" element={<Review/>} />
                             <Route path="/qna/*" element={<Qna/>} />
                             <Route path="/notice/*" element={<Notice/>} />
+                            <Route path="/faq/list" element={<FaqList/>} />
                             <Route path="/admin/*" element={<AdminRoute element={<Admin/>}/>}/> {/* 관리자만 접근 가능 */}
 
                             {/* exact path : 정확하게 일치할때만 나오게 할 수 있다 */}
