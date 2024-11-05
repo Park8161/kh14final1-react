@@ -144,7 +144,7 @@ const QnaDetail = () => {
     return (
         <>
             <div className="row mt-4">
-                <div className="col-8 offset-2 border">
+                <div className="col-8 offset-2">
 
                     {/* QnA 정보 표시 */}
                     <div className="row mt-4">
@@ -173,7 +173,7 @@ const QnaDetail = () => {
                 </div>
             </div>
             <div className="row mt-4">
-                <div className="col-8 offset-2 text-end pe-0">
+                <div className="col-8 offset-2 text-end pe-4">
                     <button className="btn btn-secondary ms-2" onClick={() => navigate("/qna/list")}>목록</button>
                     {qna.qnaWriter === memberId && (
                         <>
@@ -198,6 +198,7 @@ const QnaDetail = () => {
                                         rows="3"
                                         value={reply}
                                         onChange={handleReplyChange}
+                                        style={{height:"100px",resize:"none"}}
                                         placeholder="답글을 입력하세요"
                                     />
                                     <button className="btn btn-primary float-end mt-2" type="submit">답글 추가</button>
@@ -256,22 +257,6 @@ const QnaDetail = () => {
                     </div>
                 </div>
             </div>
-
-
-            {/* 버튼들 */}
-            {/* <div className="row mt-4">
-                <div className="col-8 offset-2 text-end pe-0">
-                    <button className="btn btn-secondary ms-2" onClick={() => navigate("/qna/list")}>목록</button>
-                    {qna.qnaWriter === memberId && (
-                        <>
-                            <button className="btn btn-info ms-2" onClick={() => {
-                                navigate("/qna/edit/" + qnaNo)
-                            }}>수정</button>
-                            <button className="btn btn-danger ms-2" onClick={handleDeleteClick}>삭제</button>
-                        </>
-                    )}
-                </div>
-            </div> */}
 
             {/* 삭제 확인 모달 */}
             <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
