@@ -35,6 +35,7 @@ const AdminMemberList = ()=> {
 
     //검색 callback
     const searchMemberList = useCallback(async()=>{
+        if(column.trim().length === 0) return;
         if(keyword.trim().length === 0){
             setFilteredMembers(memberList); // 검색어가 없으면 전체 목록으로 복원
             setPage(1); // 검색 시 첫 페이지로 돌아가도록 설정
