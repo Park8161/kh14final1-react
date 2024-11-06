@@ -449,7 +449,7 @@ const Home = () => {
                                     <FaRegHeart className="text-danger" size="25" />
                                 )}
                                 {product.productLikes}  */}
-                                    {product.productLikes > 0 ? (
+                                    {/* {product.productLikes > 0 ? (
                                         <div className="d-flex align-items-center mx-1">
                                             <FaHeart className="text-danger me-1" size="20" />
                                             <span style={{ fontWeight: "600" }}>{product.productLikes}</span>
@@ -459,7 +459,7 @@ const Home = () => {
                                             <FaRegHeart className="text-danger mx-1" size="20" />
 
                                         </>
-                                    )}
+                                    )} */}
 
                                 </div>
                             </div>
@@ -525,7 +525,7 @@ const Home = () => {
                                     <FaRegHeart className="text-danger" size="25" />
                                 )}
                                 {product.productLikes}  */}
-                                    {product.productLikes > 0 ? (
+                                    {/* {product.productLikes > 0 ? (
                                         <div className="d-flex align-items-center mx-1">
                                             <FaHeart className="text-danger me-1" size="20" />
                                             <span style={{ fontWeight: "600" }}>{product.productLikes}</span>
@@ -535,7 +535,7 @@ const Home = () => {
                                             <FaRegHeart className="text-danger mx-1" size="20" />
 
                                         </>
-                                    )}
+                                    )} */}
 
                                 </div>
                             </div>
@@ -601,7 +601,7 @@ const Home = () => {
                                     <FaRegHeart className="text-danger" size="25" />
                                 )}
                                 {product.productLikes}  */}
-                                    {product.productLikes > 0 ? (
+                                    {/* {product.productLikes > 0 ? (
                                         <div className="d-flex align-items-center mx-1">
                                             <FaHeart className="text-danger me-1" size="20" />
                                             <span style={{ fontWeight: "600" }}>{product.productLikes}</span>
@@ -611,7 +611,7 @@ const Home = () => {
                                             <FaRegHeart className="text-danger mx-1" size="20" />
 
                                         </>
-                                    )}
+                                    )} */}
 
                                 </div>
                             </div>
