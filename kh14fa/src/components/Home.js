@@ -7,6 +7,7 @@ import { random, throttle } from "lodash";
 import { useRecoilValue } from "recoil";
 import { memberIdState, memberLoadingState, productColumnState, productKeywordState } from "../utils/recoil";
 import moment from 'moment-timezone';
+import { BsFire } from "react-icons/bs";
 // component
 const Home = () => {
     // navigate
@@ -525,8 +526,9 @@ const Home = () => {
 
         {/* 좋아요 수 */}
         <div className="row" style={{ marginTop: "100px" }}>
-            <h3>
+            <h3 className="align-items-center">
                 <span style={{ fontWeight: "600", color: "#1e272e" }}>인기상품</span>
+                <BsFire style={{marginBottom:"5px"}}/>
             </h3>
             {result.likePd.map((product) => (
                 <div className="col-sm-5 col-md-5 col-lg-2 mt-3 cursor-pointer" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
@@ -573,12 +575,17 @@ const Home = () => {
                                             {product.productState}
                                         </span>
                                     )}
-                                    {/* {like[product.productNo] ? (
-                                    <FaHeart className="text-danger" size="25" />
-                                ) : (
-                                    <FaRegHeart className="text-danger" size="25" />
-                                )}
-                                {product.productLikes}  */}
+                                  {product.productLikes > 0 ? (
+                                        <div className="d-flex align-items-center mx-1">
+                                            <FaHeart className="text-danger me-1" size="20" />
+                                            <span style={{ fontWeight: "600" }}>{product.productLikes}</span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <FaRegHeart className="text-danger mx-1" size="20" />
+
+                                        </>
+                                    )}
 
                                 </div>
                             </div>

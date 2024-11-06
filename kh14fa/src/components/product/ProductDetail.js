@@ -250,10 +250,10 @@ const ProductDetail = () => {
 
                 {/* 이미지 오른쪽에 상품 정보 및 기능 */}
                 <div className="col-7 align-items-center">
-                    <div className="row mt-2 ps-1">
+                    <div className="row mt-2">
                         <div className="d-flex justify-content-start align-items-center" style={{ padding: "9" }}>
-                            <span className="text-muted">{category.category1st} <FaChevronRight /></span>
-                            <span className="text-muted">{category.category2nd} <FaChevronRight /></span>
+                            <span className="text-muted">{category.category1st} <FaChevronRight/></span>
+                            <span className="text-muted">{category.category2nd} <FaChevronRight/></span>
                             <span style={{ fontWeight: "500" }}>{category.category3rd}</span>
                         </div>
                     </div>
@@ -434,7 +434,7 @@ const ProductDetail = () => {
             {/* 연관/추천 상품, 이런 상품은 어때요? */}
             {relationList.length !== 0 && (
                 <div className="row mt-1">
-                    <div className="col">
+                    <div className="col" style={{padding:"0"}}>
                         <ul className="list-group list-group-flush">
                             <li className="list-group-item" style={{ border: "none" }}>
                                 <h4 style={{ fontWeight: "600" }}>이런 상품은 어때요?</h4>
