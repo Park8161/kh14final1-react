@@ -286,7 +286,9 @@ const Menu = () => {
             <nav className="navbar navbar-expand-lg bg-primary fixed-top" data-bs-theme="dark" >
                 <div className="container-fluid">
                     {/* 메인 로고 또는 텍스트가 존재하는 위치 */}
-                    <NavLink className="navbar-brand me-4" to="/">KH정보교육원</NavLink>
+                    <NavLink className="navbar-brand me-2" style={{fontWeight:"600"}} to="/">
+                        Once Upon A Time
+                    </NavLink>
 
                     {/* 
                         실제 메뉴 영역

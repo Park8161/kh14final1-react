@@ -45,6 +45,10 @@ const ProductDetail = () => {
         }
     }, [memberId]);
 
+    useEffect(() => {
+        window.scrollTo(0, 0); // 페이지가 로드되면 스크롤을 맨 위로 이동
+    }, []);
+
     useEffect(()=>{
         countPayment(product.productMember);
     },[product]);
