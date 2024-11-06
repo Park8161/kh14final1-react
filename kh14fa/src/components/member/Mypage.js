@@ -83,9 +83,9 @@ const MyPage = () => {
     const loadMember = useCallback(async () => {
         const response = await axios.get("/member/mypage");
         setMember(response.data);
-        // console.log(response.data);
+        console.log(response.data);
         loadReview();
-        countReview();
+        countReview(response.data.memberId);
         loadReview2();
     }, [member]);
 
@@ -158,8 +158,8 @@ const MyPage = () => {
     }, [review2List, member]);
 
     // 내가 받은 리뷰 개수 카운트 불러오기
-    const countReview = useCallback(async () => {
-        const response = await axios.get("/review/count/" + member.memberId);
+    const countReview = useCallback(async (memberId) => {
+        const response = await axios.get("/review/count/" + memberId);
         setReviewCount(response.data);
     }, [review, member]);
 
@@ -932,11 +932,11 @@ const MyPage = () => {
             <div className="offcanvas-body">
                 {payList.map((payment) => (
                     <div className="row mt-2" key={payment.paymentNo} data-bs-dismiss="offcanvas">
-                        <div className="col-5">
+                        <div className="col-5 me-2">
                             <img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${payment.attachment}`} className="card-img-top" 
                                  style={{width:"160px", height:"160px", objectFit: 'cover'}}/>
                         </div>
-                        <div className="col-7 mt-2">
+                        <div className="col-6 mt-2">
                             <div className="row">
                                 <div className="col ms-1">
                                     {payment.paymentName}
@@ -1009,7 +1009,7 @@ const MyPage = () => {
                                     </div>
                                     <div className="row mt-1">
                                         <div className="col btn-group text-end">
-                                            <button className="btn btn-primary w-100 btn-sm ms-1" disabled>
+                                            <button className="btn btn-primary w-100 btn-sm" disabled>
                                                 결제 취소 완료
                                             </button>
                                         </div>
