@@ -100,7 +100,6 @@ const ReviewInsert = ()=>{
                     <h5 className="mt-3">구매 완료한 상품 정보</h5>
 
                     <div className="row">
-                        <label className="ps-4">상품 이미지</label>
                         {images.map((image,index)=>(
                         <div className="col-2" key={index}>
                             <div className="form-control">
@@ -110,7 +109,7 @@ const ReviewInsert = ()=>{
                         ))}
                     </div>
 
-                    <div className="row mt-1 mb-4 text-center">
+                    <div className="row mt-4 mb-4 text-center">
                         <div className="col-2 w-auto">
                             <label>품명</label>
                             <div className="form-control text-truncate">{product.productName}</div>
@@ -143,7 +142,7 @@ const ReviewInsert = ()=>{
             <div className="row mt-4">
                 <div className="col border">
                     <h5 className="mt-3 mb-0">{memberId}님,</h5>
-                    <h5 className="mt-0">{product.productMember}님과 거래는 어떠셨나요?</h5>
+                    <h5 className="mt-1">{product.productMember}님과 거래는 어떠셨나요?</h5>
                     <small className="text-muted">거래 선호도는 나만 볼 수 있어요</small>
                     <div className="row mt-3 ms-3 text-center">
                         <div className={"col-2 pt-3 "+(reviewscore === 1 && "border")} name="reviewScore" value={1} onClick={e=>setReviewscore(1)}>
@@ -160,8 +159,10 @@ const ReviewInsert = ()=>{
                         </div>
                         {/* <div>{reviewscore}</div> */}
                     </div>
-
-                    <div className="row mt-1">
+                    {/*margin 안돼서 그냥 br로 처리 */}
+                    <br/>
+                    <br/>
+                    <div className="row mt-6">
                         <div className="col">
                             <h5 className="mt-3 mb-0">따뜻한 거래 경험을 알려주세요!</h5>
                             <small className="text-muted">남겨주신 거래 후기는 상대방의 프로필에 공개돼요</small>
@@ -171,10 +172,10 @@ const ReviewInsert = ()=>{
                         <span className="text-end">{input.reviewContent.length}/100</span>
                     </div>
 
-                    <div className="row mt-4 mb-4 ">
+                    <div className="row mt-2 mb-4">
                         <div className="col text-end">
-                            <button className="btn btn-danger me-2" onClick={e=>navigate("/member/mypage")}>돌아가기</button>
-                            <button className="btn btn-success me-2" onClick={insertReview}>작성하기</button>
+                            <button className="btn btn-secondary me-2" onClick={e=>navigate("/member/mypage")}>돌아가기</button>
+                            <button className="btn btn-primary me-0" onClick={insertReview}>작성하기</button>
                         </div>
                     </div>
                 </div>
