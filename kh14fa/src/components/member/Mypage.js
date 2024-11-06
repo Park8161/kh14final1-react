@@ -84,7 +84,7 @@ const MyPage = () => {
     const loadMember = useCallback(async () => {
         const response = await axios.get("/member/mypage");
         setMember(response.data);
-        console.log(response.data);
+        // console.log(response.data);
         loadReview();
         countReview(response.data.memberId);
         loadReview2();
