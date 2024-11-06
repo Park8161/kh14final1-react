@@ -324,7 +324,7 @@ const MyPage = () => {
     }
   
     return (<>
-        {/* <Jumbotron title={`${member.memberId} 님의 정보`}/> */}
+        {/*  <Jumbotron title={`${member.memberId} 님의 정보`}/>  */}
 
         <div className="row mt-4">
 
