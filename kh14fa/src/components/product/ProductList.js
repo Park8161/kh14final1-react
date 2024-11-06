@@ -7,7 +7,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import { useNavigate } from "react-router";
 import { random, throttle } from "lodash";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { memberIdState, memberLoadingState, productColumnState, productKeywordState } from "../../utils/recoil";
 import moment from 'moment-timezone';
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
@@ -19,8 +19,8 @@ const ProductList = () => {
 	const navigate = useNavigate();
 
 	// recoil
-	const productColumn = useRecoilValue(productColumnState);
-	const productKeyword = useRecoilValue(productKeywordState);
+	const [productColumn, setProductColumn] = useRecoilState(productColumnState);
+	const [productKeyword, setProductKeyword] = useRecoilState(productKeywordState);
 	const memberId = useRecoilValue(memberIdState);
 
 	// state
@@ -110,6 +110,8 @@ const ProductList = () => {
 		// setProductList(response.data.productList);
 		// console.log(response.data.productList);
 		setResult(response.data);
+		setProductColumn(null);
+		setProductKeyword(null);
 		loading.current = false;
 	}, [input, productColumn, productKeyword]);
 
@@ -285,61 +287,28 @@ const ProductList = () => {
 		navigate(`/Chat/roomlist`);
 	});
 
-	return (<>
 	
-		{/* <div classNameName="col-sm-4 col-md-4 col-lg-3 mt-3">
-  <div classNameName="Carousel">
-      <Carousel.Item>
-        <img src="https://placehold.co/800x600" text="First slide" />
-        <Carousel.Caption>
-          <h3>First slide label</h3>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-        </Carousel.Caption>
-      </Carousel.Item>
-      <Carousel.Item>
-        <img src="https://placehold.co/800x600" text="Second slide" />
-        <Carousel.Caption>
-          <h3>Second slide label</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </Carousel.Caption>
-      </Carousel.Item>
-      <Carousel.Item>
-        <img src="https://placehold.co/800x600" text="Third slide" />
-        <Carousel.Caption>
-          <h3>Third slide label</h3>
-          <p>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur.
-          </p>
-        </Carousel.Caption>
-      </Carousel.Item>
-    </div>
-    </div> */}
 
-		{/* 검색창 */}
-		{/* <div className="row mt-4">
-			<div className="col-6 offset-3">
-				<div className="input-group w-auto">
-					<select type="search" className="form-select bg-white" 
-							name="column" value={input.column} onChange={changeInput}>
-						<option value="">선택</option>
-						<option value="product_name">상품명</option>
-						<option value="product_member">판매자</option>
-					</select>
-					<input type="search" className="form-control w-auto bg-white" 
-							name="keyword" value={input.keyword} onChange={changeInput}/>
-					<button type="button" className="btn btn-dark d-flex justify-content-center align-items-center" onClick={loadProductList}>
-						<FaMagnifyingGlass />
-						검색
-					</button>
-				</div>
+	return (<>
+		{input.keyword === "" ? (
+			<div className="row" style={{ marginTop: "120px", marginBottom:"110px" }}>
+				<h3>
+					검색어를 입력해주세요
+				</h3>
 			</div>
-		</div> */}
-
-
-		{/* 상품 목록 */}
+		) : result.productList.length === 0 ? (
+			<div className="row" style={{ marginTop: "120px", marginBottom:"62px" }}>
+				<h3>
+					<span className="me-2" style={{ fontWeight: "600", color: "#1e272e" }}>'{input.keyword}'</span>
+					<span>검색결과</span>
+				</h3>
+					<p className="mt-2">상품 검색 결과가 없습니다</p>
+			</div>
+		) : (
 		<div className="row" style={{ marginTop: "120px" }}>
 			<h3>
-				<span style={{ fontWeight: "600", color: "#1e272e" }}>전체 상품 목록</span>
+				<span className="me-2" style={{ fontWeight: "600", color: "#1e272e" }}>'{input.keyword}'</span>
+				<span>검색결과</span>
 			</h3>
 			{result.productList.map((product) => (
 				<div className="col-sm-5 col-md-5 col-lg-2 mt-3 cursor-pointer" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
@@ -392,17 +361,6 @@ const ProductList = () => {
 										<FaRegHeart className="text-danger" size="25" />
 									)}
 									{product.productLikes}  */}
-									{product.productLikes > 0 ? (
-										<div className="d-flex align-items-center mx-1">
-											<FaHeart className="text-danger me-1" size="20" />
-											<span style={{ fontWeight: "600" }}>{product.productLikes}</span>
-										</div>
-									) : (
-										<>
-											<FaRegHeart className="text-danger mx-1" size="20" />
-
-										</>
-									)}
 
 								</div>
 							</div>
@@ -411,8 +369,7 @@ const ProductList = () => {
 				</div>
 			))}
 		</div>
-
-		
+)}
 	</>);
 };
 export default ProductList;
