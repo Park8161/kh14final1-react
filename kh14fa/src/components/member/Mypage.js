@@ -506,7 +506,7 @@ const MyPage = () => {
                                     <div className="row mt-4">
                                         <div className="col-2"><span style={{fontWeight:"600"}}>주소</span></div>
                                         <div className="col-10">
-                                            {!member.mebmerPost ? (
+                                            {member.memberAddress1 === null || member.memberAddress2 === null ? (
                                                 <span>- -</span>
                                             ) : (
                                                 <>
