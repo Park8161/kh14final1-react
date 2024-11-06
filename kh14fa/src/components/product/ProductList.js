@@ -291,13 +291,13 @@ const ProductList = () => {
 
 	return (<>
 		{input.keyword === "" ? (
-			<div className="row" style={{ marginTop: "120px", marginBottom:"110px" }}>
+			<div className="row" style={{ marginTop: "120px", marginBottom:"124px" }}>
 				<h3>
 					검색어를 입력해주세요
 				</h3>
 			</div>
 		) : result.productList.length === 0 ? (
-			<div className="row" style={{ marginTop: "120px", marginBottom:"62px" }}>
+			<div className="row" style={{ marginTop: "120px", marginBottom:"74px" }}>
 				<h3>
 					<span className="me-2" style={{ fontWeight: "600", color: "#1e272e" }}>'{input.keyword}'</span>
 					<span>검색결과</span>
