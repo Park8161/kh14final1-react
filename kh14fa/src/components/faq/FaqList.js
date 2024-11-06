@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Accordion } from "react-bootstrap";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const FaqList = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0); // 페이지가 로드되면 스크롤을 맨 위로 이동
+    }, []);
     // FAQ 내용 (HTML 형식)
     const faqContent = [
         `개인정보 : 개인정보를 사고파는 행위와 면허증, 허가증, 등록증 등을 위, 변조하는 행위는 형법에 따라 처벌받을 수 있습니다.
