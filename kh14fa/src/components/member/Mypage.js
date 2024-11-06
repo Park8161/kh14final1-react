@@ -1190,7 +1190,7 @@ const MyPage = () => {
                 <span style={{fontWeight:"600", fontSize:"20px"}}>{member.memberId}</span>
                 <span>님이 쓴 거래 후기</span>
                 {reviewList.map((review) => (
-                    <div className="row mt-4" key={review.reviewNo} style={{background:"#F1F6F9", padding: "12px"}}>
+                    <div className="row mt-2" key={review.reviewNo} style={{background:"#F1F6F9", padding: "12px"}}>
                         <div className="col">
                             <div className="row">
                                 <div className="col-2 mt-2">
@@ -1243,7 +1243,7 @@ const MyPage = () => {
                 <span style={{fontWeight:"600", fontSize:"20px"}}>{member.memberId}</span>
                 <span>님이 받은 거래 후기</span>
                 {reviewList.map((review) => (
-                    <div className="row mt-4" key={review.reviewNo} style={{background:"#F1F6F9", padding: "12px"}}>
+                    <div className="row mt-2" key={review.reviewNo} style={{background:"#F1F6F9", padding: "12px"}}>
                         <div className="col">
                             <div className="row">
                                 <div className="col-2 mt-2">
