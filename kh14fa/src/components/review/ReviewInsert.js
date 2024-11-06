@@ -70,10 +70,10 @@ const ReviewInsert = ()=>{
             reviewScore : reviewscore
         });
         await axios.post("/review/insert/"+productNo, input);
-        toast.success("작성 완료");
-        navigate(); // 결제내역으로 이동 : 주소 나중에 추가
         const memberReliability = (await axios.get("/member/mypage")).data.memberReliability;
         await axios.patch("/member/patch", {memberReliability : memberReliability+reviewscore});
+        toast.success("작성 완료");
+        navigate("/member/mypage"); // 결제내역으로 이동 : 주소 나중에 추가
     },[input,reviewscore]);
     
     // 리뷰 아이콘 누르면 점수가 state로 전송되게 하기
