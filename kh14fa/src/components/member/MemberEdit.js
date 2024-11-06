@@ -90,13 +90,13 @@ const MemberEdit = ()=>{
         setMemberEmailClass(valid ? "is-valid" : "is-invalid");
     },[edit]);
     const checkMemberAddress = useCallback(()=>{
-        const check1 = (!edit.memberPost || edit.memberPost.length === 0) && 
+        const check1 = (!edit.memberPost || edit.memberPost === null) && 
                        (!edit.memberAddress1 || edit.memberAddress1.length === 0) && 
                        (!edit.memberAddress2 || edit.memberAddress2.length === 0);
         const check2 = (edit.memberPost && edit.memberPost.length > 0) && 
                        (edit.memberAddress1 && edit.memberAddress1.length > 0) && 
                        (edit.memberAddress2 && edit.memberAddress2.length > 0);
-        const checkPost = edit.memberPost.length >= 6 && /^[0-9]{6}$/;
+        const checkPost = edit.memberPost && edit.memberPost.length === 6 && /^[0-9]{6}$/.test(edit.memberPost);
         const valid = check1 || (check2 && checkPost);
         setMemberAddressValid(valid);
         if(check1) setMemberAddressClass("");
@@ -153,7 +153,7 @@ const MemberEdit = ()=>{
                                 <input type="text" className={"form-control "+memberAddressClass} placeholder="상세주소"
                                     name="memberAddress2" value={edit.memberAddress2} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
                                 <div className="valid-feedback">좋은 곳에 사시는군요!</div>
-                                <div className="invalid-feedback">모두 입력하거나 모두 비워주세요(우편번호 : 0~6자 숫자만)</div>
+                                <div className="invalid-feedback">모두 입력하거나 모두 비워주세요(우편번호 : 6자리 숫자만)</div>
                         </div>
                     </div>
                     <div className="row mt-4">

@@ -6,7 +6,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import { FaAsterisk } from "react-icons/fa6";
 
-
 const AdminMemberEdit = ()=>{
     // navigate
     const navigate = useNavigate();
@@ -25,7 +24,7 @@ const AdminMemberEdit = ()=>{
         memberAddress2 : "",
         memberContact : "",
         memberBirth : "",
-        memberPoint : "",
+        memberPoint : 0,
         memberJoin : "",
         memberLogin : "",
     });
@@ -36,11 +35,12 @@ const AdminMemberEdit = ()=>{
     const [memberAddressValid, setMemberAddressValid] = useState(true);
     const [memberContactValid, setMemberContactValid] = useState(true);
     const [memberBirthValid, setMemberBirthValid] = useState(true);
+    const [memberPointValid, setMemberPointValid] = useState(true);
     const [memberNameClass, setMemberNameClass] = useState("");
     const [memberEmailClass, setMemberEmailClass] = useState("");
-    const [memberAddressClass, setMemberAddressClass] = useState("");
     const [memberContactClass, setMemberContactClass] = useState("");
     const [memberBirthClass, setMemberBirthClass] = useState("");
+    const [memberPointClass, setMemberPointClass] = useState("");
 
     //effect
     useEffect(()=>{
@@ -50,13 +50,13 @@ const AdminMemberEdit = ()=>{
     // memo
     const isAllValid = useMemo(()=>{
         const passCheck = memberNameValid && memberEmailValid && memberAddressValid 
-                        && memberContactValid && memberBirthValid;
+                        && memberContactValid && memberBirthValid && memberPointValid;
         return passCheck;
-    },[memberNameValid,memberEmailValid,memberAddressValid,memberContactValid,memberBirthValid]);
+    },[memberNameValid,memberEmailValid,memberAddressValid,memberContactValid,memberBirthValid, memberPointValid]);
     
     //callback
     const loadMember = useCallback(async ()=>{
-        console.log(memberId);
+        // console.log(memberId);
         const response = await axios.get("/admin/member/detail/" + memberId);
         setEdit({
             ...response.data,
@@ -70,7 +70,7 @@ const AdminMemberEdit = ()=>{
     const goMemberEdit = useCallback(async()=>{
         if(isAllValid === false) return;
 
-        const { memberPoint, memberJoin, memberLogin, ...updateData } = edit;
+        const { memberJoin, memberLogin, ...updateData } = edit;
         const response = await axios.put("/admin/member/edit", updateData);
         navigate(`/admin/member/detail/${memberId}`);
     
@@ -97,19 +97,6 @@ const AdminMemberEdit = ()=>{
         setMemberEmailValid(valid);
         setMemberEmailClass(valid ? "is-valid" : "is-invalid");
     },[edit]);
-    const checkMemberAddress = useCallback(()=>{
-        const check1 = (!edit.memberPost || edit.memberPost === null) && 
-                        (!edit.memberAddress1 || edit.memberAddress1.length === 0) && 
-                        (!edit.memberAddress2 || edit.memberAddress2.length === 0);
-        const check2 = (edit.memberPost && edit.memberPost > null) && 
-                        (edit.memberAddress1 && edit.memberAddress1.length > 0) && 
-                        (edit.memberAddress2 && edit.memberAddress2.length > 0);
-        const checkPost = edit.memberPost.length >= 6 && /^[0-9]{6}$/;
-        const valid = check1 || (check2 && checkPost);
-        setMemberAddressValid(valid);
-        if(check1) setMemberAddressClass("");
-        else setMemberAddressClass(valid ? "is-valid" : "is-invalid");
-    }, [edit]);
     const checkMemberContact = useCallback(()=>{
         const regex = /^010[1-9][0-9]{6,7}$/;
         const valid = regex.test(edit.memberContact) || edit.memberContact === null;
@@ -124,7 +111,12 @@ const AdminMemberEdit = ()=>{
         if(edit.memberBirth === null) setMemberBirthClass("");
         else setMemberBirthClass(valid ? "is-valid" : "is-invalid");
     },[edit]);
-
+    const checkMemberPoint = useCallback(()=>{
+        const valid = edit.memberPoint >= 0;
+        setMemberPointValid(valid);
+        if(edit.memberPoint === null) setMemberPointClass("");
+        else setMemberPointClass(valid ? "is-valid" : "is-invalid");
+    },[edit])
     // view
     return(
         <>
@@ -149,19 +141,6 @@ const AdminMemberEdit = ()=>{
                                 name="memberEmail" value={edit.memberEmail} onChange={changeEdit} onBlur={checkMemberEmail} onFocus={checkMemberEmail} />
                             <div className="valid-feedback">좋은 이메일이에요!</div>
                             <div className="invalid-feedback">이메일 형식을 지켜주세요(미입력 불가)</div>
-                        </div>
-                    </div>
-                    <div className="row mt-3">
-                        <div className="col-3">주소</div>
-                        <div className="col-5 ps-1">
-                                <input type="text" className={"form-control w-auto "+memberAddressClass} placeholder="우편번호"
-                                    name="memberPost" value={edit.memberPost} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
-                                <input type="text" className={"form-control "+memberAddressClass} placeholder="기본주소"
-                                    name="memberAddress1" value={edit.memberAddress1} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
-                                <input type="text" className={"form-control "+memberAddressClass} placeholder="상세주소"
-                                    name="memberAddress2" value={edit.memberAddress2} onChange={changeEdit} onBlur={checkMemberAddress} onFocus={checkMemberAddress} />
-                                <div className="valid-feedback">좋은 곳에 사시는군요!</div>
-                                <div className="invalid-feedback">모두 입력하거나 모두 비워주세요(우편번호 : 0~6자 숫자만)</div>
                         </div>
                     </div>
                     <div className="row mt-3">
@@ -198,10 +177,13 @@ const AdminMemberEdit = ()=>{
                         </select>
                         </div>
                 </div>
-
                     <div className="row mt-3">
                         <div className="col-3 d-flex align-items-center">포인트</div>
-                        <div className="col-5">{edit.memberPoint} (수정불가)</div>
+                        <div className="col-5 ps-1">
+                            <input type="number" className={"form-control "+memberPointClass} name="memberPoint"
+                            value={edit.memberPoint} onChange={changeEdit} onBlur={checkMemberPoint} onFocus={checkMemberPoint} />
+                            <div className="invalid-feedback">0 이상 숫자만 입력 가능</div>
+                        </div>
                     </div>
                     <div className="row mt-3">
                         <div className="col-3 d-flex align-items-center">가입일</div>
