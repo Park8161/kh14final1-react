@@ -89,7 +89,7 @@ const ChatRoom = () => {
                 // @@파일 첨부 추가 코드 - 파일 목록
                 client.subscribe(`/private/chat/${roomNo}/fileList`, (fileMessageList) => {
                     const data = JSON.parse(fileMessageList.body);
-                    console.log(data);
+                    //console.log(data);
                     setMessageList(prev => {
                         const newMessageList = [...prev]; // 기존 메시지 목록 복사
                         data.forEach(item => {
@@ -127,7 +127,7 @@ const ChatRoom = () => {
                     // setFileMessageList(prev => [...prev, data]);
                     //updateMessageList({ ...data});
                     const data = JSON.parse(fileMessage.body);
-                    console.log(data);
+                    //console.log(data);
                     //기존 messageList에 type이 file인 배열들을 추가함
                     const newMessage = {
                         image: `${process.env.REACT_APP_BASE_URL}/attach/download/${data.image}`,
@@ -236,7 +236,7 @@ const ChatRoom = () => {
         if (resp.status === 200) {
             // 파일 업로드 성공 처리
             inputFileRef.current.value = "";
-            console.log("파일목록업데이트")
+            //console.log("파일목록업데이트")
         } else {
             // 오류 처리
             console.error("파일 업로드 실패");
@@ -264,7 +264,7 @@ const ChatRoom = () => {
         if (resp.status === 200) {
             // 파일 업로드 성공 처리
             inputFileRef.current.value = ""
-            console.log("파일전송됨");
+            //console.log("파일전송됨");
             loadFileImage();
         } else {
             // 오류 처리
