@@ -17,7 +17,6 @@ import '../style/Search.css';
 import { TbShoppingBagEdit } from "react-icons/tb";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { BiSolidHot } from "react-icons/bi";
-import logo2 from "./logo2.png";
 
 // component
 const Menu = () => {
