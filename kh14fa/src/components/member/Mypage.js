@@ -314,7 +314,14 @@ const MyPage = () => {
             return `${Math.floor(years)}년 전`;
         }
     };
+    // 내 정보 확인 버튼관련
+    const [btnActive, setBtnActive] = useState(false);
 
+    const toggleActive = (e) => {
+        setBtnActive((prev)=>{
+            return !prev;
+        });
+    }
   
     return (<>
         {/* <Jumbotron title={`${member.memberId} 님의 정보`}/> */}
@@ -417,7 +424,7 @@ const MyPage = () => {
                         <div className="row mt-3">
                             <div className="col">
                                 <ul className="list-group list-group-horizontal" style={{ maxHeight: "75px" }}>
-                                    <li className="list-group-item text-center" style={{ width: "33.3%" }}>
+                                    <li className="list-group-item text-center" style={{ width: "50%" }}>
                                         <div className="row">
                                             <div className="col">
                                                 <small className="text-muted mx-2">거래횟수</small>
@@ -429,7 +436,7 @@ const MyPage = () => {
                                             </div>
                                         </div>
                                     </li>
-                                    <li className="list-group-item text-center" style={{ width: "33.3%" }}>
+                                    <li className="list-group-item text-center" style={{ width: "50%" }}>
                                         <div className="row">
                                             <div className="col">
                                                 <small className="text-muted mx-2">거래후기</small>
@@ -467,8 +474,8 @@ const MyPage = () => {
 
                 <div className="row mt-3 justify-content">
                     <div className="col">
-                        <button className="btn btn-outline-primary" type="button" data-bs-toggle="collapse" 
-                                    data-bs-target="#myInfo" style={{fontWeight:"400"}}>
+                        <button  className={`btn btn-outline-primary ${btnActive ? 'active' : ''}`}  type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#myInfo" style={{fontWeight:"400"}} onClick={toggleActive}>
                             내 정보 확인
                         </button>
                         <div className="collapse  mt-4 p-4 border" id="myInfo">
@@ -548,7 +555,7 @@ const MyPage = () => {
                     </div>
                 </div>
 
-                <div className="row text-center" style={{marginTop:"60px"}} >
+                <div className="row text-center" style={{marginTop:"55px"}} >
                     <div className="col-3">
                         <button className={collapse.productButton} 
                                                             name="product"  onClick={changeCollapse} style={{border: "none",fontWeight:"600"}}>내 상품</button>
@@ -673,7 +680,7 @@ const MyPage = () => {
 
                 {/* 판매중 */}
                 {collapse.sell === true && (
-                    <div className="row mt-4 ms-4">
+                    <div className="row mt-4">
                         {sellList.map((product) => (
                             <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
                                 <div className="card">
@@ -740,7 +747,7 @@ const MyPage = () => {
 
                 {/* 예약중 */}
                 {collapse.reserve === true && (
-                    <div className="row mt-4 ms-4">
+                    <div className="row mt-4">
                         {reserveList.map((product) => (
                             <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
                                 <div className="card">
@@ -807,7 +814,7 @@ const MyPage = () => {
 
                 {/* 판매완료 */}
                 {collapse.soldout === true && (
-                    <div className="row mt-4 ms-4">
+                    <div className="row mt-4">
                         {soldoutList.map((product) => (
                             <div className="col-sm-4 col-md-4 col-lg-3 mt-3" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
                                 <div className="card">
