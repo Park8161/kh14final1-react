@@ -95,18 +95,18 @@ const Paystart = ()=>{
 
   const checkMemberAddress = useCallback(()=>{
     const check1 = (!edit.memberPost || edit.memberPost.length === 0) && 
-                   (!edit.memberAddress1 || edit.memberAddress1.length === 0) && 
+                   (!edit.memberAddress1 || edit.memberAddress1.length === 0) &&
                    (!edit.memberAddress2 || edit.memberAddress2.length === 0);
     const check2 = (edit.memberPost && edit.memberPost.length > 0) && 
                    (edit.memberAddress1 && edit.memberAddress1.length > 0) && 
                    (edit.memberAddress2 && edit.memberAddress2.length > 0);
     const checkPost = edit.memberPost && edit.memberPost.length >= 6 && /^[0-9]{6}$/.test(edit.memberPost);;
     const valid = check1 || (check2 && checkPost);
-    console.log("memberPost"+edit.memberPost);
-    console.log("check1"+check1);
-    console.log("check2"+check2);
-    console.log("checkPost"+checkPost);
-    console.log(valid);
+    // console.log("memberPost"+edit.memberPost);
+    // console.log("check1"+check1);
+    // console.log("check2"+check2);
+    // console.log("checkPost"+checkPost);
+    // console.log(valid);
     setMemberAddressValid(valid);
     if(check1) setMemberAddressClass("");
     else setMemberAddressClass(valid ? "is-valid" : "is-invalid");

@@ -14,6 +14,7 @@ const AdminMemberDetail = () => {
     // state
     const [member, setMember] = useState(null);
     const [load, setLoad] = useState(false);
+    const [ban, setBan] = useState(false);
 
     // effect
     useEffect(() => {
@@ -28,6 +29,7 @@ const AdminMemberDetail = () => {
         } catch (e) {
             setMember(null);
         }
+        checkBan();
         setLoad(true);
     }, [memberId]);  // memberId를 의존성 배열에 추가하여 변경 시 호출되도록 설정
 
@@ -83,7 +85,16 @@ const blockMember = useCallback(async () => {
     } else {
         // console.log("차단 취소");
     }
+    loadMember();
 }, [memberId, loadMember]);
+
+// 차단여부 검사함수
+    const checkBan = useCallback(async()=>{
+        const resp = await axios.get(`/member/banCheck/${memberId}`);
+        // 차단됐을 경우 true 반환
+        // console.log(resp.data);
+        setBan(resp.data);
+    },[memberId]);
 
    // 차단 해제 callback
 const unblockMember = useCallback(async () => {
@@ -96,7 +107,6 @@ const unblockMember = useCallback(async () => {
                 banMemo: '운영진에 의한 차단 해제',
                 banTime: new Date().toISOString()
             };
-
             await axios.post("/admin/member/free", banDto);
             toast.success("회원 차단이 해제되었습니다.");
             loadMember();
@@ -107,6 +117,7 @@ const unblockMember = useCallback(async () => {
     } else {
         // console.log("차단 해제 취소");
     }
+    loadMember();
 }, [memberId, loadMember]);
 
     // 로딩 상태 처리
@@ -152,12 +163,21 @@ const unblockMember = useCallback(async () => {
                                 <div className="col-sm-9">{member.memberBirth}</div>
                             </div>
                             <div className="row mt-4">
+                                {member.memberPost ? (<>
+                                {/* 주소가 존재할때 */}
                                 <div className="col-sm-3">회원 주소</div>
                                 <div className="col-sm-9">
                                     {"["+member.memberPost+"] "}
                                     {member.memberAddress1+" "}
                                     {member.memberAddress2}
                                 </div>
+                                </>):(<>
+                                {/* 주소가 존재하지 않을 때 */}
+                                <div className="col-sm-3">회원 주소</div>
+                                <div className="col-sm-9 text-muted">
+                                    등록된 주소가 없습니다.
+                                </div>
+                                </>)}
                             </div>
                             <div className="row mt-4">
                                 <div className="col-sm-3">회원 가입일</div>
@@ -166,6 +186,14 @@ const unblockMember = useCallback(async () => {
                             <div className="row mt-4 mb-3">
                                 <div className="col-sm-3">회원 포인트</div>
                                 <div className="col-sm-9">{member.memberPoint}</div>
+                            </div>
+                            <div className="row mt-4 mb-3">
+                                <div className="col-sm-3">차단여부</div>
+                                {ban ? (<>
+                                    차단된 회원입니다.
+                                </>):(<>
+                                    차단되지 않은 회원입니다.
+                                </>)}
                             </div>
                         </div>
                     </div>
@@ -185,14 +213,19 @@ const unblockMember = useCallback(async () => {
                                 onClick={deleteMember}>
                                 삭제하기
                             </button>
-                            <button type="button" className="btn btn-danger ms-2"
-                                onClick={blockMember}>
-                                차단하기
-                            </button>
+                            {ban ? (<>
                             <button type="button" className="btn btn-success ms-2"
                                 onClick={unblockMember}>
                                 차단 해제
                             </button>
+                            
+                            </>):(<>
+                            <button type="button" className="btn btn-danger ms-2"
+                                onClick={blockMember}>
+                                차단하기
+                            </button>
+                            
+                            </>)}
                         </div>
                     </div>
                 </div>
