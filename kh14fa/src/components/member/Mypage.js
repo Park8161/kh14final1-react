@@ -60,6 +60,7 @@ const MyPage = () => {
     });
     const [reviewscore, setReviewscore] = useState(0);
     const [payList, setPayList] = useState([]);
+    const [paymentCount, setPaymentCount] = useState(); //거래횟수
 
     //effect
     useEffect(() => {
@@ -87,6 +88,7 @@ const MyPage = () => {
         loadReview();
         countReview(response.data.memberId);
         loadReview2();
+        countPayment(response.data.memberId);
     }, [member]);
 
     // 내가 찜한 상품 불러오기
@@ -322,6 +324,13 @@ const MyPage = () => {
             return !prev;
         });
     }
+
+     // 거래횟수 조회
+     const countPayment = useCallback(async (memberId) => {
+        
+        const response = await axios.get("/pay/count/" + memberId);
+        setPaymentCount(response.data);
+    }, []);
   
     return (<>
         {/*  <Jumbotron title={`${member.memberId} 님의 정보`}/>  */}
@@ -431,10 +440,10 @@ const MyPage = () => {
                                             </div>
                                         </div>
                                         <div className="row">
-                                            <div className="col mt-1">
-                                                <h5>0</h5>
+                                                <div className="col mt-1">
+                                                    <h5>{paymentCount}</h5>
+                                                </div>
                                             </div>
-                                        </div>
                                     </li>
                                     <li className="list-group-item text-center" style={{ width: "50%" }}>
                                         <div className="row">
