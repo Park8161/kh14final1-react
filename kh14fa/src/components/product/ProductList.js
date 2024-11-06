@@ -286,70 +286,7 @@ const ProductList = () => {
 	});
 
 	return (<>
-		<div className="mt-4 grid grid-cols-1 gap-4">
-			{/* <div className="flex items-center">
-                <h3 className="text-lg md:text-xl lg:text-2xl 2xl:text-3xl xl:leading-10 font-bold text-heading">
-                    진행중인 이벤트
-                </h3>
-            </div> */}
-
-			{/* 이벤트 배너 */}
-			<div className=" mt-4">
-				<div id="carouselExampleAutoplaying" className="carousel slide" data-bs-ride="carousel">
-					{/* <div className="carousel-inner">
-                        <div className="carousel-item active">
-                            <div className="row">
-                                {displayedBanners.map((banner, index) => (
-                                    <div className="col" key={index}>
-                                        <img src={banner[0]} className="d-block w-100" alt={banner[1]} style={{ width: '300px' , height: '300px', objectFit: 'contain', margin:'0 5px'}} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div> */}
-					<div className="carousel-inner">
-						<div className="carousel-item active" style={{ height: "350px" }}>
-							<div className="row">
-								{displayedBanners.map((banner, index) => (
-									<div className="col d-flex justify-content-center align-items-center" key={index}>
-										<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${banner.attachment}`}
-											className="d-block w-100 cursor-pointer" alt={banner.title} onClick={e => BannerClick(banner.noticeNo)}
-											// style={{ width: '350px', height: '350px', objectFit: 'fill', margin: '0 1px', }} />
-											style={{ width: '350px', height: '350px', objectFit: 'cover', margin: '0 1px' }} />
-									</div>
-								))}
-							</div>
-						</div>
-					</div>
-					{/* 이전 버튼 (<) */}
-					<button className="carousel-control-prev" type="button" onClick={prevBanner} data-bs-slide="prev"
-						style={{ position: 'absolute', left: '-70px', top: '50%', transform: 'translateY(-50%)', zIndex: '1', border: 'none' }}>
-						<span className="carousel-control-prev-icon" aria-hidden="true"></span>
-						<span className="visually-hidden">Previous</span>
-					</button>
-					{/* 다음 버튼 (>) */}
-					<button className="carousel-control-next" type="button" onClick={nextBanner} data-bs-slide="next"
-						style={{ position: 'absolute', right: '-70px', top: '50%', transform: 'translateY(-50%)', zIndex: '1', border: 'none' }}>
-						<span className="carousel-control-next-icon" aria-hidden="true"></span>
-						<span className="visually-hidden">Next</span>
-					</button>
-
-					{/* 인디케이터 추가 */}
-					<div className="carousel-indicators mt-5">
-						{[...Array(Math.ceil(bannerList.length / 3))].map((_, index) => (
-							<button key={index} type="button" className={currentIndex === index ? "active" : ""}
-								aria-current={currentIndex === index ? "true" : "false"} onClick={e => setCurrentIndex(index)}
-								style={{
-									borderRadius: '20%', width: '20px', height: '6px', margin: '2px', border:"none",
-									backgroundColor: currentIndex === index ? "rgba(11, 25, 44, 1)" : "rgba(238, 238, 238, 0.5)"
-								}}>
-							</button> /* 색상 변경border: 'none', 기본 테두리 제거*/
-						))}
-					</div>
-				</div>
-			</div>
-		</div>
-
+	
 		{/* <div classNameName="col-sm-4 col-md-4 col-lg-3 mt-3">
   <div classNameName="Carousel">
       <Carousel.Item>
@@ -402,9 +339,9 @@ const ProductList = () => {
 		{/* 상품 목록 */}
 		<div className="row" style={{ marginTop: "120px" }}>
 			<h3>
-				<span style={{ fontWeight: "600", color: "#1e272e" }}>오늘의 추천 상품!</span>
+				<span style={{ fontWeight: "600", color: "#1e272e" }}>전체 상품 목록</span>
 			</h3>
-			{result.randomProduct.map((product) => (
+			{result.productList.map((product) => (
 				<div className="col-sm-5 col-md-5 col-lg-2 mt-3 cursor-pointer" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
 					<div className="card">
 						<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
@@ -475,159 +412,7 @@ const ProductList = () => {
 			))}
 		</div>
 
-		{/* 최신등록 */}
-		<div className="row" style={{ marginTop: "100px" }}>
-			<h3>
-				<span style={{ fontWeight: "600", color: "#1e272e" }}>최신 등록된 상품</span>
-			</h3>
-			{result.recentPd.map((product) => (
-				<div className="col-sm-5 col-md-5 col-lg-2 mt-3 cursor-pointer" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
-					<div className="card">
-						<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
-							className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
-
-						<div className="card-body">
-							<h5 className="card-title justify-content-start align-items-center"
-								style={{ width: "100%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", display: "block" }}>
-								{/* 상품 이름 */}
-								{product.productName}
-							</h5>
-							<div className="card-text mt-3">
-								{/* {product.productDetail} */}
-								<h5>
-									<div className="text-start" style={{ fontWeight: "600" }}>
-										{formatCurrency(product.productPrice)}원
-									</div>
-								</h5>
-								<div className="text-muted mt-1">
-									{timeCalculate(product.productDate)}
-									{/* {moment(product.productDate).fromNow()} */}
-								</div>
-								{/* <div className="text-end mt-1"
-									style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
-									onClick={e => {e.preventDefault();	e.stopPropagation(); pushLike(product);}}> */}
-								{/* 좋아요 추가 기능 */}
-								<div className="text-start mt-1"
-									style={{ display: 'flex', alignItems: 'center' }}>
-									{/* 상품 상태 */}
-									{product.productState === "판매중" && (
-										<span className='badge bg-primary me-2' >
-											{product.productState}
-										</span>
-									)}
-									{product.productState === "판매보류" && (
-										<span className='badge bg-danger me-2'>
-											{product.productState}
-										</span>
-									)}
-									{product.productState === "판매완료" && (
-										<span className='badge bg-success me-2'>
-											{product.productState}
-										</span>
-									)}
-									{/* {like[product.productNo] ? (
-										<FaHeart className="text-danger" size="25" />
-									) : (
-										<FaRegHeart className="text-danger" size="25" />
-									)}
-									{product.productLikes}  */}
-									{product.productLikes > 0 ? (
-										<div className="d-flex align-items-center mx-1">
-											<FaHeart className="text-danger me-1" size="20" />
-											<span style={{ fontWeight: "600" }}>{product.productLikes}</span>
-										</div>
-									) : (
-										<>
-											<FaRegHeart className="text-danger mx-1" size="20" />
-
-										</>
-									)}
-
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			))}
-		</div>
-
-		{/* 좋아요 수 */}
-		<div className="row" style={{ marginTop: "100px" }}>
-			<h3>
-				<span style={{ fontWeight: "600", color: "#1e272e" }}>인기상품</span>
-			</h3>
-			{result.likePd.map((product) => (
-				<div className="col-sm-5 col-md-5 col-lg-2 mt-3 cursor-pointer" key={product.productNo} onClick={e => navigate("/product/detail/" + product.productNo)}>
-					<div className="card">
-						<img src={`${process.env.REACT_APP_BASE_URL}/attach/download/${product.attachment}`}
-							className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
-
-						<div className="card-body">
-							<h5 className="card-title justify-content-start align-items-center"
-								style={{ width: "100%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", display: "block" }}>
-								{/* 상품 이름 */}
-								{product.productName}
-							</h5>
-							<div className="card-text mt-3">
-								{/* {product.productDetail} */}
-								<h5>
-									<div className="text-start" style={{ fontWeight: "600" }}>
-										{formatCurrency(product.productPrice)}원
-									</div>
-								</h5>
-								<div className="text-muted mt-1">
-									{timeCalculate(product.productDate)}
-									{/* {moment(product.productDate).fromNow()} */}
-								</div>
-								{/* <div className="text-end mt-1"
-									style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
-									onClick={e => {e.preventDefault();	e.stopPropagation(); pushLike(product);}}> */}
-								{/* 좋아요 추가 기능 */}
-								<div className="text-start mt-1"
-									style={{ display: 'flex', alignItems: 'center' }}>
-									{/* 상품 상태 */}
-									{product.productState === "판매중" && (
-										<span className='badge bg-primary me-2' >
-											{product.productState}
-										</span>
-									)}
-									{product.productState === "판매보류" && (
-										<span className='badge bg-danger me-2'>
-											{product.productState}
-										</span>
-									)}
-									{product.productState === "판매완료" && (
-										<span className='badge bg-success me-2'>
-											{product.productState}
-										</span>
-									)}
-									{/* {like[product.productNo] ? (
-										<FaHeart className="text-danger" size="25" />
-									) : (
-										<FaRegHeart className="text-danger" size="25" />
-									)}
-									{product.productLikes}  */}
-									{product.productLikes > 0 ? (
-										<div className="d-flex align-items-center mx-1">
-											<FaHeart className="text-danger me-1" size="20" />
-											<span style={{ fontWeight: "600" }}>{product.productLikes}</span>
-										</div>
-									) : (
-										<>
-											<FaRegHeart className="text-danger mx-1" size="20" />
-
-										</>
-									)}
-
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			))}
-		</div>
-           
-
+		
 	</>);
 };
 export default ProductList;
