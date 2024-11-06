@@ -65,7 +65,7 @@ const QnaDetail = () => {
 
     const deleteQna = useCallback(async () => {
         try {
-            await axios.delete("http://localhost:8080/qna/delete/" + qna.qnaNo);
+            await axios.delete("/qna/delete/" + qna.qnaNo);
             setShowDeleteModal(false);
             setShowSuccessModal(true);
         } catch (error) {
